@@ -1,6 +1,6 @@
 import { Box, Stack, Typography } from "@mui/material";
 import React from "react";
-
+import SideBar from "./SideBar";
 const Feed = () => (
   <Stack
     sx={{
@@ -20,7 +20,7 @@ const Feed = () => (
         px: { sx: 0, md: 2 },
       }}
     >
-      SideBar
+      <SideBar />
       <Typography
         className="Coppyright"
         variant="body2"
