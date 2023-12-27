@@ -6,6 +6,10 @@ import VideoCard from "./VideoCard";
 const Videos = (videos) => {
   videos = videos.videos;
 
+  if (videos === null) {
+    console.log("Videos object is null");
+    return <span>Loading ...</span>;
+  }
   return (
     <Stack direction="row" flexWrap="wrap" justifyContent="start" gap={2}>
       {videos.map((item, idx) => (
