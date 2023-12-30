@@ -23,7 +23,8 @@ const SearchBar = () => {
       className="pl-2 mr-5
         !rounded-full w-[40rem] 
         flex flex-row
-        bg-none px-5 py-2"
+        bg-none px-5 py-2
+        !shadow-none"
     >
       <input
         className="flex-grow ml-5 focus:outline-none "

@@ -31,76 +31,59 @@ const VideoDetail = () => {
     statistics: { viewCount, likeCount },
   } = videoDetail;
   return (
-    <Box minHeight="95vh">
-      <Stack direction={{ xs: "column", md: "row" }}>
-        <Box flex={1}>
-          <Box
-            sx={{
-              width: "100%",
-              position: "sticky",
-              top: "86px",
-            }}
-          >
-            <ReactPlayer
-              url={`https://www.youtube.com/watch?v=${id.id}`}
-              className="react-player"
-              controls
-            />
-            <Typography color="white" fontWeight="bold" p={2} variant="h5">
+    <div className="min-h-screen">
+      <div className="flex flex-col md:flex-row">
+        <div className="flex-1">
+          <div className="mt-8 flex flex-col justify-center items-center">
+            {/* Video Player */}
+            <div className="rounded-3xl w-4/5 aspect-video">
+              <ReactPlayer
+                url={`https://www.youtube.com/watch?v=${id.id}`}
+                controls
+                playing={true}
+                width="100%"
+                height="100%"
+              />
+            </div>
+
+            {/* Video Title */}
+            <div className="text-xl font-bold mt-4 text-left w-4/5">
               {title}
-            </Typography>
-            <Stack
-              direction="row"
-              justifyContent="space-between"
-              py={1}
-              px={2}
-              sx={{
-                color: "#FFF",
-              }}
-            >
-              <Link to={`/channel/${channelId}`}>
-                <Typography
-                  variant={{ sm: "subtitle1", md: "h6" }}
-                  color="#FFF"
-                >
-                  {channelTitle}
-                  <CheckCircle
-                    sx={{ fontSize: "14px", color: "gray", ml: "5px" }}
-                  />
-                </Typography>
-              </Link>
-              <Stack direction="row" gap="20px" alignItems="center">
-                <Typography
-                  variant="body1"
-                  k
-                  sx={{
-                    opacity: 0.7,
-                  }}
-                >
+            </div>
+
+            {/* Channel Details and Video Stats */}
+            <div className="flex justify-between py-1 mt-2 w-4/5">
+              {/* Channel Details */}
+              <div className="flex flex-col text-left">
+                <Link to={`/channel/${channelId}`}>
+                  <p className="text-sm md:text-base text-gray-900">
+                    {channelTitle}
+                    <CheckCircle className="text-gray-500 ml-1" />
+                  </p>
+                </Link>
+
+                {/* Add your channel subscribes here if needed */}
+              </div>
+
+              {/* Video Stats */}
+              <div className="flex flex-col text-right">
+                <div className="text-sm text-gray-700">
                   {parseInt(viewCount).toLocaleString()} views
-                </Typography>
-                <Typography
-                  variant="body1"
-                  sx={{
-                    opacity: 0.7,
-                  }}
-                >
+                </div>
+
+                <div className="text-sm text-gray-700">
                   {parseInt(likeCount).toLocaleString()} likes
-                </Typography>
-              </Stack>
-            </Stack>
-          </Box>
-        </Box>
-        <Box
-          px={2}
-          py={{ md: 1, xs: 5 }}
-          justifyContent="center"
-          alignItems="center"
-        >
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        {/* Second Box */}
+        <div className="mr-12 py-8 justify-center items-center">
           <Videos direction="column" videos={relatedVideos} />
-        </Box>
-      </Stack>
-    </Box>
+        </div>
+      </div>
+    </div>
   );
 };
 

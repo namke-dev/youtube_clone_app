@@ -9,7 +9,7 @@ import {
 } from "./component";
 const App = () => (
   <BrowserRouter>
-    <Box className="bg-vlack">
+    <Box>
       <div
         className="bg-[#fbe2e4e7] -z-10
           fixed top-[-6rem] right-[11rem] 
