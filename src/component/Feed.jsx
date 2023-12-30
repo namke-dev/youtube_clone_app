@@ -1,4 +1,3 @@
-import { Box, Stack, Typography } from "@mui/material";
 import React, { useEffect } from "react";
 import { SideBar, Videos } from "../component";
 import { fetchFromApi } from "../utils/fetchFromApi";
@@ -15,57 +14,21 @@ const Feed = () => {
   }, [selectedCategory]);
 
   return (
-    <Stack
-      sx={{
-        flexDirection: {
-          sx: "column",
-          md: "row",
-        },
-      }}
-    >
-      <Box
-        sx={{
-          height: {
-            sx: "auto",
-            md: "92vh",
-          },
-          borderRight: "1px solid #3d3d3d",
-          px: { sx: 0, md: 2 },
-        }}
-      >
+    <div className="flex flex-col md:flex-row">
+      <div className="mt-12 h-auto border-r border-solid border-gray-200 mr-16 px-5 w-[13rem]">
         <SideBar
           selectedCategory={selectedCategory}
           setSelectedCategory={setSelectedCategory}
         />
-        <Typography
-          className="Coppyright"
-          variant="body2"
-          sx={{ mt: 1.5, color: "#FFF" }}
-        >
-          Coppyright 2023 NKM Media
-        </Typography>
-      </Box>
-      <Box
-        p={2}
-        sx={{
-          overflowY: "auto",
-          height: "90vh",
-          flex: "2",
-        }}
-      >
-        <Typography
-          variant="h4"
-          fontWeight="bold"
-          mb={2}
-          sx={{
-            color: "white",
-          }}
-        >
-          {selectedCategory} <span style={{ color: "#F31503" }}>videos</span>
-        </Typography>
-        <Videos direction="row" videos={videos} />
-      </Box>
-    </Stack>
+      </div>
+
+      <div className="p-2 h-90vh">
+        <p className="text-black font-bold mt-2 mb-4 text-4xl">
+          {selectedCategory} <span className="text-red-600">Videos</span>
+        </p>
+        {/* <Videos direction="row" videos={videos} /> */}
+      </div>
+    </div>
   );
 };
 

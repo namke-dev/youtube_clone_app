@@ -4,22 +4,18 @@ import { Link } from "react-router-dom";
 import { logo } from "../utils/constants";
 import SearchBar from "./SearchBar";
 const Navbar = () => (
-  <Stack
-    direction="row"
-    alignItems="center"
-    p={2}
-    sx={{
-      position: "sticky",
-      background: "#000",
-      top: 0,
-      justifyContent: "space-between",
-    }}
+  <div
+    className="flex items-center p-2 
+    sticky top-0 bg-white 
+    justify-between
+    text-lg"
   >
-    <Link to="/" style={{ display: "flex", alignItems: "center" }}>
-      <img src={logo} alt="logo" height={45} />
+    <Link to="/" className="flex items-center font-bold">
+      <img src={logo} alt="logo" className="h-[3rem] mx-3" />
+      DevTube
     </Link>
-    <SearchBar />
-  </Stack>
+    <SearchBar className="flex" />
+  </div>
 );
 
 export default Navbar;

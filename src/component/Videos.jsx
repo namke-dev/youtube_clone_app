@@ -9,10 +9,9 @@ const Videos = ({ videos, direction }) => {
   }
   return (
     <Stack
-      direction={direction || "row"}
-      flexWrap="wrap"
-      justifyContent="start"
-      gap={2}
+      className={`flex ${
+        direction === "column" ? "!flex-col" : "!flex-row"
+      } flex-wrap gap-2 justify-center`}
     >
       {videos.map((item, idx) => (
         <Box key={idx}>

@@ -3,40 +3,33 @@ import React from "react";
 import { categories } from "../utils/constants";
 
 const SideBar = ({ selectedCategory, setSelectedCategory }) => (
-  <Stack
-    direction="row"
-    sx={{
-      overflowY: "auto",
-      height: { sx: "auto", md: "95%" },
-      flexDirection: { md: "column" },
-    }}
-  >
+  <Stack>
     {categories.map((category) => (
       <button
-        className="category-btn"
+        className={`
+        my-2 py-1 w-[100%] rounded-full
+        border border-gray-200
+        hover:bg-red-600
+        transition-all
+        ${
+          category.name === selectedCategory
+            ? "!bg-gray-100 text-red-600 border-red-600"
+            : "!bg-gray-50 text-gray-600"
+        }`}
         onClick={() => setSelectedCategory(category.name)}
-        style={{
-          background: category.name === selectedCategory && "#FC1503",
-          color: "white",
-        }}
         key={category.name}
       >
         <span
-          style={{
-            color: category.name === selectedCategory ? "white" : "red",
-            marginRight: "15px",
-          }}
+          className={`mr-2 ${
+            category.name === selectedCategory
+              ? "text-red-600"
+              : "text-gray-600"
+          }`}
         >
           {category.icon}
         </span>
 
-        <span
-          style={{
-            opacity: category.name === selectedCategory ? "1" : "0.85",
-          }}
-        >
-          {category.name}
-        </span>
+        <span>{category.name}</span>
       </button>
     ))}
   </Stack>
