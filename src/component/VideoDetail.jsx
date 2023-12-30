@@ -1,4 +1,3 @@
-import { Box, Stack, Typography } from "@mui/material";
 import React, { useEffect } from "react";
 import ReactPlayer from "react-player";
 import { Link, useParams } from "react-router-dom";

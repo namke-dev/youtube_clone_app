@@ -6,9 +6,8 @@ import {
   demoChannelUrl,
   demoChannelTitle,
 } from "../utils/constants";
-import { Card, CardContent, CardMedia, Typography } from "@mui/material";
+import { Card, CardContent, CardMedia } from "@mui/material";
 import { Link } from "react-router-dom";
-import { CheckCircle } from "@mui/icons-material";
 const VideoCard = (video) => {
   const snippet = video.video.snippet;
   const videoId = video.video.id.videoId;
@@ -16,7 +15,11 @@ const VideoCard = (video) => {
     <Card className="w-280 bg-none">
       <Link to={videoId ? `/video/${videoId}` : demoVideoUrl}>
         <CardMedia
-          image={snippet?.thumbnails?.high?.url}
+          image={
+            snippet?.thumbnails?.high?.url
+              ? snippet?.thumbnails?.high?.url
+              : demoThumbnailUrl
+          }
           alt={snippet?.title}
           className="w-[280px] h-[157.5px]"
         />
