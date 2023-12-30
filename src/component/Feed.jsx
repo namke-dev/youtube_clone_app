@@ -15,7 +15,13 @@ const Feed = () => {
 
   return (
     <div className="flex flex-col md:flex-row">
-      <div className="mt-12 h-auto border-r border-solid border-gray-200 mr-16 px-5 w-[13rem]">
+      <div
+        className="
+        pt-12 h-auto 
+        border-r border-solid border-gray-50 
+        mr-16 px-5 w-[13rem]
+        bg-white/30"
+      >
         <SideBar
           selectedCategory={selectedCategory}
           setSelectedCategory={setSelectedCategory}
@@ -23,7 +29,7 @@ const Feed = () => {
       </div>
 
       <div className="p-2 h-90vh">
-        <p className="text-black font-bold mt-2 mb-4 text-4xl">
+        <p className="text-gray-700 font-bold mt-2 mb-4 text-4xl">
           {selectedCategory} <span className="text-red-600">Videos</span>
         </p>
         {/* <Videos direction="row" videos={videos} /> */}

@@ -7,23 +7,29 @@ const SideBar = ({ selectedCategory, setSelectedCategory }) => (
     {categories.map((category) => (
       <button
         className={`
-        my-2 py-1 w-[100%] rounded-full
-        border border-gray-200
-        hover:bg-red-600
+        group
+        mt-3 py-1 w-[100%]
+        rounded-full
+        bg-gray-50
+        font-semibold
+        text-sm
+        text-gray-400
+        shadow-gray-300
+        shadow-sm
+        hover:bg-red-50
+        hover:text-pink-800
         transition-all
         ${
           category.name === selectedCategory
-            ? "!bg-gray-100 text-red-600 border-red-600"
-            : "!bg-gray-50 text-gray-600"
+            ? "text-pink-800  bg-gradient-to-br from-orange-100 via-orange-200 to-pink-300"
+            : ""
         }`}
         onClick={() => setSelectedCategory(category.name)}
         key={category.name}
       >
         <span
-          className={`mr-2 ${
-            category.name === selectedCategory
-              ? "text-red-600"
-              : "text-gray-600"
+          className={`mr-2 group-hover:text-red-800 ${
+            category.name === selectedCategory ? "text-red-600" : ""
           }`}
         >
           {category.icon}

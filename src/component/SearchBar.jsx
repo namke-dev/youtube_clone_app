@@ -20,11 +20,13 @@ const SearchBar = () => {
     <Paper
       component="form"
       onSubmit={(e) => handleSubmit(e)}
-      className="border border-gray-300 pl-2 shadow-none mr-5
-      !rounded-full w-[40rem] flex flex-row"
+      className="pl-2 mr-5
+        !rounded-full w-[40rem] 
+        flex flex-row
+        bg-none px-5 py-2"
     >
       <input
-        className="flex-grow focus:outline-none"
+        className="flex-grow ml-5 focus:outline-none "
         placeholder="Search..."
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
