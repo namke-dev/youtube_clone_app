@@ -3,22 +3,18 @@ import { Link } from "react-router-dom";
 import { logo } from "../utils/constants";
 import SearchBar from "./SearchBar";
 const Navbar = () => (
-  <div
-    className="
-      flex flex-row p-2 
-      sticky top-0 
-      bg-white/40 
-      backdrop-blur-xl 
-      justify-between items-center 
-      text-lg shadow-md"
-  >
+  <div className="w-full flex items-center p-2 sticky top-0 bg-white/40 backdrop-blur-xl text-lg shadow">
+    {/* Logo on the left */}
     <Link to="/" className="flex items-center font-bold">
       <img src={logo} alt="logo" className="h-8 mx-3" />
       <span>DevTube</span>
     </Link>
 
-    <div className="flex-grow mx-4 items-center">
-      <SearchBar className="w-full" />
+    {/* Centered SearchBar */}
+    <div className="flex items-center w-full">
+      <div className="mx-auto w-2/3">
+        <SearchBar />
+      </div>
     </div>
   </div>
 );

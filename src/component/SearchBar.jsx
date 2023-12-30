@@ -21,10 +21,10 @@ const SearchBar = () => {
       component="form"
       onSubmit={(e) => handleSubmit(e)}
       className="pl-2 mr-5
-        !rounded-full w-[40rem] 
+        !rounded-full w-full 
         flex flex-row
         bg-none px-5 py-2
-        !shadow-none"
+        !shadow"
     >
       <input
         className="flex-grow ml-5 focus:outline-none "
