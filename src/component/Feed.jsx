@@ -9,9 +9,9 @@ const Feed = () => {
   const [isWideScreen, setIsWideScreen] = useState(window.innerWidth > 640);
 
   useEffect(() => {
-    fetchFromApi(`search?part=snippet&q=${selectedCategory}`).then((data) =>
-      setVideos(data.items)
-    );
+    fetchFromApi(
+      `search?part=snippet,id&q=${selectedCategory}&regionCode=VN&order=date`
+    ).then((data) => setVideos(data.items));
 
     const handleResize = () => {
       setIsWideScreen(window.innerWidth > 640);

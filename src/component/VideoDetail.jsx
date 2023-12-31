@@ -15,10 +15,12 @@ const VideoDetail = () => {
     fetchFromApi(`videos?part=snippet,statistics&id=${id.id}`).then((data) =>
       setVideoDetail(data.items[0])
     );
-
-    fetchFromApi(`search?part=snippet&id=${id}&type=video`).then((data) =>
-      setRelatedVideos(data.items)
+    alert(
+      `search?relatedToVideoId=${id.id}&part=id,snippet&type=video&maxResults=20`
     );
+    fetchFromApi(
+      `search?relatedToVideoId=${id.id}&part=id,snippet&type=video&maxResults=20`
+    ).then((data) => setRelatedVideos(data.items));
   }, [id]);
 
   if (!videoDetail) {
@@ -34,7 +36,7 @@ const VideoDetail = () => {
       <div className="flex-1">
         <div className="mt-8 flex flex-col items-center sm:w-85% mx-3 sm:mx-10">
           {/* Video Player */}
-          <div className="rounded-3xl w-full aspect-video">
+          <div className="w-full aspect-video">
             <ReactPlayer
               url={`https://www.youtube.com/watch?v=${id.id}`}
               controls

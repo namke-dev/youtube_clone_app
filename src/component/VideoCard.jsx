@@ -33,10 +33,18 @@ const VideoCard = ({ video, direction }) => {
         />
       </Link>
 
-      <div className="bg-white shadow-sm mb-3 px-2 pt-2 pb-4">
-        <Link to={videoId ? `/video/${videoId}` : demoVideoUrl}>
-          <p className="text-sm font-semibold mb-2">
-            {snippet?.title.slice(0, 60) || demoVideoTitle.slice(0, 60)}
+      <div
+        className="bg-white 
+        shadow-sm mb-3 px-4 
+        py-4 min-h-[7rem]"
+      >
+        <Link
+          to={videoId ? `/video/${videoId}` : demoVideoUrl}
+          title={snippet?.title}
+        >
+          <p className="text-base md:text-sm font-semibold mb-2">
+            {snippet?.title.slice(0, 92) || demoVideoTitle.slice(0, 92)}
+            {snippet?.title.length > 92 ? " . . ." : ""}
           </p>
         </Link>
 
@@ -47,7 +55,7 @@ const VideoCard = ({ video, direction }) => {
               : demoChannelUrl
           }
         >
-          <p className="text-xs text-gray-500 font-bold">
+          <p className="text-sm md:text-xs text-gray-500 font-bold">
             {snippet?.channelTitle || demoChannelTitle}
           </p>
         </Link>
