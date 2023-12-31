@@ -1,15 +1,26 @@
-import { Stack } from "@mui/material";
 import React from "react";
 import { categories } from "../utils/constants";
 
 const SideBar = ({ selectedCategory, setSelectedCategory }) => (
-  <Stack>
+  <div
+    className="
+    flex 
+    flex-row sm:flex-col 
+    overflow-hidden 
+    overflow-x-auto 
+    sm:overflow-y-auto
+    sm:w-auto w-full"
+  >
     {categories.map((category) => (
       <button
         className={`
         group
-        mt-3 py-2 px-3
-        rounded-full
+        sm:mt-3 py-2 px-3
+        sm:rounded-full
+        rounded-xl
+        sm:ml-0
+        mr-4
+        min-w-[100px]
         bg-gray-50
         font-semibold
         text-sm
@@ -19,9 +30,14 @@ const SideBar = ({ selectedCategory, setSelectedCategory }) => (
         hover:bg-red-50
         hover:text-pink-800
         items-center
-        justify-start
+        justify-center
+        sm:justify-start
         transition-all
-        flex flex-row flex-wrap
+        flex 
+        sm:flex-row 
+        flex-col
+        flex-wrap
+        w-full
         ${
           category.name === selectedCategory
             ? "text-pink-800  bg-gradient-to-br from-orange-100 via-orange-200 to-pink-300"
@@ -41,7 +57,7 @@ const SideBar = ({ selectedCategory, setSelectedCategory }) => (
         <span className="flex pt-[0.5]">{category.name}</span>
       </button>
     ))}
-  </Stack>
+  </div>
 );
 
 export default SideBar;

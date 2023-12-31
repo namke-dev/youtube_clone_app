@@ -28,11 +28,14 @@ const Feed = () => {
     <div className="flex flex-col md:flex-row">
       <div
         className="
-        pt-12 h-auto 
+        pt-8 h-auto 
         border-r border-solid border-gray-50 
-        mr-5 px-5 w-[13rem]
+        mr-5 px-5
         bg-white/30
-        min-w-[12rem]"
+        min-w-[12rem]
+        sm:w-[14rem]
+        w-full
+        "
       >
         <SideBar
           selectedCategory={selectedCategory}

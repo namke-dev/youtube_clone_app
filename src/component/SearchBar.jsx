@@ -20,20 +20,20 @@ const SearchBar = () => {
     <Paper
       component="form"
       onSubmit={(e) => handleSubmit(e)}
-      className="pl-2 mr-5
+      className="
         !rounded-full w-full 
         flex flex-row
-        bg-none px-5 py-2
+        mx-0 py-2 pl-4
         !shadow"
     >
       <input
-        className="flex-grow ml-5 focus:outline-none "
+        className="flex-grow focus:outline-none w-11/12"
         placeholder="Search..."
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
       />
 
-      <button type="submit" className="flex items-center">
+      <button type="submit" className="pr-4">
         <Search />
       </button>
     </Paper>
