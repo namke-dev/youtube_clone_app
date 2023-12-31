@@ -32,7 +32,7 @@ const VideoDetail = () => {
   return (
     <div className="flex flex-col sm:flex-row">
       <div className="flex-1">
-        <div className="mt-8 sm:mx-auto flex flex-col items-center sm:w-85% mx-3">
+        <div className="mt-8 flex flex-col items-center sm:w-85% mx-3 sm:mx-10">
           {/* Video Player */}
           <div className="rounded-3xl w-full aspect-video">
             <ReactPlayer
@@ -75,10 +75,10 @@ const VideoDetail = () => {
         </div>
       </div>
       {/* Second Box */}
-      <div className="justify-center items-center sm:w-1/3 mt-12 sm:mt-0 sm:mx-4">
+      <div className="justify-center items-center sm:w-1/3 sm:mt-0 sm:mx-4">
         <div
-          className="justify-center items-center my-5 px-3
-          text-lg sm:text-xl font-semibold text-gray-900"
+          className="justify-center items-center my-5 px-3 mx-3
+          text-2xl sm:text-3xl font-bold text-red-700"
         >
           Related Video
         </div>

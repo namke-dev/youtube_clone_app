@@ -6,11 +6,22 @@ import { useState } from "react";
 const Feed = () => {
   const [selectedCategory, setSelectedCategory] = useState("New");
   const [videos, setVideos] = useState([]);
+  const [isWideScreen, setIsWideScreen] = useState(window.innerWidth > 640);
 
   useEffect(() => {
     fetchFromApi(`search?part=snippet&q=${selectedCategory}`).then((data) =>
       setVideos(data.items)
     );
+
+    const handleResize = () => {
+      setIsWideScreen(window.innerWidth > 640);
+    };
+
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
   }, [selectedCategory]);
 
   return (
@@ -33,7 +44,11 @@ const Feed = () => {
         <p className="text-gray-700 font-bold mt-2 mb-4 mr-2 text-3xl">
           {selectedCategory} <span className="text-pink-500">Videos</span>
         </p>
-        <Videos direction="row" videos={videos} />
+        {isWideScreen ? (
+          <Videos direction="row" videos={videos} />
+        ) : (
+          <Videos direction="column" videos={videos} />
+        )}
       </div>
     </div>
   );

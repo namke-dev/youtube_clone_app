@@ -10,19 +10,16 @@ import { CardMedia } from "@mui/material";
 import { Link } from "react-router-dom";
 
 const VideoCard = ({ video, direction }) => {
-  console.log({ video });
-  // alert({ video });
   const snippet = video.snippet;
   const videoId = video.id.videoId;
 
   return (
     <div
-      className="bg-red-600 
-        sm:w-[280px] w-3/4 
-        justify-center items-center 
-        mx-auto 
-        mb-8 sm:mb-0 mt-3 sm:mt-0
-        "
+      className={`bg-red-600 
+      ${direction === "row" ? "sm:w-[280px]" : "w-11/12"}
+      justify-center items-center 
+      mx-auto 
+      mb-0 sm:mb-0 mt-3 sm:mt-0`}
     >
       <Link to={videoId ? `/video/${videoId}` : demoVideoUrl}>
         <CardMedia

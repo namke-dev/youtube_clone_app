@@ -14,7 +14,7 @@ const Videos = ({ videos, direction }) => {
       }  gap-2 justify-center`}
     >
       {videos.map((item, idx) => (
-        <Box key={idx} className="mb-5 sm:mb-0">
+        <Box key={idx} className="mb-0">
           {item.id.videoId && <VideoCard video={item} direction={direction} />}
           {item.id.channelId && <ChannelCard channelDetail={item} />}
         </Box>
