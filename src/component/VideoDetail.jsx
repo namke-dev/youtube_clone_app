@@ -15,9 +15,7 @@ const VideoDetail = () => {
     fetchFromApi(`videos?part=snippet,statistics&id=${id.id}`).then((data) =>
       setVideoDetail(data.items[0])
     );
-    alert(
-      `search?relatedToVideoId=${id.id}&part=id,snippet&type=video&maxResults=20`
-    );
+
     fetchFromApi(
       `search?relatedToVideoId=${id.id}&part=id,snippet&type=video&maxResults=20`
     ).then((data) => setRelatedVideos(data.items));

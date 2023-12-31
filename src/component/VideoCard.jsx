@@ -17,7 +17,7 @@ const VideoCard = ({ video, direction }) => {
   return (
     <div
       className={`bg-red-600 
-      ${direction === "row" ? "md:w-[300px]" : "w-11/12"}
+      ${direction === "row" ? "sm:w-[300px]" : "w-11/12"}
       justify-center items-center 
       mx-auto 
       mb-0 md:mb-0 mt-3 md:mt-0`}
