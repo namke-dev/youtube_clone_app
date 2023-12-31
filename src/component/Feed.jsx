@@ -28,13 +28,18 @@ const Feed = () => {
     <div className="flex flex-col md:flex-row">
       <div
         className="
-        pt-8 h-auto 
+        p-5
+        h-auto 
         border-r border-solid border-gray-50 
-        mr-5 px-5
-        bg-white/30
+        mr-5
         min-w-[12rem]
-        sm:w-[14rem]
+        md:w-[14rem]
         w-full
+        md:sticky
+        md:top-0
+        md:h-screen
+        md:overflow-y-auto
+        overflow-hidden 
         "
       >
         <SideBar

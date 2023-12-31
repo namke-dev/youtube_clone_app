@@ -5,20 +5,20 @@ const SideBar = ({ selectedCategory, setSelectedCategory }) => (
   <div
     className="
     flex 
-    flex-row sm:flex-col 
+    flex-row md:flex-col 
     overflow-hidden 
     overflow-x-auto 
-    sm:overflow-y-auto
-    sm:w-auto w-full"
+    md:overflow-y-auto
+    md:w-auto w-full"
   >
     {categories.map((category) => (
       <button
         className={`
         group
-        sm:mt-3 py-2 px-3
-        sm:rounded-full
+        md:mt-3 py-2 px-3
+        md:rounded-full
         rounded-xl
-        sm:ml-0
+        md:ml-0
         mr-4
         min-w-[100px]
         bg-gray-50
@@ -31,10 +31,10 @@ const SideBar = ({ selectedCategory, setSelectedCategory }) => (
         hover:text-pink-800
         items-center
         justify-center
-        sm:justify-start
+        md:justify-start
         transition-all
         flex 
-        sm:flex-row 
+        md:flex-row 
         flex-col
         flex-wrap
         w-full
