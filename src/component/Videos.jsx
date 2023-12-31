@@ -11,7 +11,8 @@ const Videos = ({ videos, direction }) => {
     <Stack
       className={`flex ${
         direction === "column" ? "!flex-col" : "!flex-row sm:flex-wrap"
-      }  gap-2 justify-center`}
+      }  
+        gap-2 justify-center       `}
     >
       {videos.map((item, idx) => (
         <Box key={idx} className="mb-0">

@@ -34,12 +34,9 @@ const Feed = () => {
         mr-5
         min-w-[12rem]
         md:w-[14rem]
-        w-full
-        md:sticky
-        md:top-0
-        md:h-screen
+        
         overflow-hidden 
-        ${isWideScreen ? "overflow-y-auto" : "overflow-x-auto"}
+        ${isWideScreen ? "" : "overflow-x-auto"}
         `}
       >
         <SideBar
@@ -48,8 +45,11 @@ const Feed = () => {
         />
       </div>
 
-      <div className="h-90vh flex-wrap">
-        <p className="text-gray-700 font-bold mt-2 mb-4 mr-2 text-3xl">
+      <div
+        className="h-90vh flex-wrap
+        "
+      >
+        <p className="text-gray-700 font-bold mt-2 mb-4 mr-2 text-3xl ml-5">
           {selectedCategory} <span className="text-pink-500">Videos</span>
         </p>
         {isWideScreen ? (
