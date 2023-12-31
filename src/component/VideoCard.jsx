@@ -8,6 +8,7 @@ import {
 } from "../utils/constants";
 import { CardMedia } from "@mui/material";
 import { Link } from "react-router-dom";
+import { nomalzeVideoTitle } from "../utils/utils";
 
 const VideoCard = ({ video, direction }) => {
   const snippet = video.snippet;
@@ -16,10 +17,10 @@ const VideoCard = ({ video, direction }) => {
   return (
     <div
       className={`bg-red-600 
-      ${direction === "row" ? "sm:w-[280px]" : "w-11/12"}
+      ${direction === "row" ? "md:w-[300px]" : "w-11/12"}
       justify-center items-center 
       mx-auto 
-      mb-0 sm:mb-0 mt-3 sm:mt-0`}
+      mb-0 md:mb-0 mt-3 md:mt-0`}
     >
       <Link to={videoId ? `/video/${videoId}` : demoVideoUrl}>
         <CardMedia
@@ -36,14 +37,15 @@ const VideoCard = ({ video, direction }) => {
       <div
         className="bg-white 
         shadow-sm mb-3 px-4 
-        py-4 min-h-[7rem]"
+        py-4 min-h-[7.5rem]"
       >
         <Link
           to={videoId ? `/video/${videoId}` : demoVideoUrl}
           title={snippet?.title}
         >
           <p className="text-base md:text-sm font-semibold mb-2">
-            {snippet?.title.slice(0, 92) || demoVideoTitle.slice(0, 92)}
+            {nomalzeVideoTitle(snippet?.title.slice(0, 92)) ||
+              demoVideoTitle.slice(0, 92)}
             {snippet?.title.length > 92 ? " . . ." : ""}
           </p>
         </Link>

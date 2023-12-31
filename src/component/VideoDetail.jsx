@@ -32,9 +32,9 @@ const VideoDetail = () => {
     statistics: { viewCount, likeCount },
   } = videoDetail;
   return (
-    <div className="flex flex-col sm:flex-row">
+    <div className="flex flex-col md:flex-row">
       <div className="flex-1">
-        <div className="mt-8 flex flex-col items-center sm:w-85% mx-3 sm:mx-10">
+        <div className="mt-8 flex flex-col items-center md:w-85% mx-3 md:mx-10">
           {/* Video Player */}
           <div className="w-full aspect-video">
             <ReactPlayer
@@ -54,7 +54,7 @@ const VideoDetail = () => {
             {/* Channel Details */}
             <div className="flex flex-col text-left">
               <Link to={`/channel/${channelId}`}>
-                <p className="text-sm sm:text-base text-gray-900">
+                <p className="text-sm md:text-base text-gray-900">
                   {channelTitle}
                   <CheckCircle className="text-gray-500 ml-1" />
                 </p>
@@ -77,10 +77,10 @@ const VideoDetail = () => {
         </div>
       </div>
       {/* Second Box */}
-      <div className="justify-center items-center sm:w-1/3 sm:mt-0 sm:mx-4">
+      <div className="justify-center items-center md:w-1/3 md:mt-0 md:mx-4">
         <div
           className="justify-center items-center my-5 px-3 mx-3
-          text-2xl sm:text-3xl font-bold text-red-700"
+          text-2xl md:text-3xl font-bold text-red-700"
         >
           Related Video
         </div>
