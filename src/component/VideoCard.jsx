@@ -6,13 +6,24 @@ import {
   demoChannelUrl,
   demoChannelTitle,
 } from "../utils/constants";
-import { Card, CardContent, CardMedia } from "@mui/material";
+import { CardMedia } from "@mui/material";
 import { Link } from "react-router-dom";
-const VideoCard = (video) => {
-  const snippet = video.video.snippet;
-  const videoId = video.video.id.videoId;
+
+const VideoCard = ({ video, direction }) => {
+  console.log({ video });
+  // alert({ video });
+  const snippet = video.snippet;
+  const videoId = video.id.videoId;
+
   return (
-    <Card className="w-280 bg-none">
+    <div
+      className="bg-red-600 
+        sm:w-[280px] w-3/4 
+        justify-center items-center 
+        mx-auto 
+        mb-8 sm:mb-0 mt-3 sm:mt-0
+        "
+    >
       <Link to={videoId ? `/video/${videoId}` : demoVideoUrl}>
         <CardMedia
           image={
@@ -21,15 +32,17 @@ const VideoCard = (video) => {
               : demoThumbnailUrl
           }
           alt={snippet?.title}
-          className="w-[280px] h-[157.5px]"
+          className="w-full aspect-video"
         />
       </Link>
-      <CardContent className="w-[280px] h-[90px] bg-">
+
+      <div className="bg-white shadow-sm mb-3 px-2 pt-2 pb-4">
         <Link to={videoId ? `/video/${videoId}` : demoVideoUrl}>
           <p className="text-sm font-semibold mb-2">
             {snippet?.title.slice(0, 60) || demoVideoTitle.slice(0, 60)}
           </p>
         </Link>
+
         <Link
           to={
             snippet?.channelId
@@ -41,8 +54,8 @@ const VideoCard = (video) => {
             {snippet?.channelTitle || demoChannelTitle}
           </p>
         </Link>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 };
 

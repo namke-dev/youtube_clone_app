@@ -10,12 +10,12 @@ const Videos = ({ videos, direction }) => {
   return (
     <Stack
       className={`flex ${
-        direction === "column" ? "!flex-col" : "!flex-row"
-      } flex-wrap gap-2 justify-center`}
+        direction === "column" ? "!flex-col" : "!flex-row sm:flex-wrap"
+      }  gap-2 justify-center`}
     >
       {videos.map((item, idx) => (
-        <Box key={idx} className="bg-none">
-          {item.id.videoId && <VideoCard video={item} />}
+        <Box key={idx} className="mb-5 sm:mb-0">
+          {item.id.videoId && <VideoCard video={item} direction={direction} />}
           {item.id.channelId && <ChannelCard channelDetail={item} />}
         </Box>
       ))}
