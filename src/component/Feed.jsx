@@ -27,7 +27,7 @@ const Feed = () => {
   return (
     <div className="flex flex-col md:flex-row">
       <div
-        className="
+        className={`
         p-5
         h-auto 
         border-r border-solid border-gray-50 
@@ -38,9 +38,9 @@ const Feed = () => {
         md:sticky
         md:top-0
         md:h-screen
-        md:overflow-y-auto
         overflow-hidden 
-        "
+        ${isWideScreen ? "overflow-y-auto" : "overflow-x-auto"}
+        `}
       >
         <SideBar
           selectedCategory={selectedCategory}

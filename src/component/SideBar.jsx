@@ -6,10 +6,7 @@ const SideBar = ({ selectedCategory, setSelectedCategory }) => (
     className="
     flex 
     flex-row md:flex-col 
-    overflow-hidden 
-    overflow-x-auto 
-    md:overflow-y-auto
-    md:w-auto w-full"
+    "
   >
     {categories.map((category) => (
       <button
