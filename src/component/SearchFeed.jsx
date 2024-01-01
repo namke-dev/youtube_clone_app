@@ -7,30 +7,29 @@ import { useParams } from "react-router-dom";
 const SearchFeed = () => {
   const [selectedCategory, setSelectedCategory] = useState("");
   const [isWideScreen, setIsWideScreen] = useState(window.innerWidth > 640);
+  const handleResize = () => {
+    setIsWideScreen(window.innerWidth > 640);
+  };
+
+  const { searchTerm } = useParams();
+  const [videos, setVideos] = useState([]);
 
   useEffect(() => {
     fetchFromApi(
       `search?part=snippet,id&q=${selectedCategory}&regionCode=VN&order=date`
     ).then((data) => setVideos(data.items));
 
-    const handleResize = () => {
-      setIsWideScreen(window.innerWidth > 640);
-    };
-
     window.addEventListener("resize", handleResize);
-
     return () => {
       window.removeEventListener("resize", handleResize);
     };
   }, [selectedCategory]);
 
-  const { searchTerm } = useParams();
-  const [videos, setVideos] = useState([]);
-
   useEffect(() => {
     fetchFromApi(`search?part=snippet&q=${searchTerm}&regionCode=VN`).then(
       (data) => setVideos(data.items)
     );
+    setSelectedCategory("");
   }, [searchTerm]);
 
   return (
@@ -54,12 +53,10 @@ const SearchFeed = () => {
         />
       </div>
 
-      <div
-        className="h-90vh flex-wrap
-        "
-      >
+      <div className="h-90vh flex-wrap">
         <p className="text-gray-700 font-bold mt-2 mb-4 mr-2 text-3xl ml-5">
-          {selectedCategory} <span className="text-pink-500">Videos</span>
+          {selectedCategory ? selectedCategory : searchTerm}{" "}
+          <span className="text-pink-500">Videos</span>
         </p>
         {isWideScreen ? (
           <Videos direction="row" videos={videos} />

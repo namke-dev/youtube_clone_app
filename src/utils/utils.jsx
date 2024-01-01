@@ -1,5 +1,3 @@
-import React from "react";
-
 export function nomalzeVideoTitle(inputString) {
   if (!inputString) {
     return "";

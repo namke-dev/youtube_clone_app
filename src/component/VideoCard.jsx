@@ -14,9 +14,11 @@ const VideoCard = ({ video, direction }) => {
   const snippet = video.snippet;
   const videoId = video.id.videoId;
 
+  if (!snippet?.thumbnails?.high?.url) return null;
+
   return (
     <div
-      className={`bg-red-600 
+      className={`bg-gray-600 
       ${direction === "row" ? "sm:w-[300px]" : "w-11/12"}
       justify-center items-center 
       mx-auto 
