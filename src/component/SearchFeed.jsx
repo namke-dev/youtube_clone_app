@@ -3,9 +3,10 @@ import { useEffect } from "react";
 import { fetchFromApi } from "../utils/fetchFromApi";
 import { useState } from "react";
 import { useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const SearchFeed = () => {
-  const [selectedCategory, setSelectedCategory] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("Lofi");
   const [isWideScreen, setIsWideScreen] = useState(window.innerWidth > 640);
   const handleResize = () => {
     setIsWideScreen(window.innerWidth > 640);
@@ -14,23 +15,31 @@ const SearchFeed = () => {
   const { searchTerm } = useParams();
   const [videos, setVideos] = useState([]);
 
-  useEffect(() => {
-    fetchFromApi(
-      `search?part=snippet,id&q=${selectedCategory}&regionCode=VN&order=date`
-    ).then((data) => setVideos(data.items));
+  const navigate = useNavigate();
 
+  useEffect(() => {
+    if (selectedCategory) {
+      navigate(`/search/${selectedCategory}`);
+    }
+  }, [selectedCategory]);
+
+  useEffect(() => {
+    if (searchTerm) {
+      fetchFromApi(`search?part=snippet,id&q=${searchTerm}&regionCode=VN`).then(
+        (data) => setVideos(data.items)
+      );
+    }
+    if (searchTerm !== selectedCategory) {
+      setSelectedCategory("");
+    }
+  }, [searchTerm]);
+
+  useEffect(() => {
     window.addEventListener("resize", handleResize);
     return () => {
       window.removeEventListener("resize", handleResize);
     };
-  }, [selectedCategory]);
-
-  useEffect(() => {
-    fetchFromApi(`search?part=snippet&q=${searchTerm}&regionCode=VN`).then(
-      (data) => setVideos(data.items)
-    );
-    setSelectedCategory("");
-  }, [searchTerm]);
+  }, []);
 
   return (
     <div className="flex flex-col md:flex-row">
