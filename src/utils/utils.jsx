@@ -5,7 +5,7 @@ export const formatRelativeTime = (timestamp) => {
   return formatDistanceToNow(date, { addSuffix: true });
 };
 
-export function nomalzeVideoTitle(inputString) {
+export function normalzeVideoTitle(inputString) {
   if (!inputString) {
     return "";
   }

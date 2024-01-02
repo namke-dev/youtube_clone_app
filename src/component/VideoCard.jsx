@@ -8,7 +8,7 @@ import {
 } from "../utils/constants";
 import { CardMedia } from "@mui/material";
 import { Link } from "react-router-dom";
-import { nomalzeVideoTitle } from "../utils/utils";
+import { normalzeVideoTitle } from "../utils/utils";
 
 const VideoCard = ({ video, direction }) => {
   const snippet = video.snippet;
@@ -37,33 +37,35 @@ const VideoCard = ({ video, direction }) => {
         />
       </Link>
 
-      <div
-        className="bg-white 
-        shadow-sm px-4 
-        py-4 min-h-[7.5rem]"
-      >
-        <Link
-          to={videoId ? `/video/${videoId}` : demoVideoUrl}
-          title={snippet?.title}
-        >
-          <p className="text-base md:text-sm font-semibold mb-2">
-            {nomalzeVideoTitle(snippet?.title.slice(0, 92)) ||
-              demoVideoTitle.slice(0, 92)}
-            {snippet?.title.length > 92 ? " . . ." : ""}
-          </p>
-        </Link>
+      <div className="flex flex-col ">
+        {/* Top Section */}
+        <div className="bg-white shadow-sm px-4 pt-4">
+          <Link
+            to={videoId ? `/video/${videoId}` : demoVideoUrl}
+            title={snippet?.title}
+          >
+            <p className="text-base md:text-sm font-semibold mb-2">
+              {normalzeVideoTitle(snippet?.title.slice(0, 92)) ||
+                demoVideoTitle.slice(0, 92)}
+              {snippet?.title.length > 92 ? " . . ." : ""}
+            </p>
+          </Link>
+        </div>
 
-        <Link
-          to={
-            snippet?.channelId
-              ? `/channel/${snippet?.channelId}`
-              : demoChannelUrl
-          }
-        >
-          <p className="text-sm md:text-xs text-gray-500 font-bold">
-            {snippet?.channelTitle || demoChannelTitle}
-          </p>
-        </Link>
+        {/* Bottom Section */}
+        <div className="bg-white shadow-sm  px-4 pb-4">
+          <Link
+            to={
+              snippet?.channelId
+                ? `/channel/${snippet?.channelId}`
+                : demoChannelUrl
+            }
+          >
+            <p className="text-sm md:text-xs text-gray-500 font-bold">
+              {snippet?.channelTitle || demoChannelTitle}
+            </p>
+          </Link>
+        </div>
       </div>
     </div>
   );
