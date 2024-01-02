@@ -5,7 +5,9 @@ import { fetchFromApi } from "../utils/fetchFromApi";
 import { CheckCircle } from "@mui/icons-material";
 import { Videos, Comments } from "../component";
 import { formatRelativeTime } from "../utils/utils";
-
+import ThumbUpIcon from "@mui/icons-material/ThumbUp";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import { HtmlContent } from "../utils/utils";
 const VideoDetail = () => {
   const { id } = useParams();
   const [videoDetail, setVideoDetail] = useState(null);
@@ -71,7 +73,7 @@ const VideoDetail = () => {
           <div className="text-xl font-bold mt-2 text-left w-full">{title}</div>
 
           {/* Channel Details and Video Stats */}
-          <div className="flex justify-between py-1 mt-2 w-full material-box">
+          <div className="flex justify-between mt-2 w-full material-box">
             {/* Channel Details */}
             <div className="flex flex-col text-left">
               {/* Published Date */}
@@ -80,7 +82,7 @@ const VideoDetail = () => {
               </p>
 
               {/* Channel Title */}
-              <div className="text-sm md:text-xl text-gray-900  mt-2">
+              <div className="text-lg font-semibold md:text-xl text-gray-900  mt-2">
                 <Link to={`/channel/${channelId}`}>
                   {channelTitle}
                   <CheckCircle className="text-blue-500 ml-1 text-xs" />
@@ -89,23 +91,46 @@ const VideoDetail = () => {
             </div>
 
             {/* Video Stats */}
-            <div className="flex flex-col text-right text-xs md:text-base text-gray-700">
-              <div>{parseInt(viewCount).toLocaleString()} views</div>
-
-              <div>{parseInt(likeCount).toLocaleString()} likes</div>
-
-              <div>{parseInt(commentCount).toLocaleString()} comments</div>
+            <div className="flex flex-col text-right text-sm md:text-base text-gray-400">
+              <div>
+                <span className="align-middle">
+                  {parseInt(viewCount).toLocaleString()}
+                </span>
+                <VisibilityIcon
+                  style={{
+                    fontSize: "16px",
+                    marginLeft: "4px",
+                    marginTop: "1px",
+                  }}
+                />
+              </div>
+              <div>
+                <span className="align-middle">
+                  {parseInt(likeCount).toLocaleString()}
+                </span>
+                <ThumbUpIcon
+                  style={{
+                    fontSize: "16px",
+                    marginLeft: "4px",
+                    marginTop: "1px",
+                  }}
+                />
+              </div>
             </div>
           </div>
+
           {description && (
             <div
               className="text-gray-700 mt-2 whitespace-pre-line 
               material-box 
-              text-md w-full
+              text-sm w-full
               "
             >
-              <p>{truncatedDescription}</p>
+              <p className="mb-2 text-base text-gray-800 font-semibold">
+                Description
+              </p>
 
+              <HtmlContent content={truncatedDescription} />
               <button
                 className="text-blue-500 mt-2 cursor-pointer focus:outline-none"
                 onClick={() => setIsDescriptionExpanded(!isDescriptionExpanded)}

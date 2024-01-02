@@ -6,7 +6,7 @@ export default function Comments({ data }) {
 
   return (
     <>
-      <div>Comments</div>
+      <p className="mb-2 text-base text-gray-800 font-semibold">Comments</p>{" "}
       {data.map((commentData) => (
         <Comment key={commentData.id} commentData={commentData} />
       ))}

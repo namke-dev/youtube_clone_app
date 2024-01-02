@@ -1,5 +1,7 @@
 import React from "react";
 import { formatRelativeTime } from "../utils/utils";
+import { HtmlContent } from "../utils/utils";
+import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 
 const Comment = ({ commentData }) => {
   const {
@@ -34,17 +36,29 @@ const Comment = ({ commentData }) => {
           >
             {authorDisplayName}
           </a>
-          <p className="published-date text-gray-500">
+          <p className="published-date text-gray-500 text-xs">
             {formatRelativeTime(publishedAt)}
           </p>
+          <HtmlContent
+            className="comment-text text-gray-700 mt-2"
+            content={textDisplay}
+          />
+          {likeCount > 0 && (
+            <div>
+              <span className="align-middle">
+                {parseInt(likeCount).toLocaleString()}
+              </span>
+              <ThumbUpIcon
+                style={{
+                  fontSize: "16px",
+                  marginLeft: "4px",
+                  marginTop: "1px",
+                }}
+              />
+            </div>
+          )}
         </div>
       </div>
-      <p className="comment-text text-gray-700 mt-2">{textDisplay}</p>
-      {likeCount > 0 && (
-        <div className="comment-actions flex items-center mt-2">
-          <span className="text-gray-700">{`${likeCount} likes`}</span>
-        </div>
-      )}
     </div>
   );
 };

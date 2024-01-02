@@ -20,3 +20,8 @@ export const formatDescription = (description) => {
   const formattedDescription = description.replace(/\.\s/g, ".\n");
   return formattedDescription;
 };
+
+export const HtmlContent = ({ content }) => {
+  const formattedComment = { __html: content };
+  return <div dangerouslySetInnerHTML={formattedComment} />;
+};

@@ -10,7 +10,7 @@
   .material-box {
     background-color: rgba(255, 255, 255, 0.8);
     border-radius: 0.5rem; /* equivalent to rounded-xl */
-    padding: 0.75rem; /* equivalent to px-3 and py-2 */
+    padding: 1rem; /* equivalent to px-3 and py-2 */
     margin-bottom: 1rem; /* equivalent to mb-4 */
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); /* equivalent to shadow-md */
   }
