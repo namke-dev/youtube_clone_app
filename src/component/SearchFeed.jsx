@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 
 const SearchFeed = () => {
   const [selectedCategory, setSelectedCategory] = useState("Lofi");
-  const [isWideScreen, setIsWideScreen] = useState(window.innerWidth > 640);
+  const [isWideScreen, setIsWideScreen] = useState(window.innerWidth > 768);
   const handleResize = () => {
     setIsWideScreen(window.innerWidth > 640);
   };

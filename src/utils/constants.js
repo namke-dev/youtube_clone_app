@@ -12,7 +12,7 @@ import TheaterComedyIcon from "@mui/icons-material/TheaterComedy";
 import FitnessCenterIcon from "@mui/icons-material/FitnessCenter";
 import DeveloperModeIcon from "@mui/icons-material/DeveloperMode";
 
-export const logo = "logo.png";
+export const logo = window.location.origin + "/logo.png";
 
 export const categories = [
   { name: "Lofi", icon: <HomeIcon /> },

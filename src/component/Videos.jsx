@@ -12,7 +12,8 @@ const Videos = ({ videos, direction }) => {
       className={`flex ${
         direction === "column" ? "!flex-col" : "!flex-row sm:flex-wrap"
       }  
-        gap-2 justify-center       `}
+        justify-center
+        gap-5 xl:gap-3`}
     >
       {videos.map((item, idx) => (
         <div key={idx} className="my-0 mx-0 flex">
