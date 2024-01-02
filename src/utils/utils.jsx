@@ -25,3 +25,11 @@ export const HtmlContent = ({ content }) => {
   const formattedComment = { __html: content };
   return <div dangerouslySetInnerHTML={formattedComment} />;
 };
+
+export const scrollToTop = () => {
+  // Scroll to the top of the page
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth", // Use 'smooth' for a smooth scrolling effect
+  });
+};

@@ -4,9 +4,10 @@ import { fetchFromApi } from "../utils/fetchFromApi";
 import { useState } from "react";
 import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
+import { categories } from "../utils/constants";
 
 const SearchFeed = () => {
-  const [selectedCategory, setSelectedCategory] = useState("Markiplier");
+  const [selectedCategory, setSelectedCategory] = useState(categories[0].name);
   const [isWideScreen, setIsWideScreen] = useState(window.innerWidth > 768);
   const handleResize = () => {
     setIsWideScreen(window.innerWidth > 640);

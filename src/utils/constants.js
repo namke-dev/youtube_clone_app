@@ -12,20 +12,20 @@ import SportsGymnasticsIcon from "@mui/icons-material/SportsGymnastics";
 export const logo = window.location.origin + "/logo.png";
 
 export const categories = [
-  { name: "Markiplier", icon: <VideoLibraryIcon /> },
   { name: "Conan", icon: <LiveTvIcon /> },
-  { name: "HorrorGame", icon: <SportsEsportsIcon /> },
   { name: "Làm Bánh", icon: <MicrowaveIcon /> },
+  { name: "Markiplier", icon: <VideoLibraryIcon /> },
   { name: "Ghibli", icon: <MusicNoteIcon /> },
+  { name: "HorrorGame", icon: <SportsEsportsIcon /> },
   { name: "Thắng", icon: <MusicNoteIcon /> },
-  { name: "Ngọt", icon: <MusicNoteIcon /> },
-  { name: "City Pop", icon: <MusicVideoIcon /> },
-  { name: "Indie", icon: <MusicVideoIcon /> },
-  { name: "Cozy", icon: <MusicVideoIcon /> },
-  { name: "Podcast", icon: <PodcastsIcon /> },
-  { name: "ASP.NET", icon: <DeveloperModeIcon /> },
-  { name: "Asmr", icon: <GraphicEqIcon /> },
   { name: "Gym", icon: <SportsGymnasticsIcon /> },
+  { name: "Ngọt", icon: <MusicNoteIcon /> },
+  { name: "Podcast", icon: <PodcastsIcon /> },
+  { name: "City Pop", icon: <MusicVideoIcon /> },
+  { name: "ASP.NET", icon: <DeveloperModeIcon /> },
+  { name: "Indie", icon: <MusicVideoIcon /> },
+  { name: "Asmr", icon: <GraphicEqIcon /> },
+  { name: "Cozy", icon: <MusicVideoIcon /> },
 ];
 
 export const demoThumbnailUrl = "https://i.ibb.co/G2L2Gwp/API-Course.png";

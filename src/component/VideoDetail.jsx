@@ -8,6 +8,7 @@ import { formatRelativeTime } from "../utils/utils";
 import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import { HtmlContent } from "../utils/utils";
+import { scrollToTop } from "../utils/utils";
 const VideoDetail = () => {
   const { id } = useParams();
   const [videoDetail, setVideoDetail] = useState(null);
@@ -24,6 +25,10 @@ const VideoDetail = () => {
     fetchFromApi(`videos?part=snippet,statistics&id=${id}`).then((data) =>
       setVideoDetail(data.items[0])
     );
+    setIsShowComments(false);
+    setIsShowRelatedVideos(false);
+    setIsDescriptionExpanded(false);
+    scrollToTop();
   }, [id]);
 
   if (!videoDetail) {
@@ -44,7 +49,7 @@ const VideoDetail = () => {
 
   const fetchComments = () => {
     fetchFromApi(
-      `commentThreads?videoId=${id}&part=snippet&maxResults=100`
+      `commentThreads?videoId=${id}&part=snippet&maxResults=30`
     ).then((data) => setComments(data.items));
     setIsShowComments(true);
   };
@@ -139,28 +144,29 @@ const VideoDetail = () => {
               </button>
             </div>
           )}
+          {!isShowComments && (
+            <button
+              className="text-blue-500 py-2 cursor-pointer focus:outline-none"
+              onClick={() => {
+                !isShowComments && fetchComments();
+                setIsShowComments(true);
+              }}
+            >
+              Show comments
+            </button>
+          )}
 
           {/* {Show comment} */}
-          <div
-            className="text-gray-700 my-2 whitespace-pre-line 
+          {isShowComments && (
+            <div
+              className="text-gray-700 my-2 whitespace-pre-line 
               material-box 
               text-md w-full
               "
-          >
-            {!isShowComments && (
-              <button
-                className="text-blue-500 py-2 cursor-pointer focus:outline-none"
-                onClick={() => {
-                  !isShowComments && fetchComments();
-                  setIsShowComments(true);
-                }}
-              >
-                Show comments
-              </button>
-            )}
-
-            {isShowComments && <Comments data={comments} />}
-          </div>
+            >
+              <Comments data={comments} />
+            </div>
+          )}
         </div>
       </div>
       {/* Second Box */}
