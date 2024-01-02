@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { fetchFromApi } from "../utils/fetchFromApi";
-import { Box } from "@mui/material";
 import ChannelCard from "./ChannelCard";
 import Videos from "./Videos";
 
@@ -22,7 +21,7 @@ const ChannelDetail = () => {
 
   return (
     <>
-      <div className="my-20">
+      <div className="my-5 py-10 bg-gray-300">
         <ChannelCard channelDetail={channelDetail}></ChannelCard>
       </div>
 

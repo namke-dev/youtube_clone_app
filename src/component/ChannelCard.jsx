@@ -6,12 +6,11 @@ import { CheckCircle } from "@mui/icons-material";
 
 const ChannelCard = ({ channelDetail, direction }) => (
   <div
-    className={`bg-gray-600 
+    className={`
       ${direction === "row" ? "sm:w-[300px]" : "w-11/12"}
       justify-center items-center 
       mx-auto 
       mb-0 md:mb-0 mt-3 md:mt-0
-      bg-white/50
       rounded-2xl
       flex
       `}
