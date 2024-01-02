@@ -22,7 +22,8 @@ const VideoCard = ({ video, direction }) => {
       ${direction === "row" ? "sm:w-[300px]" : "w-11/12"}
       justify-center items-center 
       mx-auto 
-      mb-0 md:mb-0 mt-3 md:mt-0`}
+      mb-0 md:mb-0 mt-3 md:mt-0
+      min-w-[280px]`}
     >
       <Link to={videoId ? `/video/${videoId}` : demoVideoUrl}>
         <CardMedia

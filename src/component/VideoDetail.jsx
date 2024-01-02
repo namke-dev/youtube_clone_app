@@ -1,24 +1,21 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import ReactPlayer from "react-player";
 import { Link, useParams } from "react-router-dom";
 import { fetchFromApi } from "../utils/fetchFromApi";
-import { useState } from "react";
 import { CheckCircle } from "@mui/icons-material";
 import { Videos } from "../component";
 
 const VideoDetail = () => {
-  const id = useParams();
+  const { id } = useParams();
   const [videoDetail, setVideoDetail] = useState(null);
   const [relatedVideos, setRelatedVideos] = useState(null);
+  const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
+  const [showRelatedVideos, setShowRelatedVideos] = useState(false);
 
   useEffect(() => {
-    fetchFromApi(`videos?part=snippet,statistics&id=${id.id}`).then((data) =>
+    fetchFromApi(`videos?part=snippet,statistics&id=${id}`).then((data) =>
       setVideoDetail(data.items[0])
     );
-
-    fetchFromApi(
-      `search?relatedToVideoId=${id.id}&part=id,snippet&type=video&maxResults=20`
-    ).then((data) => setRelatedVideos(data.items));
   }, [id]);
 
   if (!videoDetail) {
@@ -26,17 +23,30 @@ const VideoDetail = () => {
   }
 
   const {
-    snippet: { title, channelId, channelTitle },
-    statistics: { viewCount, likeCount },
+    snippet: { title, channelId, channelTitle, description, publishedAt },
+    statistics: { viewCount, likeCount, commentCount },
   } = videoDetail;
+
+  const fetchRelatedVideos = () => {
+    fetchFromApi(
+      `search?relatedToVideoId=${id}&part=id,snippet&type=video&maxResults=20`
+    ).then((data) => setRelatedVideos(data.items));
+    setShowRelatedVideos(true);
+  };
+
+  const truncatedDescription =
+    description && !isDescriptionExpanded
+      ? description.split(" ").slice(0, 50).join(" ") + "..."
+      : description;
+
   return (
-    <div className="flex flex-col md:flex-row">
+    <div className="flex flex-col lg:flex-row pb-12">
       <div className="flex-1">
-        <div className="mt-8 flex flex-col items-center md:w-85% mx-3 md:mx-10">
+        <div className="mt-8 md:mt-8 flex flex-col items-center md:w-85% mx-3 md:mx-10 ">
           {/* Video Player */}
           <div className="w-full aspect-video">
             <ReactPlayer
-              url={`https://www.youtube.com/watch?v=${id.id}`}
+              url={`https://www.youtube.com/watch?v=${id}`}
               controls
               playing={true}
               width="100%"
@@ -45,44 +55,83 @@ const VideoDetail = () => {
           </div>
 
           {/* Video Title */}
-          <div className="text-xl font-bold mt-4 text-left w-full">{title}</div>
+          <div className="text-xl font-bold mt-2 text-left w-full">{title}</div>
 
           {/* Channel Details and Video Stats */}
-          <div className="flex justify-between py-1 mt-2 w-full">
+          <div className="flex justify-between py-1 mt-2 w-full material-box">
             {/* Channel Details */}
             <div className="flex flex-col text-left">
-              <Link to={`/channel/${channelId}`}>
-                <p className="text-sm md:text-base text-gray-900">
-                  {channelTitle}
-                  <CheckCircle className="text-gray-500 ml-1" />
-                </p>
-              </Link>
+              {/* Published Date */}
+              <p className="text-xs md:text-sm text-gray-500">
+                Published on {new Date(publishedAt).toLocaleDateString()}
+              </p>
 
-              {/* Add your channel subscribes here if needed */}
+              {/* Channel Title */}
+              <div className="text-sm md:text-xl text-gray-900  mt-2">
+                <Link to={`/channel/${channelId}`}>
+                  {channelTitle}
+                  <CheckCircle className="text-blue-500 ml-1 text-xs" />
+                </Link>
+              </div>
             </div>
 
             {/* Video Stats */}
-            <div className="flex flex-col text-right">
-              <div className="text-sm text-gray-700">
-                {parseInt(viewCount).toLocaleString()} views
-              </div>
+            <div className="flex flex-col text-right text-xs md:text-base text-gray-700">
+              <div>{parseInt(viewCount).toLocaleString()} views</div>
 
-              <div className="text-sm text-gray-700">
-                {parseInt(likeCount).toLocaleString()} likes
-              </div>
+              <div>{parseInt(likeCount).toLocaleString()} likes</div>
+
+              <div>{parseInt(commentCount).toLocaleString()} comments</div>
             </div>
           </div>
+          {description && (
+            <div
+              className="text-gray-700 mt-2 whitespace-pre-line 
+              material-box 
+              text-md w-full
+              "
+            >
+              <p>{truncatedDescription}</p>
+
+              {description && (
+                <button
+                  className="text-blue-500 mt-2 cursor-pointer focus:outline-none"
+                  onClick={() =>
+                    setIsDescriptionExpanded(!isDescriptionExpanded)
+                  }
+                >
+                  {isDescriptionExpanded ? "Show Less" : "Show More"}
+                </button>
+              )}
+            </div>
+          )}
         </div>
       </div>
       {/* Second Box */}
-      <div className="justify-center items-center md:w-1/3 md:mt-0 md:mx-4">
-        <div
-          className="justify-center items-center my-5 px-3 mx-3
-          text-2xl md:text-3xl font-bold text-red-700"
-        >
-          Related Video
-        </div>
-        <Videos direction="column" videos={relatedVideos} />
+      <div
+        className="justify-center items-center 
+        lg:w-1/3 md:px-12"
+      >
+        {/* Button to show related videos */}
+        {!showRelatedVideos && (
+          <button
+            className="text-blue-500 mt-2 cursor-pointer focus:outline-none px-6 py-8 md:text-xl justify-center w-full"
+            onClick={fetchRelatedVideos}
+          >
+            Show more videos like this
+          </button>
+        )}
+        {showRelatedVideos && (
+          <>
+            <div
+              className="justify-center items-center mt-2 px-3
+              text-2xl md:text-3xl font-bold py-5 text-red-700"
+            >
+              Related Video
+            </div>
+            <Videos direction="column" videos={relatedVideos} />
+          </>
+        )}
       </div>
     </div>
   );
