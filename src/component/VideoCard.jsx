@@ -38,7 +38,7 @@ const VideoCard = ({ video, direction }) => {
 
       <div
         className="bg-white 
-        shadow-sm mb-3 px-4 
+        shadow-sm px-4 
         py-4 min-h-[7.5rem]"
       >
         <Link

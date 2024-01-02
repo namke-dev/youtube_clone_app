@@ -21,31 +21,16 @@ const ChannelDetail = () => {
   }, [id]);
 
   return (
-    <Box minHeight="95vh">
-      <Box>
-        <div
-          style={{
-            background:
-              "radial-gradient(circle, rgba(63,94,251,1) 0%, rgba(252,70,107,1) 100%)",
-            zIndex: 10,
-            height: "300px",
-          }}
-        ></div>
-        <ChannelCard
-          channelDetail={channelDetail}
-          marginTop="-133px"
-        ></ChannelCard>
-      </Box>
+    <>
+      <div className="my-20">
+        <ChannelCard channelDetail={channelDetail}></ChannelCard>
+      </div>
 
-      <Box display="flex" p="2">
-        <Box
-          sx={{
-            mr: { sm: "100px" },
-          }}
-        />
+      <div className="flex p-2">
+        <div className="h-90vh flex-wrap" />
         <Videos direction="row" videos={channelVideos} />
-      </Box>
-    </Box>
+      </div>
+    </>
   );
 };
 

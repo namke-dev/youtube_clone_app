@@ -15,9 +15,11 @@ const Videos = ({ videos, direction }) => {
         gap-2 justify-center       `}
     >
       {videos.map((item, idx) => (
-        <div key={idx} className="mb-0">
+        <div key={idx} className="my-0 mx-0 flex">
           {item.id.videoId && <VideoCard video={item} direction={direction} />}
-          {item.id.channelId && <ChannelCard channelDetail={item} />}
+          {item.id.channelId && (
+            <ChannelCard channelDetail={item} direction={direction} />
+          )}
         </div>
       ))}
     </Stack>
