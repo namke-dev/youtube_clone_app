@@ -1,37 +1,31 @@
 import MusicNoteIcon from "@mui/icons-material/MusicNote";
-import HomeIcon from "@mui/icons-material/Home";
-import CodeIcon from "@mui/icons-material/Code";
-import OndemandVideoIcon from "@mui/icons-material/OndemandVideo";
 import SportsEsportsIcon from "@mui/icons-material/SportsEsports";
 import LiveTvIcon from "@mui/icons-material/LiveTv";
-import SchoolIcon from "@mui/icons-material/School";
-import FaceRetouchingNaturalIcon from "@mui/icons-material/FaceRetouchingNatural";
-import CheckroomIcon from "@mui/icons-material/Checkroom";
-import GraphicEqIcon from "@mui/icons-material/GraphicEq";
-import TheaterComedyIcon from "@mui/icons-material/TheaterComedy";
-import FitnessCenterIcon from "@mui/icons-material/FitnessCenter";
 import DeveloperModeIcon from "@mui/icons-material/DeveloperMode";
+import VideoLibraryIcon from "@mui/icons-material/VideoLibrary";
+import MicrowaveIcon from "@mui/icons-material/Microwave";
+import PodcastsIcon from "@mui/icons-material/Podcasts";
+import MusicVideoIcon from "@mui/icons-material/MusicVideo";
+import GraphicEqIcon from "@mui/icons-material/GraphicEq";
+import SportsGymnasticsIcon from "@mui/icons-material/SportsGymnastics";
 
 export const logo = window.location.origin + "/logo.png";
 
 export const categories = [
-  { name: "Lofi", icon: <HomeIcon /> },
-  { name: "JS Mastery", icon: <CodeIcon /> },
-  { name: "Coding", icon: <CodeIcon /> },
-  { name: "ReactJS", icon: <CodeIcon /> },
-  { name: "NextJS", icon: <CodeIcon /> },
-  { name: "Music", icon: <MusicNoteIcon /> },
-  { name: "Education", icon: <SchoolIcon /> },
-  { name: "Podcast", icon: <GraphicEqIcon /> },
-  { name: "Movie", icon: <OndemandVideoIcon /> },
-  { name: "Gaming", icon: <SportsEsportsIcon /> },
-  { name: "Live", icon: <LiveTvIcon /> },
-  { name: "Sport", icon: <FitnessCenterIcon /> },
-  { name: "Fashion", icon: <CheckroomIcon /> },
-  { name: "Beauty", icon: <FaceRetouchingNaturalIcon /> },
-  { name: "Comedy", icon: <TheaterComedyIcon /> },
-  { name: "Gym", icon: <FitnessCenterIcon /> },
-  { name: "Crypto", icon: <DeveloperModeIcon /> },
+  { name: "Conan", icon: <LiveTvIcon /> },
+  { name: "Markiplier", icon: <VideoLibraryIcon /> },
+  { name: "HorrorGame", icon: <SportsEsportsIcon /> },
+  { name: "Làm Bánh", icon: <MicrowaveIcon /> },
+  { name: "Ghibli", icon: <MusicNoteIcon /> },
+  { name: "Thắng", icon: <MusicNoteIcon /> },
+  { name: "Ngọt", icon: <MusicNoteIcon /> },
+  { name: "City Pop", icon: <MusicVideoIcon /> },
+  { name: "Indie", icon: <MusicVideoIcon /> },
+  { name: "Cozy", icon: <MusicVideoIcon /> },
+  { name: "Podcast", icon: <PodcastsIcon /> },
+  { name: "ASP.NET", icon: <DeveloperModeIcon /> },
+  { name: "Asmr", icon: <GraphicEqIcon /> },
+  { name: "Gym", icon: <SportsGymnasticsIcon /> },
 ];
 
 export const demoThumbnailUrl = "https://i.ibb.co/G2L2Gwp/API-Course.png";

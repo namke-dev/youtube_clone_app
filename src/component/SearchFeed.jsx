@@ -6,7 +6,7 @@ import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 
 const SearchFeed = () => {
-  const [selectedCategory, setSelectedCategory] = useState("Lofi");
+  const [selectedCategory, setSelectedCategory] = useState("Conan");
   const [isWideScreen, setIsWideScreen] = useState(window.innerWidth > 768);
   const handleResize = () => {
     setIsWideScreen(window.innerWidth > 640);
@@ -21,7 +21,7 @@ const SearchFeed = () => {
     if (selectedCategory) {
       navigate(`/search/${selectedCategory}`);
     }
-  }, [selectedCategory]);
+  }, [selectedCategory, navigate]);
 
   useEffect(() => {
     if (searchTerm) {
@@ -32,7 +32,7 @@ const SearchFeed = () => {
     if (searchTerm !== selectedCategory) {
       setSelectedCategory("");
     }
-  }, [searchTerm]);
+  }, [searchTerm, selectedCategory]);
 
   useEffect(() => {
     window.addEventListener("resize", handleResize);
