@@ -1,16 +1,10 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Box } from "@mui/material";
-import {
-  Navbar,
-  Feed,
-  VideoDetail,
-  ChannelDetail,
-  SearchFeed,
-} from "./component";
+import { Navbar, VideoDetail, ChannelDetail, SearchFeed } from "./component";
 const App = () => (
   <BrowserRouter>
-    <Box>
-      <div
+    <Box className="bg-gray-100">
+      {/* <div
         className="bg-[#fbe2e4e7] -z-10
           fixed top-[-6rem] right-[11rem] 
             h-[31.25rem] w-[31.25rem]
@@ -24,7 +18,8 @@ const App = () => (
             rounded-full blur-[10rem] 
             md:w-[68.75rem] md:left-[-33rem] lg:left-[-28rem] 
             xl:left-[-15rem] 2xl:left-[-5rem]"
-      ></div>
+      ></div> */}
+
       <Navbar />
       <Routes>
         <Route path="/" exact element={<SearchFeed />} />
