@@ -1,3 +1,10 @@
+import { formatDistanceToNow } from "date-fns";
+
+export const formatRelativeTime = (timestamp) => {
+  const date = new Date(timestamp);
+  return formatDistanceToNow(date, { addSuffix: true });
+};
+
 export function nomalzeVideoTitle(inputString) {
   if (!inputString) {
     return "";

@@ -4,6 +4,7 @@ import { Link, useParams } from "react-router-dom";
 import { fetchFromApi } from "../utils/fetchFromApi";
 import { CheckCircle } from "@mui/icons-material";
 import { Videos, Comments } from "../component";
+import { formatRelativeTime } from "../utils/utils";
 
 const VideoDetail = () => {
   const { id } = useParams();
@@ -75,7 +76,7 @@ const VideoDetail = () => {
             <div className="flex flex-col text-left">
               {/* Published Date */}
               <p className="text-xs md:text-sm text-gray-500">
-                Published on {new Date(publishedAt).toLocaleDateString()}
+                {formatRelativeTime(publishedAt)}
               </p>
 
               {/* Channel Title */}

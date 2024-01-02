@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { formatRelativeTime } from "../utils/utils";
 
 const Comment = ({ commentData }) => {
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
@@ -35,7 +36,9 @@ const Comment = ({ commentData }) => {
           >
             {authorDisplayName}
           </a>
-          <p className="published-date text-gray-500">{publishedAt}</p>
+          <p className="published-date text-gray-500">
+            {formatRelativeTime(publishedAt)}
+          </p>
         </div>
       </div>
       <p className="comment-text text-gray-700 mt-2">{textDisplay}</p>
