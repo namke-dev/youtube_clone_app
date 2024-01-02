@@ -6,7 +6,7 @@ import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 
 const SearchFeed = () => {
-  const [selectedCategory, setSelectedCategory] = useState("Conan");
+  const [selectedCategory, setSelectedCategory] = useState("Markiplier");
   const [isWideScreen, setIsWideScreen] = useState(window.innerWidth > 768);
   const handleResize = () => {
     setIsWideScreen(window.innerWidth > 640);
@@ -47,7 +47,6 @@ const SearchFeed = () => {
         className={`
         p-5
         h-auto 
-        border-r border-solid border-gray-50 
         mr-5
         min-w-[12rem]
         md:w-[14rem]
@@ -65,7 +64,7 @@ const SearchFeed = () => {
       <div className="h-90vh flex-wrap mx-1">
         <p className="text-gray-700 font-bold md:mt-2 mb-2 md:mb-5 text-3xl ml-5">
           {selectedCategory ? selectedCategory : searchTerm}{" "}
-          <span className="text-pink-500">Videos</span>
+          <span className="text-blue-500">videos</span>
         </p>
         {isWideScreen ? (
           <Videos direction="row" videos={videos} />

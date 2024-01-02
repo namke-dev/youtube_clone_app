@@ -3,7 +3,7 @@ import { Box } from "@mui/material";
 import { Navbar, VideoDetail, ChannelDetail, SearchFeed } from "./component";
 const App = () => (
   <BrowserRouter>
-    <Box className="bg-gray-100">
+    <Box className="bg-gray-50">
       <Navbar />
       <Routes>
         <Route path="/" exact element={<SearchFeed />} />

@@ -33,7 +33,7 @@ const ChannelDetail = () => {
 
   return (
     <>
-      <div className="my-5 py-5 bg-gray-100">
+      <div className="mb-5 py-5 bg-sky-100 shadow-sm">
         <ChannelCard channelDetail={channelDetail}></ChannelCard>
       </div>
 

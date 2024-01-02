@@ -10,7 +10,7 @@ const ChannelCard = ({ channelDetail, direction }) => {
     <div
       className={`flex ${
         direction === "row" ? "sm:w-[300px]" : "w-11/12"
-      } mx-auto mb-0 md:mb-0 mt-3 md:mt-0 rounded-2xl`}
+      } mx-auto mb-0 md:mb-0 mt-3 md:mt-0 rounded-2xl items-center`}
     >
       <Link
         to={`/channel/${id?.channelId}`}
@@ -21,19 +21,19 @@ const ChannelCard = ({ channelDetail, direction }) => {
           alt={snippet?.title}
           className="rounded-full h-48 w-48 border border-gray-300 mb-2 justify-center"
         />
-        <p className="text-2xl font-semibold">
+        <p className="text-xl font-semibold mb-3">
           {snippet?.title}
           <CheckCircle className="text-gray-500 text-sm" />
         </p>
 
         {statistics?.subscriberCount && (
-          <p className="text-base font-thin">
+          <p className="text-sm">
             {parseInt(statistics?.subscriberCount).toLocaleString()} Subscribers
           </p>
         )}
 
         {statistics?.viewCount && (
-          <p className="font-xs font-thin">
+          <p className="text-sm">
             {parseInt(statistics?.viewCount).toLocaleString()} views
           </p>
         )}

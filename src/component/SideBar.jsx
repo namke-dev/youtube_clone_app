@@ -19,14 +19,14 @@ const SideBar = ({ selectedCategory, setSelectedCategory }) => (
         md:ml-0
         mr-4
         min-w-[100px]
-        bg-gray-50
+        bg-white
+        border border-gray-100 border-solid
         font-semibold
         text-sm
         text-gray-600
-        shadow-gray-300
-        shadow-sm
-        hover:bg-red-50
-        hover:text-pink-800
+        shadow-sm shadow-sky-300
+        hover:bg-sky-200
+        hover:text-gray-800
         items-center
         justify-center
         md:justify-start
@@ -45,7 +45,7 @@ const SideBar = ({ selectedCategory, setSelectedCategory }) => (
         key={category.name}
       >
         <span
-          className={`flex mr-2 group-hover:text-red-800 ${
+          className={`flex mr-2  ${
             category.name === selectedCategory ? "text-red-600" : ""
           }`}
         >

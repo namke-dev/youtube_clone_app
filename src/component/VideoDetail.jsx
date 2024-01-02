@@ -32,7 +32,7 @@ const VideoDetail = () => {
 
   const {
     snippet: { title, channelId, channelTitle, description, publishedAt },
-    statistics: { viewCount, likeCount, commentCount },
+    statistics: { viewCount, likeCount },
   } = videoDetail;
 
   const fetchRelatedVideos = () => {
@@ -181,7 +181,7 @@ const VideoDetail = () => {
           <div className="mx-3">
             <div
               className="justify-center items-center mt-2 px-3
-          text-2xl md:text-3xl font-bold py-5 text-red-700"
+          text-2xl md:text-3xl font-bold py-5 text-blue-500"
             >
               Related Video
             </div>

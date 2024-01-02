@@ -12,8 +12,8 @@ import SportsGymnasticsIcon from "@mui/icons-material/SportsGymnastics";
 export const logo = window.location.origin + "/logo.png";
 
 export const categories = [
-  { name: "Conan", icon: <LiveTvIcon /> },
   { name: "Markiplier", icon: <VideoLibraryIcon /> },
+  { name: "Conan", icon: <LiveTvIcon /> },
   { name: "HorrorGame", icon: <SportsEsportsIcon /> },
   { name: "Làm Bánh", icon: <MicrowaveIcon /> },
   { name: "Ghibli", icon: <MusicNoteIcon /> },
