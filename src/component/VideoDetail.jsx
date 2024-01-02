@@ -3,14 +3,19 @@ import ReactPlayer from "react-player";
 import { Link, useParams } from "react-router-dom";
 import { fetchFromApi } from "../utils/fetchFromApi";
 import { CheckCircle } from "@mui/icons-material";
-import { Videos } from "../component";
+import { Videos, Comments } from "../component";
 
 const VideoDetail = () => {
   const { id } = useParams();
   const [videoDetail, setVideoDetail] = useState(null);
-  const [relatedVideos, setRelatedVideos] = useState(null);
+
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
-  const [showRelatedVideos, setShowRelatedVideos] = useState(false);
+
+  const [relatedVideos, setRelatedVideos] = useState(null);
+  const [isShowRelatedVideos, setIsShowRelatedVideos] = useState(false);
+
+  const [comments, setComments] = useState(null);
+  const [isShowComments, setIsShowComments] = useState(false);
 
   useEffect(() => {
     fetchFromApi(`videos?part=snippet,statistics&id=${id}`).then((data) =>
@@ -31,7 +36,14 @@ const VideoDetail = () => {
     fetchFromApi(
       `search?relatedToVideoId=${id}&part=id,snippet&type=video&maxResults=20`
     ).then((data) => setRelatedVideos(data.items));
-    setShowRelatedVideos(true);
+    setIsShowRelatedVideos(true);
+  };
+
+  const fetchComments = () => {
+    fetchFromApi(
+      `commentThreads?videoId=${id}&part=snippet&maxResults=100`
+    ).then((data) => setComments(data.items));
+    setIsShowComments(true);
   };
 
   const truncatedDescription =
@@ -93,18 +105,36 @@ const VideoDetail = () => {
             >
               <p>{truncatedDescription}</p>
 
-              {description && (
-                <button
-                  className="text-blue-500 mt-2 cursor-pointer focus:outline-none"
-                  onClick={() =>
-                    setIsDescriptionExpanded(!isDescriptionExpanded)
-                  }
-                >
-                  {isDescriptionExpanded ? "Show Less" : "Show More"}
-                </button>
-              )}
+              <button
+                className="text-blue-500 mt-2 cursor-pointer focus:outline-none"
+                onClick={() => setIsDescriptionExpanded(!isDescriptionExpanded)}
+              >
+                {isDescriptionExpanded ? "Show Less" : "Show More"}
+              </button>
             </div>
           )}
+
+          {/* {Show comment} */}
+          <div
+            className="text-gray-700 my-2 whitespace-pre-line 
+              material-box 
+              text-md w-full
+              "
+          >
+            {!isShowComments && (
+              <button
+                className="text-blue-500 py-2 cursor-pointer focus:outline-none"
+                onClick={() => {
+                  !isShowComments && fetchComments();
+                  setIsShowComments(true);
+                }}
+              >
+                Show comments
+              </button>
+            )}
+
+            {isShowComments && <Comments data={comments} />}
+          </div>
         </div>
       </div>
       {/* Second Box */}
@@ -113,7 +143,7 @@ const VideoDetail = () => {
         lg:w-1/3 md:px-12"
       >
         {/* Button to show related videos */}
-        {!showRelatedVideos && (
+        {!isShowRelatedVideos && (
           <button
             className="text-blue-500 mt-2 cursor-pointer focus:outline-none px-6 py-8 md:text-xl justify-center w-full"
             onClick={fetchRelatedVideos}
@@ -121,7 +151,7 @@ const VideoDetail = () => {
             Show more videos like this
           </button>
         )}
-        {showRelatedVideos && (
+        {isShowRelatedVideos && (
           <>
             <div
               className="justify-center items-center mt-2 px-3
