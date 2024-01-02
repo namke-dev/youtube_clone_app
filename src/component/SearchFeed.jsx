@@ -44,6 +44,7 @@ const SearchFeed = () => {
 
   return (
     <div className="flex flex-col md:flex-row">
+      {/* Side bar container */}
       <div
         className={`
         p-5
@@ -51,8 +52,7 @@ const SearchFeed = () => {
         mr-5
         min-w-[12rem]
         md:w-[14rem]
-        
-        overflow-hidden 
+        overflow-hidden
         ${isWideScreen ? "" : "overflow-x-auto"}
         `}
       >
@@ -62,6 +62,7 @@ const SearchFeed = () => {
         />
       </div>
 
+      {/* Feed container */}
       <div className="h-90vh flex-wrap mx-1">
         <p className="text-gray-700 font-bold md:mt-2 mb-2 md:mb-5 text-3xl ml-5">
           {selectedCategory ? selectedCategory : searchTerm}{" "}

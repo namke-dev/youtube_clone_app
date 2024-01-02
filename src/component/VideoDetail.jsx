@@ -62,7 +62,8 @@ const VideoDetail = () => {
   return (
     <div className="flex flex-col lg:flex-row pb-12">
       <div className="flex-1">
-        <div className="mt-8 md:mt-8 flex flex-col items-center md:w-85% md:mx-10 mx-1">
+        {/* First box */}
+        <div className="mt-8 flex flex-col items-center md:w-85% lg:mr-4 lg:ml-14 mx-1">
           {/* Video Player */}
           <div className="w-full aspect-video">
             <ReactPlayer
@@ -171,8 +172,8 @@ const VideoDetail = () => {
       </div>
       {/* Second Box */}
       <div
-        className="justify-center items-center 
-        lg:w-1/3 md:px-12"
+        className="justify-center items-center lg:h-[85vh] lg:overflow-y-auto overflow-hidden
+        lg:w-[29.5%] !xl:pl-8 material-box lg:mt-8 lg:pt-2 "
       >
         {/* Button to show related videos */}
         {!isShowRelatedVideos && (
@@ -186,10 +187,10 @@ const VideoDetail = () => {
         {isShowRelatedVideos && (
           <div className="mx-3">
             <div
-              className="justify-center items-center mt-2 px-3
-          text-2xl md:text-3xl font-bold py-5 text-blue-500"
+              className="justify-center items-center mt-2 px-3 lg:mt-0
+          text-lg md:text-xl font-semibold pt-4 pb-3 text-gray-500"
             >
-              Related Video
+              Related video
             </div>
             <Videos direction="column" videos={relatedVideos} />
           </div>
