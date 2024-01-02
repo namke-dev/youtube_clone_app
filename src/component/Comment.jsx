@@ -19,19 +19,19 @@ const Comment = ({ commentData }) => {
   } = commentData;
 
   return (
-    <div className="comment-container bg-white/80 rounded-xl px-4 py-3 mb-4 shadow-md">
-      <div className="author-info flex items-center">
+    <div className=" px-4 py-3 mb-4">
+      <div className="flex items-center">
         <img
           src={authorProfileImageUrl}
           alt="Author Profile"
-          className="profile-image rounded-full h-10 w-10 mr-3"
+          className="rounded-full h-10 w-10 mr-3"
         />
         <div className="author-details">
           <a
             href={authorChannelUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="author-name text-blue-500 hover:underline"
+            className="author-name text-gray-800 font-semibold hover:underline"
           >
             {authorDisplayName}
           </a>
@@ -39,10 +39,11 @@ const Comment = ({ commentData }) => {
         </div>
       </div>
       <p className="comment-text text-gray-700 mt-2">{textDisplay}</p>
-      <div className="comment-actions flex items-center mt-2">
-        <span className="text-gray-700">{`${likeCount} likes`}</span>
-        {/* Add more actions if needed */}
-      </div>
+      {likeCount > 0 && (
+        <div className="comment-actions flex items-center mt-2">
+          <span className="text-gray-700">{`${likeCount} likes`}</span>
+        </div>
+      )}
     </div>
   );
 };
