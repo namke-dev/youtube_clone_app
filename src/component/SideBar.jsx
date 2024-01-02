@@ -24,7 +24,7 @@ const SideBar = ({ selectedCategory, setSelectedCategory }) => (
         font-semibold
         text-sm
         text-gray-600
-        shadow-sm shadow-sky-300
+        shadow-sm shadow-sky-200
         hover:bg-sky-200
         hover:text-gray-800
         items-center
