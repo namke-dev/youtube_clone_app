@@ -23,7 +23,7 @@ const VideoCard = ({ video, direction }) => {
       justify-center items-center 
       mx-auto 
       mb-0 md:mb-0 mt-3 md:mt-0
-      min-w-[280px]`}
+      min-w-[280px] flex-row flex-grow`}
     >
       <Link to={videoId ? `/video/${videoId}` : demoVideoUrl}>
         <CardMedia
@@ -37,7 +37,8 @@ const VideoCard = ({ video, direction }) => {
         />
       </Link>
 
-      <div className="flex flex-col ">
+      {/* Text part */}
+      <div className="flex flex-col flex-grow">
         {/* Top Section */}
         <div className="bg-white shadow-sm px-4 pt-4">
           <Link

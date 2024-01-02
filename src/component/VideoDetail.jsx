@@ -55,7 +55,7 @@ const VideoDetail = () => {
   return (
     <div className="flex flex-col lg:flex-row pb-12">
       <div className="flex-1">
-        <div className="mt-8 md:mt-8 flex flex-col items-center md:w-85% mx-3 md:mx-10 ">
+        <div className="mt-8 md:mt-8 flex flex-col items-center md:w-85% md:mx-10 mx-1">
           {/* Video Player */}
           <div className="w-full aspect-video">
             <ReactPlayer
@@ -153,15 +153,15 @@ const VideoDetail = () => {
           </button>
         )}
         {isShowRelatedVideos && (
-          <>
+          <div className="mx-3">
             <div
               className="justify-center items-center mt-2 px-3
-              text-2xl md:text-3xl font-bold py-5 text-red-700"
+          text-2xl md:text-3xl font-bold py-5 text-red-700"
             >
               Related Video
             </div>
             <Videos direction="column" videos={relatedVideos} />
-          </>
+          </div>
         )}
       </div>
     </div>

@@ -62,8 +62,8 @@ const SearchFeed = () => {
         />
       </div>
 
-      <div className="h-90vh flex-wrap">
-        <p className="text-gray-700 font-bold mt-2 mb-4 mr-2 text-3xl ml-5">
+      <div className="h-90vh flex-wrap mx-1">
+        <p className="text-gray-700 font-bold md:mt-2 mb-2 md:mb-5 text-3xl">
           {selectedCategory ? selectedCategory : searchTerm}{" "}
           <span className="text-pink-500">Videos</span>
         </p>
