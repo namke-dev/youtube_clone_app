@@ -1,9 +1,7 @@
-import React, { useState } from "react";
+import React from "react";
 import { formatRelativeTime } from "../utils/utils";
 
 const Comment = ({ commentData }) => {
-  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
-
   const {
     snippet: {
       topLevelComment: {
