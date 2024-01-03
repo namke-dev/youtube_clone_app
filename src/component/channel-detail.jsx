@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import { fetchFromApi } from "../utils/fetchFromApi";
 import ChannelCard from "./channel-card";
 import Videos from "./videos";
+import { useLoading } from "../context/loading-context";
 
 const ChannelDetail = () => {
   const [channelDetail, setChannelDetail] = useState(null);
@@ -11,17 +12,33 @@ const ChannelDetail = () => {
   const handleResize = () => {
     setIsWideScreen(window.innerWidth > 640);
   };
-
   const { id } = useParams();
 
-  useEffect(() => {
-    fetchFromApi(`channels?part=snippet&id=${id}`).then((data) =>
-      setChannelDetail(data?.items[0])
-    );
+  const { startLoading, stopLoading } = useLoading();
 
-    fetchFromApi(`search?channelId=${id}&part=snippet&order=date`).then(
-      (data) => setChannelVideos(data?.items)
-    );
+  useEffect(() => {
+    if (!id) return;
+    console.log(`Channel id: ${id}`);
+    startLoading();
+
+    const fetchChannelDetailData = async () => {
+      const channelDetail = await fetchFromApi(
+        `channels?part=snippet&id=${id}`
+      );
+      setChannelDetail(channelDetail?.items[0]);
+    };
+
+    const fetchChannelVideosData = async () => {
+      const channelVideosData = await fetchFromApi(
+        `search?channelId=${id}&part=snippet&order=date`
+      );
+      setChannelVideos(channelVideosData.items);
+    };
+
+    fetchChannelDetailData();
+    fetchChannelVideosData();
+
+    stopLoading();
   }, [id]);
 
   useEffect(() => {

@@ -37,12 +37,10 @@ const HomePage = () => {
 
   //Fetch data from searchTerm
   useEffect(() => {
+    if (!searchTerm) return;
+    console.log("Search term: " + searchTerm);
     const fetchData = async () => {
-      if (!searchTerm) return;
-
-      console.log("Search term: " + searchTerm);
       startLoading();
-
       try {
         const data = await fetchFromApi(
           `search?part=snippet,id&q=${searchTerm}&regionCode=VN`
@@ -52,9 +50,6 @@ const HomePage = () => {
         console.log(error);
       } finally {
         stopLoading();
-        console.log(
-          `Get data from api__ search?part=snippet,id&q=${searchTerm}&regionCode=VN`
-        );
       }
     };
     fetchData();

@@ -9,6 +9,8 @@ import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import { HtmlContent } from "../utils/utils";
 import { scrollToTop } from "../utils/utils";
+import { useLoading } from "../context/loading-context";
+
 const VideoDetail = () => {
   const { id } = useParams();
   const [videoDetail, setVideoDetail] = useState(null);
@@ -21,10 +23,24 @@ const VideoDetail = () => {
   const [comments, setComments] = useState(null);
   const [isShowComments, setIsShowComments] = useState(false);
 
+  const { startLoading, stopLoading } = useLoading();
+
+  // Load video
   useEffect(() => {
-    fetchFromApi(`videos?part=snippet,statistics&id=${id}`).then((data) =>
-      setVideoDetail(data.items[0])
-    );
+    if (!id) return;
+    console.log(`Video id: ${id}`);
+
+    const fetchData = async () => {
+      const data = await fetchFromApi(
+        `videos?part=snippet,statistics&id=${id}`
+      );
+      setVideoDetail(data.items[0]);
+    };
+
+    startLoading();
+    fetchData();
+    stopLoading();
+
     setIsShowComments(false);
     setIsShowRelatedVideos(false);
     setIsDescriptionExpanded(false);
@@ -40,17 +56,25 @@ const VideoDetail = () => {
     statistics: { viewCount, likeCount },
   } = videoDetail;
 
-  const fetchRelatedVideos = () => {
+  // Load related videos
+  const fetchRelatedVideos = async () => {
+    startLoading();
     fetchFromApi(
       `search?relatedToVideoId=${id}&part=id,snippet&type=video&maxResults=20`
     ).then((data) => setRelatedVideos(data.items));
+    stopLoading();
+
     setIsShowRelatedVideos(true);
   };
 
-  const fetchComments = () => {
+  // Load comment
+  const fetchComments = async () => {
+    startLoading();
     fetchFromApi(
       `commentThreads?videoId=${id}&part=snippet&maxResults=30`
     ).then((data) => setComments(data.items));
+    stopLoading();
+
     setIsShowComments(true);
   };
 
