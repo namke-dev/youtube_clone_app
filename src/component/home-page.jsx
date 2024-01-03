@@ -1,5 +1,5 @@
 import { SideBar, Videos } from ".";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { fetchFromApi } from "../utils/fetchFromApi";
 import { useState } from "react";
 import { useParams } from "react-router-dom";
@@ -15,20 +15,9 @@ const HomePage = () => {
   const { searchTerm } = useParams();
 
   const navigate = useNavigate();
+  const feedContainerRef = useRef(null);
 
-  // Handle realtime responsive for Videos component
-  const [isWideScreen, setIsWideScreen] = useState(window.innerWidth > 640);
-  const handleResize = () => {
-    setIsWideScreen(window.innerWidth > 640);
-  };
-  useEffect(() => {
-    window.addEventListener("resize", handleResize);
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
-  });
-
-  //pass category to searchTerm by url param
+  // Pass category to searchTerm by URL param
   useEffect(() => {
     if (selectedCategory) {
       console.log(`==>> /search/${selectedCategory}`);
@@ -36,32 +25,67 @@ const HomePage = () => {
     }
   }, [selectedCategory]);
 
-  //Fetch data from searchTerm
-  useEffect(() => {
-    if (!searchTerm) return;
-    console.log("Search term: " + searchTerm);
+  // Fetch more data when scrolling to the end
+  const handleScroll = async () => {
+    const feedContainer = feedContainerRef.current;
+    if (feedContainer) {
+      const { scrollHeight, scrollTop, clientHeight } = feedContainer;
 
-    const fetchData = async () => {
-      startLoading();
-      try {
-        const regionCode = "VN";
-        const maxResults = 20;
-        const order = "relevance";
-        const data = await fetchFromApi(
-          `search?part=snippet,id&q=${encodeURI(
-            searchTerm
-          )}&regionCode=${regionCode}&maxResults=${maxResults}&order=${order}&pageToken=${nextpageToken}`
-        );
-        setNextPageToken(data.nextPageToken);
-        setVideos(data.items);
-      } catch (error) {
-        console.log(error);
-      } finally {
-        stopLoading();
+      // Use a small threshold to account for floating-point precision issues
+      const threshold = 1;
+
+      if (scrollHeight - scrollTop <= clientHeight + threshold) {
+        // User has scrolled to the bottom
+        console.log("User has scrolled to the bottom");
+        await fetchData(true);
       }
-    };
+    }
+  };
 
-    fetchData();
+  useEffect(() => {
+    // Attach the scroll event listener
+    const feedContainer = feedContainerRef.current;
+    feedContainer.addEventListener("scroll", handleScroll);
+
+    // Clean up the event listener when the component is unmounted
+    return () => {
+      feedContainer.removeEventListener("scroll", handleScroll);
+    };
+  }, [videos, nextpageToken]);
+
+  // Fetch data from searchTerm
+  const fetchData = async (loadMore = false) => {
+    startLoading();
+    try {
+      const regionCode = "VN";
+      const maxResults = 48;
+      const order = "relevance";
+      const data = await fetchFromApi(
+        `search?part=snippet,id&q=${encodeURI(
+          searchTerm
+        )}&regionCode=${regionCode}&maxResults=${maxResults}&order=${order}&pageToken=${
+          loadMore ? nextpageToken : ""
+        }`
+      );
+
+      if (loadMore) {
+        // Append the new videos to the existing ones
+        setVideos((prevVideos) => [...prevVideos, ...data.items]);
+      } else {
+        // Replace existing videos with new data
+        setVideos(data.items);
+      }
+
+      setNextPageToken(data.nextPageToken);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      stopLoading();
+    }
+  };
+
+  useEffect(() => {
+    if (searchTerm) fetchData();
   }, [searchTerm]);
 
   return (
@@ -84,17 +108,18 @@ const HomePage = () => {
       </div>
 
       {/* Feed container */}
-      <div className="flex-wrap mx-1 md:overflow-y-auto md:h-[90vh]">
+      <div
+        ref={feedContainerRef}
+        className="flex-wrap mx-1 md:overflow-y-auto md:h-[90vh]"
+      >
         <p className="text-gray-700 font-bold md:mt-2 mb-2 md:mb-5 text-3xl ml-5">
-          {selectedCategory ? selectedCategory : searchTerm}{" "}
+          {searchTerm}
           <span className="text-blue-500">videos</span>
         </p>
-        {/* I fix this later */}
-        {isWideScreen ? (
-          <Videos direction="row" videos={videos} />
-        ) : (
-          <Videos direction="column" videos={videos} />
-        )}
+        <Videos
+          direction={window.innerWidth > 640 ? "row" : "column"}
+          videos={videos}
+        />
       </div>
     </div>
   );
