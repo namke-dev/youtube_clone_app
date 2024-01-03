@@ -92,9 +92,11 @@ const HomePage = () => {
     <div className="flex flex-col md:flex-row">
       {/* Side bar container */}
       <div
-        className={`p-5
+        className={`
+        md:m-5
+        mb-2 mx-2
         h-auto 
-        mr-5
+        md:mr-5
         min-w-[12rem]
         md:w-[14rem]
         overflow-hidden
@@ -110,16 +112,17 @@ const HomePage = () => {
       {/* Feed container */}
       <div
         ref={feedContainerRef}
-        className="flex-wrap mx-1 md:overflow-y-auto md:h-[90vh]"
+        className="flex-wrap mx-1 overflow-y-auto overflow-hidden h-[90vh]"
       >
-        <p className="text-gray-700 font-bold md:mt-2 mb-2 md:mb-5 text-3xl ml-5">
-          {searchTerm}
-          <span className="text-blue-500">videos</span>
-        </p>
-        <Videos
-          direction={window.innerWidth > 640 ? "row" : "column"}
-          videos={videos}
-        />
+        {window.innerWidth > 640 ? (
+          <p className="text-gray-700 font-bold md:mt-2 mb-2 md:mb-5 text-3xl ml-5">
+            {searchTerm} <span className="text-blue-500"> videos</span>
+          </p>
+        ) : (
+          ""
+        )}
+
+        <Videos direction="row" videos={videos} />
       </div>
     </div>
   );

@@ -50,7 +50,7 @@ const VideoDetail = () => {
   }, [id]);
 
   if (!videoDetail) {
-    return "Loading ...";
+    return "";
   }
 
   const {

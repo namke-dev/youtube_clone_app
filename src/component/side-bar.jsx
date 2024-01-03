@@ -12,30 +12,38 @@ const SideBar = ({ selectedCategory, setSelectedCategory }) => (
     {categories.map((category) => (
       <button
         className={`
-        group
-        md:mt-3 py-2 px-3
-        md:rounded-full
-        rounded-xl
-        md:ml-0
-        mr-4
-        min-w-[100px]
+          group
         bg-white
-        border border-gray-100 border-solid
-        font-semibold
-        text-sm
-        text-gray-600
-        shadow-sm shadow-sky-200
-        hover:bg-sky-200
-        hover:text-gray-800
-        items-center
-        justify-center
-        md:justify-start
-        transition-all
-        flex 
-        md:flex-row 
-        flex-col
-        flex-wrap
-        w-full
+          border border-gray-100 border-solid
+          font-semibold
+          text-sm
+          text-gray-600
+          shadow-sm shadow-sky-200
+          hover:bg-sky-200
+          hover:text-gray-800
+          items-center
+          justify-center
+          transition-all
+          flex
+          
+          md:mt-3 
+          mt-1
+          md:py-2
+          py-1
+          md:px-3
+          px-1
+          
+          md:rounded-full
+          rounded-xl
+          md:ml-0
+          mr-4
+          min-w-[100px]
+          md:flex-row
+          md:justify-start
+
+          flex-col
+          flex-wrap
+          w-full
         ${
           category.name === selectedCategory
             ? "text-pink-800  bg-gradient-to-br from-orange-100 via-orange-200 to-pink-300"
