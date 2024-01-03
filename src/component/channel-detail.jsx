@@ -13,7 +13,6 @@ const ChannelDetail = () => {
     setIsWideScreen(window.innerWidth > 640);
   };
   const { id } = useParams();
-
   const { startLoading, stopLoading } = useLoading();
 
   useEffect(() => {
@@ -21,24 +20,24 @@ const ChannelDetail = () => {
     console.log(`Channel id: ${id}`);
     startLoading();
 
-    const fetchChannelDetailData = async () => {
-      const channelDetail = await fetchFromApi(
-        `channels?part=snippet&id=${id}`
-      );
-      setChannelDetail(channelDetail?.items[0]);
+    const fetchData = async () => {
+      try {
+        const channelData = await fetchFromApi(
+          `channels?part=snippet&id=${id}`
+        );
+        setChannelDetail(channelData?.items[0]);
+
+        const VideosData = await fetchFromApi(
+          `search?channelId=${id}&part=snippet&order=date`
+        );
+        setChannelVideos(VideosData.items);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      } finally {
+        stopLoading();
+      }
     };
-
-    const fetchChannelVideosData = async () => {
-      const channelVideosData = await fetchFromApi(
-        `search?channelId=${id}&part=snippet&order=date`
-      );
-      setChannelVideos(channelVideosData.items);
-    };
-
-    fetchChannelDetailData();
-    fetchChannelVideosData();
-
-    stopLoading();
+    fetchData();
   }, [id]);
 
   useEffect(() => {

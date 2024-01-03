@@ -31,20 +31,22 @@ const VideoDetail = () => {
     console.log(`Video id: ${id}`);
 
     const fetchData = async () => {
+      startLoading();
+
       const data = await fetchFromApi(
         `videos?part=snippet,statistics&id=${id}`
       );
       setVideoDetail(data.items[0]);
+
+      setIsShowComments(false);
+      setIsShowRelatedVideos(false);
+      setIsDescriptionExpanded(false);
+
+      stopLoading();
+      scrollToTop();
     };
 
-    startLoading();
     fetchData();
-    stopLoading();
-
-    setIsShowComments(false);
-    setIsShowRelatedVideos(false);
-    setIsDescriptionExpanded(false);
-    scrollToTop();
   }, [id]);
 
   if (!videoDetail) {
@@ -59,23 +61,29 @@ const VideoDetail = () => {
   // Load related videos
   const fetchRelatedVideos = async () => {
     startLoading();
-    fetchFromApi(
-      `search?relatedToVideoId=${id}&part=id,snippet&type=video&maxResults=20`
-    ).then((data) => setRelatedVideos(data.items));
-    stopLoading();
 
+    const data = await fetchFromApi(
+      `search?relatedToVideoId=${id}&part=id,snippet&type=video&maxResults=20`
+    );
+
+    setRelatedVideos(data.items);
     setIsShowRelatedVideos(true);
+
+    stopLoading();
   };
 
   // Load comment
   const fetchComments = async () => {
     startLoading();
-    fetchFromApi(
-      `commentThreads?videoId=${id}&part=snippet&maxResults=30`
-    ).then((data) => setComments(data.items));
-    stopLoading();
 
+    const data = await fetchFromApi(
+      `commentThreads?videoId=${id}&part=snippet&maxResults=30`
+    );
+
+    setComments(data.items);
     setIsShowComments(true);
+
+    stopLoading();
   };
 
   const truncatedDescription =
@@ -161,6 +169,7 @@ const VideoDetail = () => {
               </p>
 
               <HtmlContent content={truncatedDescription} />
+
               <button
                 className="text-blue-500 mt-2 cursor-pointer focus:outline-none"
                 onClick={() => setIsDescriptionExpanded(!isDescriptionExpanded)}
@@ -169,19 +178,20 @@ const VideoDetail = () => {
               </button>
             </div>
           )}
+
+          {/* Show comments btn */}
           {!isShowComments && (
             <button
               className="text-blue-500 py-2 cursor-pointer focus:outline-none"
               onClick={() => {
-                !isShowComments && fetchComments();
-                setIsShowComments(true);
+                fetchComments();
               }}
             >
               Show comments
             </button>
           )}
 
-          {/* {Show comment} */}
+          {/* {Comments} */}
           {isShowComments && (
             <div
               className="text-gray-700 my-2 whitespace-pre-line 
@@ -194,7 +204,8 @@ const VideoDetail = () => {
           )}
         </div>
       </div>
-      {/* Second Box */}
+
+      {/* Related video*/}
       <div
         className="justify-center items-center lg:h-[85vh] lg:overflow-y-auto overflow-hidden
         lg:w-[29.5%] !xl:pl-8 material-box lg:mt-8 lg:pt-2 "

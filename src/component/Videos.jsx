@@ -5,7 +5,7 @@ import VideoCard from "./video-card";
 
 const Videos = ({ videos, direction }) => {
   if (!videos?.length) {
-    return "Loading ...";
+    return "";
   }
   return (
     <Stack
