@@ -4,12 +4,13 @@ import { fetchFromApi } from "../utils/fetchFromApi";
 import { useState } from "react";
 import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-import { categories } from "../utils/constants";
+import { LoadingBar } from "./loading-bar";
 
 const SearchFeed = () => {
-  console.log(categories[0].name);
   const [selectedCategory, setSelectedCategory] = useState("Conan");
   const [isWideScreen, setIsWideScreen] = useState(window.innerWidth > 768);
+  const [isLoading, setIsLoading] = useState(false);
+
   const handleResize = () => {
     setIsWideScreen(window.innerWidth > 640);
   };
@@ -20,21 +21,35 @@ const SearchFeed = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    console.log(`==>> Navigate /search/${selectedCategory}`);
     if (selectedCategory) {
       navigate(`/search/${selectedCategory}`);
     }
-  }, [selectedCategory, navigate]);
+  }, [selectedCategory]);
 
   useEffect(() => {
-    if (searchTerm) {
-      fetchFromApi(`search?part=snippet,id&q=${searchTerm}&regionCode=VN`).then(
-        (data) => setVideos(data.items)
-      );
-    }
-    if (searchTerm !== selectedCategory) {
-      setSelectedCategory("");
-    }
-  }, [searchTerm, selectedCategory]);
+    const fetchData = async () => {
+      if (!searchTerm) return;
+      try {
+        console.log("Search term: " + searchTerm);
+        console.log("Before loading");
+        setIsLoading(true);
+        if (searchTerm) {
+          const data = await fetchFromApi(
+            `search?part=snippet,id&q=${searchTerm}&regionCode=VN`
+          );
+          setVideos(data.items);
+        }
+      } catch (error) {
+        console.log(error);
+      } finally {
+        console.log("After loading");
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [searchTerm]);
 
   useEffect(() => {
     window.addEventListener("resize", handleResize);
@@ -44,10 +59,13 @@ const SearchFeed = () => {
   }, []);
 
   return (
-    <div className="flex flex-col md:flex-row">
-      {/* Side bar container */}
-      <div
-        className={`
+    <>
+      <LoadingBar isLoading={isLoading} />
+      <div className="flex flex-col md:flex-row">
+        {/* Side bar container */}
+
+        <div
+          className={`
         p-5
         h-auto 
         mr-5
@@ -60,26 +78,27 @@ const SearchFeed = () => {
             : "overflow-x-auto"
         }
         `}
-      >
-        <SideBar
-          selectedCategory={selectedCategory}
-          setSelectedCategory={setSelectedCategory}
-        />
-      </div>
+        >
+          <SideBar
+            selectedCategory={selectedCategory}
+            setSelectedCategory={setSelectedCategory}
+          />
+        </div>
 
-      {/* Feed container */}
-      <div className="flex-wrap mx-1 md:overflow-y-auto md:h-[90vh]">
-        <p className="text-gray-700 font-bold md:mt-2 mb-2 md:mb-5 text-3xl ml-5">
-          {selectedCategory ? selectedCategory : searchTerm}{" "}
-          <span className="text-blue-500">videos</span>
-        </p>
-        {isWideScreen ? (
-          <Videos direction="row" videos={videos} />
-        ) : (
-          <Videos direction="column" videos={videos} />
-        )}
+        {/* Feed container */}
+        <div className="flex-wrap mx-1 md:overflow-y-auto md:h-[90vh]">
+          <p className="text-gray-700 font-bold md:mt-2 mb-2 md:mb-5 text-3xl ml-5">
+            {selectedCategory ? selectedCategory : searchTerm}{" "}
+            <span className="text-blue-500">videos</span>
+          </p>
+          {isWideScreen ? (
+            <Videos direction="row" videos={videos} />
+          ) : (
+            <Videos direction="column" videos={videos} />
+          )}
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 
