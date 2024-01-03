@@ -1,7 +1,7 @@
 import { Stack } from "@mui/material";
 
-import ChannelCard from "./ChannelCard";
-import VideoCard from "./VideoCard";
+import ChannelCard from "./channel-card";
+import VideoCard from "./video-card";
 
 const Videos = ({ videos, direction }) => {
   if (!videos?.length) {

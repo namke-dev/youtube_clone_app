@@ -1,8 +1,8 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { logo } from "../utils/constants";
-import SearchBar from "./SearchBar";
-const Navbar = () => (
+import SearchBar from "./search-bar";
+const Header = () => (
   <div
     className="
       w-full flex items-center p-2 
@@ -27,4 +27,4 @@ const Navbar = () => (
   </div>
 );
 
-export default Navbar;
+export default Header;

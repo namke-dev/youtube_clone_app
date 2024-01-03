@@ -3,7 +3,7 @@ import ReactPlayer from "react-player";
 import { Link, useParams } from "react-router-dom";
 import { fetchFromApi } from "../utils/fetchFromApi";
 import { CheckCircle } from "@mui/icons-material";
-import { Videos, Comments } from "../component";
+import { Videos, Comments } from ".";
 import { formatRelativeTime } from "../utils/utils";
 import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import VisibilityIcon from "@mui/icons-material/Visibility";

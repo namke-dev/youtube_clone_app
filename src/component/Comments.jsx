@@ -1,5 +1,5 @@
 import React from "react";
-import Comment from "./Comment";
+import Comment from "./comment";
 
 export default function Comments({ data }) {
   if (!data) return null;

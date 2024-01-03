@@ -1,15 +1,15 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Box } from "@mui/material";
-import { Navbar, VideoDetail, ChannelDetail, SearchFeed } from "./component";
+import { VideoDetail, ChannelDetail, Header, HomePage } from "./component";
 const App = () => (
   <BrowserRouter>
     <Box className="bg-gray-50">
-      <Navbar />
+      <Header />
       <Routes>
-        <Route path="/" exact element={<SearchFeed />} />
+        <Route path="/" exact element={<HomePage />} />
         <Route path="/video/:id" element={<VideoDetail />} />
         <Route path="/channel/:id" element={<ChannelDetail />} />
-        <Route path="/search/:searchTerm" element={<SearchFeed />} />
+        <Route path="/search/:searchTerm" element={<HomePage />} />
       </Routes>
     </Box>
   </BrowserRouter>

@@ -1,4 +1,4 @@
-import { SideBar, Videos } from "../component";
+import { SideBar, Videos } from ".";
 import { useEffect } from "react";
 import { fetchFromApi } from "../utils/fetchFromApi";
 import { useState } from "react";
@@ -6,7 +6,7 @@ import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { LoadingBar } from "./loading-bar";
 
-const SearchFeed = () => {
+const HomePage = () => {
   const [selectedCategory, setSelectedCategory] = useState("Conan");
   const [isWideScreen, setIsWideScreen] = useState(window.innerWidth > 768);
   const [isLoading, setIsLoading] = useState(false);
@@ -102,4 +102,4 @@ const SearchFeed = () => {
   );
 };
 
-export default SearchFeed;
+export default HomePage;
