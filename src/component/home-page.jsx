@@ -9,6 +9,7 @@ import { useLoading } from "../context/loading-context";
 const HomePage = () => {
   const [selectedCategory, setSelectedCategory] = useState("Conan");
   const [videos, setVideos] = useState([]);
+  const [nextpageToken, setNextPageToken] = useState("");
 
   const { startLoading, stopLoading } = useLoading();
   const { searchTerm } = useParams();
@@ -43,9 +44,15 @@ const HomePage = () => {
     const fetchData = async () => {
       startLoading();
       try {
+        const regionCode = "VN";
+        const maxResults = 20;
+        const order = "relevance";
         const data = await fetchFromApi(
-          `search?part=snippet,id&q=${searchTerm}&regionCode=VN`
+          `search?part=snippet,id&q=${encodeURI(
+            searchTerm
+          )}&regionCode=${regionCode}&maxResults=${maxResults}&order=${order}&pageToken=${nextpageToken}`
         );
+        setNextPageToken(data.nextPageToken);
         setVideos(data.items);
       } catch (error) {
         console.log(error);
