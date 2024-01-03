@@ -7,7 +7,8 @@ import { useNavigate } from "react-router-dom";
 import { categories } from "../utils/constants";
 
 const SearchFeed = () => {
-  const [selectedCategory, setSelectedCategory] = useState(categories[0].name);
+  console.log(categories[0].name);
+  const [selectedCategory, setSelectedCategory] = useState("Conan");
   const [isWideScreen, setIsWideScreen] = useState(window.innerWidth > 768);
   const handleResize = () => {
     setIsWideScreen(window.innerWidth > 640);
@@ -53,7 +54,11 @@ const SearchFeed = () => {
         min-w-[12rem]
         md:w-[14rem]
         overflow-hidden
-        ${isWideScreen ? "" : "overflow-x-auto"}
+        ${
+          isWideScreen
+            ? "md:overflow-y-auto md:h-[90vh] md:overflow-hidden"
+            : "overflow-x-auto"
+        }
         `}
       >
         <SideBar
@@ -63,7 +68,7 @@ const SearchFeed = () => {
       </div>
 
       {/* Feed container */}
-      <div className="h-90vh flex-wrap mx-1">
+      <div className="flex-wrap mx-1 md:overflow-y-auto md:h-[90vh]">
         <p className="text-gray-700 font-bold md:mt-2 mb-2 md:mb-5 text-3xl ml-5">
           {selectedCategory ? selectedCategory : searchTerm}{" "}
           <span className="text-blue-500">videos</span>
