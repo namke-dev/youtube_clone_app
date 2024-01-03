@@ -9,3 +9,4 @@ export { default as VideoCard } from "./video-card";
 export { default as ChannelCard } from "./channel-card";
 export { default as Comments } from "./comments";
 export { default as Comment } from "./comment";
+export { LoadingProvider, useLoading } from "../context/loading-context";
