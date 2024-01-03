@@ -63,7 +63,7 @@ const VideoDetail = () => {
     startLoading();
 
     const data = await fetchFromApi(
-      `search?relatedToVideoId=${id}&part=id,snippet&type=video&maxResults=20`
+      `search?relatedToVideoId=${id}&part=id,snippet&type=video`
     );
 
     setRelatedVideos(data.items);
@@ -179,29 +179,26 @@ const VideoDetail = () => {
             </div>
           )}
 
-          {/* Show comments btn */}
-          {!isShowComments && (
-            <button
-              className="text-blue-500 py-2 cursor-pointer focus:outline-none"
-              onClick={() => {
-                fetchComments();
-              }}
-            >
-              Show comments
-            </button>
-          )}
-
           {/* {Comments} */}
-          {isShowComments && (
-            <div
-              className="text-gray-700 my-2 whitespace-pre-line 
+          <div
+            className="text-gray-700 my-2 whitespace-pre-line 
               material-box 
               text-md w-full
               "
-            >
-              <Comments data={comments} />
-            </div>
-          )}
+          >
+            {/* Show comments btn */}
+            {!isShowComments && (
+              <button
+                className="text-blue-500 py-2 cursor-pointer focus:outline-none"
+                onClick={() => {
+                  fetchComments();
+                }}
+              >
+                Show comments
+              </button>
+            )}
+            {isShowComments && <Comments data={comments} />}
+          </div>
         </div>
       </div>
 
