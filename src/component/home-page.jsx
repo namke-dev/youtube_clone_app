@@ -39,6 +39,7 @@ const HomePage = () => {
   useEffect(() => {
     if (!searchTerm) return;
     console.log("Search term: " + searchTerm);
+
     const fetchData = async () => {
       startLoading();
       try {
@@ -52,6 +53,7 @@ const HomePage = () => {
         stopLoading();
       }
     };
+
     fetchData();
   }, [searchTerm]);
 
