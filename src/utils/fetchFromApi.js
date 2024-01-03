@@ -13,6 +13,7 @@ const options = {
 };
 
 export const fetchFromApi = async (url) => {
+  console.log(`Call api => ${BASE_URL}/${url}`);
   const { data } = await axios.get(`${BASE_URL}/${url}`, options);
   return data;
 };
