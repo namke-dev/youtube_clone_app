@@ -8,14 +8,13 @@ const Header = () => {
   const { isLoading } = useLoading();
 
   return (
-    <div className="fex fex-col">
+    <div className="fex fex-col sticky top-0">
       <div
         className="
       w-full flex items-center p-2 
-      sticky top-0 
       bg-sky-100 opacity-85 
-      backdrop-blur-lg 
-      text-lg shadow
+      text-lg 
+      shadow
       z-50"
       >
         {/* Logo on the left */}
