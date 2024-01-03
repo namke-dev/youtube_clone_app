@@ -93,7 +93,7 @@ const HomePage = () => {
       {/* Side bar container */}
       <div
         className={`
-        md:m-5
+        md:mx-3
         mb-2 mx-2
         h-auto 
         md:mr-5
@@ -116,7 +116,7 @@ const HomePage = () => {
       >
         {window.innerWidth > 640 ? (
           <p className="text-gray-700 font-bold md:mt-2 mb-2 md:mb-5 text-3xl ml-5">
-            {searchTerm} <span className="text-blue-500"> videos</span>
+            {searchTerm} <span className="text-red-800"> videos</span>
           </p>
         ) : (
           ""

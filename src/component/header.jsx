@@ -12,7 +12,7 @@ const Header = () => {
       <div
         className="
       w-full flex items-center p-2 
-      bg-sky-100 opacity-85 
+      bg-white opacity-85 
       text-lg 
       shadow
       z-50"
