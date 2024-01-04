@@ -8,10 +8,7 @@ import { useLoading } from "../context/loading-context";
 const ChannelDetail = () => {
   const [channelDetail, setChannelDetail] = useState(null);
   const [channelVideos, setChannelVideos] = useState(null);
-  const [isWideScreen, setIsWideScreen] = useState(window.innerWidth > 768);
-  const handleResize = () => {
-    setIsWideScreen(window.innerWidth > 640);
-  };
+
   const { id } = useParams();
   const { startLoading, stopLoading } = useLoading();
 
@@ -40,13 +37,6 @@ const ChannelDetail = () => {
     fetchData();
   }, [id]);
 
-  useEffect(() => {
-    window.addEventListener("resize", handleResize);
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
-  }, []);
-
   return (
     <>
       <div className="mb-5 py-5 bg-sky-100 shadow-sm">
@@ -55,11 +45,10 @@ const ChannelDetail = () => {
 
       <div className="flex p-2">
         <div className="h-90vh flex-wrap" />
-        {isWideScreen ? (
-          <Videos direction="row" videos={channelVideos} />
-        ) : (
-          <Videos direction="column" videos={channelVideos} />
-        )}
+        <Videos
+          direction={window.screen.width >= 768 ? "row" : "column"}
+          videos={channelVideos}
+        />
       </div>
     </>
   );
