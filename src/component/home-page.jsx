@@ -89,15 +89,21 @@ const HomePage = () => {
   }, [searchTerm]);
 
   return (
-    <div className="flex flex-col md:flex-row fixed top-0">
+    <div
+      className="
+      flex 
+      flex-col 
+      md:flex-row 
+      md:fixed md:top-0"
+    >
       {/* Side bar container */}
       <div
         className={`
         md:mx-3
         md:pt-20
         md:mr-5
-        md:mt-0        
-        mt-20
+        mt-4
+        md:mt-12
         mb-2 mx-2
         
         
@@ -130,13 +136,11 @@ const HomePage = () => {
           xl:px-1
           2xl:px-1
           md:pt-20
+
+          flex flex-wrap 
           
           md:overflow-y-scroll
-          
           md:h-[100vh] 
-          h-auto
-          
-          flex flex-wrap 
           md:w-full
           "
       >
