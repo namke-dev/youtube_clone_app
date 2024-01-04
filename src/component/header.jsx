@@ -20,7 +20,7 @@ const Header = () => {
           mt-1.5
           ml-[5vw]
           p-3
-          w-[90vw]
+          w-[86vw]
           backdrop-blur-sm
           rounded-full 
           shadow
