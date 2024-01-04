@@ -5,7 +5,7 @@ export const LoadingBar = ({ isLoading }) => {
     <div
       className={`transition-all duration-500 ${
         isLoading ? "w-full" : "w-0"
-      } h-1 bg-blue-400`}
+      } h-1 bg-blue-700 opacity-30`}
     ></div>
   );
 };
