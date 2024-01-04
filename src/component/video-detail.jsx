@@ -76,8 +76,10 @@ const VideoDetail = () => {
   const fetchComments = async () => {
     startLoading();
 
+    const part = "snippet";
+    const maxResults = "30";
     const data = await fetchFromApi(
-      `commentThreads?videoId=${id}&part=snippet&maxResults=30`
+      `commentThreads?videoId=${id}&part=${part}&maxResults=${maxResults}`
     );
 
     setComments(data.items);
@@ -205,19 +207,20 @@ const VideoDetail = () => {
       {/* Related video*/}
       <div
         className="justify-center items-center lg:h-[85vh] lg:overflow-y-auto
-        lg:w-[29.5%] !xl:pl-8 material-box lg:mt-8 lg:pt-2 "
+        lg:w-[29.5%] !xl:pl-8 lg:mt-8 lg:pt-2 "
       >
         {/* Button to show related videos */}
         {!isShowRelatedVideos && (
           <button
-            className="text-blue-500 mt-2 cursor-pointer focus:outline-none px-6 py-8 md:text-xl justify-center w-full"
+            className="text-blue-500 mt-2 cursor-pointer focus:outline-none px-6 py-8 md:text-xl text-left w-full"
             onClick={fetchRelatedVideos}
           >
             Show more videos like this
           </button>
         )}
+
         {isShowRelatedVideos && (
-          <div className="mx-3">
+          <>
             <div
               className="justify-center items-center mt-2 px-3 lg:mt-0
           text-lg md:text-xl font-semibold pt-4 pb-3 text-gray-500"
@@ -228,7 +231,7 @@ const VideoDetail = () => {
               direction={window.screen.width >= 768 ? "column" : "row"}
               videos={relatedVideos}
             />
-          </div>
+          </>
         )}
       </div>
     </div>

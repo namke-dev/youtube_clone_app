@@ -20,7 +20,8 @@ const Header = () => {
       rounded-full 
       shadow
       z-50 
-      mx-16 
+      md:mx-16
+      mx-3
       pl-3
       pr-2
       py-2
@@ -28,10 +29,10 @@ const Header = () => {
       >
         <div
           className="
-      w-full flex 
-      text-lg 
-      text-gray-700
-      "
+            w-full flex 
+            text-lg 
+            text-gray-700
+          "
         >
           {/* Logo on the left */}
           <Link to="/" className="flex items-center font-bold mr-10">

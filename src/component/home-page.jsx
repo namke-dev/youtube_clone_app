@@ -106,7 +106,10 @@ const HomePage = () => {
         
         h-auto 
         md:h-[100vh]
-        md:overflow-y-auto 
+        w-[100vw]
+
+        md:overflow-y-auto
+        md:overflow-visible
         overflow-hidden
         overflow-x-auto`}
       >
@@ -120,17 +123,18 @@ const HomePage = () => {
       <div
         ref={feedContainerRef}
         className="
-          overflow-y-auto 
-          h-[100vh] 
-          w-auto
-          flex-wrap 
-          
           sm:px-1 
           md:px-1
           lg:px-30
           xl:px-1
-          2xl:px-1 
-          md:pt-20"
+          2xl:px-1
+
+          md:pt-20
+          overflow-y-scroll
+          
+          h-[100vh] 
+          flex-wrap 
+          "
       >
         {window.innerWidth > 768 ? (
           <p className="text-gray-700 font-bold md:mt-2 mb-2 md:mb-5 text-3xl">

@@ -24,12 +24,13 @@ const VideoCard = ({ video }) => {
     sm:w-[300px] w-11/12
     mx-auto 
     mb-0 md:mb-0 mt-3 md:mt-0
-    min-w-[280px] flex flex-col
+    min-w-[280px] 
+    flex flex-col
+
     border border-gray-200
-    shadow-gray-200
-    shadow-sm
-    bg-white
+    shadow-gray-200 shadow-sm
     !rounded-2xl
+    bg-white
     `}
     >
       <Link to={videoId ? `/video/${videoId}` : demoVideoUrl}>

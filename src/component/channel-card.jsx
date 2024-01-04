@@ -8,9 +8,12 @@ const ChannelCard = ({ channelDetail, direction }) => {
 
   return (
     <div
-      className={`flex ${
-        direction === "row" ? "sm:w-[300px]" : "w-11/12"
-      } mx-auto mb-0 md:mb-0 mt-3 md:mt-0 rounded-2xl items-center`}
+      className={`flex ${direction === "row" ? "sm:w-[300px]" : "w-11/12"} 
+      mx-auto mb-0 
+      md:mb-0 mt-3 
+      md:mt-0 
+      rounded-2xl 
+      items-center`}
     >
       <Link
         to={`/channel/${id?.channelId}`}
