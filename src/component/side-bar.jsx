@@ -7,6 +7,7 @@ const SideBar = ({ selectedCategory, setSelectedCategory }) => (
     flex 
     flex-row
     md:flex-col 
+    my-1
     "
   >
     {categories.map((category) => (

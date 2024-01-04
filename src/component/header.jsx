@@ -8,24 +8,24 @@ const Header = () => {
   const { isLoading } = useLoading();
 
   return (
-    <div className="fex fex-col sticky top-0">
+    <div className="flex flex-col sticky top-1.5 mx-16 backdrop-blur-xl rounded-xl z-50 mb-5">
       <div
         className="
-      w-full flex items-center p-2 
-      bg-white opacity-85 
-      text-lg 
-      shadow
-      z-50"
+        w-full flex 
+        p-2 
+        text-lg 
+        "
       >
         {/* Logo on the left */}
-        <Link to="/" className="flex items-center font-bold">
+        <Link to="/" className="flex items-center font-bold mr-10">
           <img src={logo} alt="logo" className="h-8 mx-3" />
           <span>DevTubes</span>
+          <p className="text-xs font-thin ml-2">namke-dev</p>
         </Link>
 
         {/* Centered SearchBar */}
         <div className="flex items-center w-full">
-          <div className="mx-auto w-2/3">
+          <div className="mx-auto w-full">
             <SearchBar />
           </div>
         </div>
