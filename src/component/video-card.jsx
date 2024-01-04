@@ -12,7 +12,7 @@ import { normalzeVideoTitle } from "../utils/utils";
 import { formatRelativeTime } from "../utils/utils";
 import { HtmlContent } from "../utils/utils";
 
-const VideoCard = ({ video, direction }) => {
+const VideoCard = ({ video }) => {
   const snippet = video.snippet;
   const videoId = video.id.videoId;
 
@@ -29,12 +29,10 @@ const VideoCard = ({ video, direction }) => {
     shadow-gray-200
     shadow-sm
     bg-white
+    !rounded-2xl
     `}
     >
-      <Link
-        to={videoId ? `/video/${videoId}` : demoVideoUrl}
-        className="w-full"
-      >
+      <Link to={videoId ? `/video/${videoId}` : demoVideoUrl}>
         <CardMedia
           image={
             snippet?.thumbnails?.high?.url
@@ -42,7 +40,7 @@ const VideoCard = ({ video, direction }) => {
               : demoThumbnailUrl
           }
           alt={snippet?.title}
-          className="aspect-video"
+          className="aspect-video rounded-t-xl"
         />
       </Link>
 
@@ -72,7 +70,7 @@ const VideoCard = ({ video, direction }) => {
         </div>
 
         {/* Channel info Section */}
-        <div className="bg-white px-4 pb-3 pt-3 flex items-end">
+        <div className="px-4 pb-3 pt-3 flex items-end">
           {/* channel title */}
           <a
             href={

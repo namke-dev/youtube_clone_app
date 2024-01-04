@@ -15,7 +15,7 @@ const Videos = ({ videos, direction }) => {
     >
       {videos.map((item, idx) => (
         <div key={idx} className="my-0 mx-0 flex flex-grow">
-          {item.id.videoId && <VideoCard video={item} direction={direction} />}
+          {item.id.videoId && <VideoCard video={item} />}
           {item.id.channelId && (
             <ChannelCard channelDetail={item} direction={direction} />
           )}

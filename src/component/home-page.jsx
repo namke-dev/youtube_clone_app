@@ -112,17 +112,16 @@ const HomePage = () => {
       {/* Feed container */}
       <div
         ref={feedContainerRef}
-        className="flex-wrap mx-1 overflow-y-auto h-[90vh]"
+        className="flex-wrap overflow-y-auto h-[90vh] sm:px-1 lg:px-24 xl:px-1"
       >
         {window.innerWidth > 768 ? (
-          <p className="text-gray-700 font-bold md:mt-2 mb-2 md:mb-5 text-3xl ml-5">
+          <p className="text-gray-700 font-bold md:mt-2 mb-2 md:mb-5 text-3xl">
             {searchTerm} <span className="text-red-800"> videos</span>
           </p>
         ) : (
           ""
         )}
 
-        {/* <Videos direction={"row"} videos={videos} /> */}
         <Videos
           direction={window.screen.width >= 768 ? "row" : "column"}
           videos={videos}
