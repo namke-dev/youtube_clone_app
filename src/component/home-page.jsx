@@ -94,14 +94,20 @@ const HomePage = () => {
       <div
         className={`
         md:mx-3
-        mb-2 mx-2
-        pt-20
-        h-auto 
+        md:pt-20
         md:mr-5
+        md:mt-0
+
         min-w-[12rem]
         md:w-[14rem]
+        
+        mt-20
+        mb-2 mx-2
+        
+        h-auto 
+        md:h-[100vh]
+        md:overflow-y-auto 
         overflow-hidden
-        md:overflow-y-auto md:h-[100vh]
         overflow-x-auto`}
       >
         <SideBar
@@ -113,7 +119,18 @@ const HomePage = () => {
       {/* Feed container */}
       <div
         ref={feedContainerRef}
-        className="flex-wrap overflow-y-auto h-[100vh] sm:px-1 lg:px-16 xl:px-1 pt-20"
+        className="
+          overflow-y-auto 
+          h-[100vh] 
+          w-auto
+          flex-wrap 
+          
+          sm:px-1 
+          md:px-1
+          lg:px-30
+          xl:px-1
+          2xl:px-1 
+          md:pt-20"
       >
         {window.innerWidth > 768 ? (
           <p className="text-gray-700 font-bold md:mt-2 mb-2 md:mb-5 text-3xl">

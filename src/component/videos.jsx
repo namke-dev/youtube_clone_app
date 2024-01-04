@@ -11,7 +11,7 @@ const Videos = ({ videos, direction }) => {
         direction === "column" ? "flex-col" : "flex-row flex-wrap"
       }  
         justify-center
-        gap-0 lg:gap-3 sm:gap-5`}
+        lg:gap-3 sm:gap-5 w-[100vw]`}
     >
       {videos.map((item, idx) => (
         <div key={idx} className="my-0 mx-0 flex flex-grow">

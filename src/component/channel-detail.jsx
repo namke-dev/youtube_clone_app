@@ -38,19 +38,19 @@ const ChannelDetail = () => {
   }, [id]);
 
   return (
-    <>
-      <div className="mb-5 py-5 bg-sky-100 shadow-sm">
+    <div className="overflow-y h-[100vh] ">
+      <div className="mb-5 mt-3 py-5">
         <ChannelCard channelDetail={channelDetail}></ChannelCard>
       </div>
 
-      <div className="flex p-2">
+      <div className="flex md:mx-20">
         <div className="h-90vh flex-wrap" />
         <Videos
           direction={window.screen.width >= 768 ? "row" : "column"}
           videos={channelVideos}
         />
       </div>
-    </>
+    </div>
   );
 };
 

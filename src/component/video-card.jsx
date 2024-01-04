@@ -25,7 +25,7 @@ const VideoCard = ({ video }) => {
     mx-auto 
     mb-0 md:mb-0 mt-3 md:mt-0
     min-w-[280px] flex flex-col
-    border border-gray-2000
+    border border-gray-200
     shadow-gray-200
     shadow-sm
     bg-white
