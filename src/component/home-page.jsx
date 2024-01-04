@@ -112,9 +112,9 @@ const HomePage = () => {
       {/* Feed container */}
       <div
         ref={feedContainerRef}
-        className="flex-wrap mx-1 overflow-y-auto overflow-hidden h-[90vh]"
+        className="flex-wrap mx-1 overflow-y-auto h-[90vh]"
       >
-        {window.innerWidth > 640 ? (
+        {window.innerWidth > 768 ? (
           <p className="text-gray-700 font-bold md:mt-2 mb-2 md:mb-5 text-3xl ml-5">
             {searchTerm} <span className="text-red-800"> videos</span>
           </p>
@@ -122,7 +122,11 @@ const HomePage = () => {
           ""
         )}
 
-        <Videos direction="row" videos={videos} />
+        {/* <Videos direction={"row"} videos={videos} /> */}
+        <Videos
+          direction={window.screen.width >= 768 ? "row" : "column"}
+          videos={videos}
+        />
       </div>
     </div>
   );

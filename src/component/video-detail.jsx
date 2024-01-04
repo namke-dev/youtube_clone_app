@@ -204,7 +204,7 @@ const VideoDetail = () => {
 
       {/* Related video*/}
       <div
-        className="justify-center items-center lg:h-[85vh] lg:overflow-y-auto overflow-hidden
+        className="justify-center items-center lg:h-[85vh] lg:overflow-y-auto
         lg:w-[29.5%] !xl:pl-8 material-box lg:mt-8 lg:pt-2 "
       >
         {/* Button to show related videos */}
@@ -225,7 +225,7 @@ const VideoDetail = () => {
               Related video
             </div>
             <Videos
-              direction={window.screen.width >= 640 ? "column" : "row"}
+              direction={window.screen.width >= 768 ? "column" : "row"}
               videos={relatedVideos}
             />
           </div>

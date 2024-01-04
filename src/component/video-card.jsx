@@ -21,7 +21,7 @@ const VideoCard = ({ video, direction }) => {
   return (
     <div
       className={` 
-    ${direction === "row" ? "sm:w-[300px]" : "w-11/12"}
+    sm:w-[300px] w-11/12
     mx-auto 
     mb-0 md:mb-0 mt-3 md:mt-0
     min-w-[280px] flex flex-col
@@ -42,19 +42,14 @@ const VideoCard = ({ video, direction }) => {
               : demoThumbnailUrl
           }
           alt={snippet?.title}
-          className="w-full aspect-video"
+          className="aspect-video"
         />
       </Link>
 
       {/* Text part */}
-      <div
-        className="w-full
-       flex-grow
-       flex flex-col
-       "
-      >
+      <div className="flex flex-col">
         {/* Video info Section */}
-        <div className="px-4">
+        <div className="px-4 ">
           {/* pushlished time */}
           <p className="pb-2 font-thin text-xs pt-2 self-end">
             {formatRelativeTime(snippet?.publishedAt)}
@@ -77,7 +72,7 @@ const VideoCard = ({ video, direction }) => {
         </div>
 
         {/* Channel info Section */}
-        <div className="bg-white px-4 pb-3 pt-3 flex-grow flex items-end">
+        <div className="bg-white px-4 pb-3 pt-3 flex items-end">
           {/* channel title */}
           <a
             href={
@@ -85,7 +80,7 @@ const VideoCard = ({ video, direction }) => {
                 ? `/channel/${snippet?.channelId}`
                 : demoChannelUrl
             }
-            className="text-sm md:text-sm text-gray-600 font-bold"
+            className="text-sm md:text-sm text-gray-600 font-bold "
           >
             {snippet?.channelTitle || demoChannelTitle}
           </a>
