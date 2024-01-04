@@ -5,14 +5,14 @@ const App = () => (
   <BrowserRouter>
     <div>
       <div
-        className="bg-[#fbdfd7] -z-10
+        className="bg-[#fbd7ed] -z-10
           absolute top-[-6rem] right-[11rem] 
             h-[31.25rem] w-[31.25rem]
             rounded-full blur-[10rem] 
             sm:w-[68.75rem]"
       ></div>
       <div
-        className="bg-[#e2ecfbfd] -z-10
+        className="bg-gray-100 -z-10
             absolute top-[-1rem] left-[-35rem]
             h-[31.25rem] w-[50rem]
             rounded-full blur-[10rem] 

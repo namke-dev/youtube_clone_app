@@ -15,8 +15,7 @@ const Header = () => {
         className="
       flex flex-col 
       sticky mt-1.5
-      bg-white
-      opacity-95
+      backdrop-blur-sm
       rounded-full 
       shadow
       z-50 

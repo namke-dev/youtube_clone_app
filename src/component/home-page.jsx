@@ -145,7 +145,7 @@ const HomePage = () => {
         )}
 
         <Videos
-          direction={window.screen.width >= 768 ? "row" : "column"}
+          direction={window.innerWidth >= 768 ? "row" : "column"}
           videos={videos}
         />
       </div>

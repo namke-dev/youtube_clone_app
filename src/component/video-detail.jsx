@@ -25,39 +25,6 @@ const VideoDetail = () => {
 
   const { startLoading, stopLoading } = useLoading();
 
-  // Load video
-  useEffect(() => {
-    if (!id) return;
-    console.log(`Video id: ${id}`);
-
-    const fetchData = async () => {
-      startLoading();
-
-      const data = await fetchFromApi(
-        `videos?part=snippet,statistics&id=${id}`
-      );
-      setVideoDetail(data.items[0]);
-
-      setIsShowComments(false);
-      setIsShowRelatedVideos(false);
-      setIsDescriptionExpanded(false);
-
-      stopLoading();
-      scrollToTop();
-    };
-
-    fetchData();
-  }, [id]);
-
-  if (!videoDetail) {
-    return "";
-  }
-
-  const {
-    snippet: { title, channelId, channelTitle, description, publishedAt },
-    statistics: { viewCount, likeCount },
-  } = videoDetail;
-
   // Load related videos
   const fetchRelatedVideos = async () => {
     startLoading();
@@ -71,6 +38,36 @@ const VideoDetail = () => {
 
     stopLoading();
   };
+
+  // Load video
+  const fetchData = async () => {
+    startLoading();
+
+    const data = await fetchFromApi(`videos?part=snippet,statistics&id=${id}`);
+    setVideoDetail(data.items[0]);
+
+    setIsShowComments(false);
+    setIsShowRelatedVideos(false);
+    setIsDescriptionExpanded(false);
+
+    stopLoading();
+    scrollToTop();
+  };
+  useEffect(() => {
+    if (!id) return;
+    console.log(`Video id: ${id}`);
+    fetchData();
+    fetchRelatedVideos();
+  }, [id]);
+
+  if (!videoDetail) {
+    return "";
+  }
+
+  const {
+    snippet: { title, channelId, channelTitle, description, publishedAt },
+    statistics: { viewCount, likeCount },
+  } = videoDetail;
 
   // Load comment
   const fetchComments = async () => {
@@ -207,7 +204,7 @@ const VideoDetail = () => {
       {/* Related video*/}
       <div
         className="justify-center items-center lg:h-[85vh] lg:overflow-y-auto
-        lg:w-[29.5%] !xl:pl-8 lg:mt-8 lg:pt-2 "
+        lg:w-[29.5%] !xl:pl-8 md:mt-8"
       >
         {/* Button to show related videos */}
         {!isShowRelatedVideos && (
@@ -223,12 +220,12 @@ const VideoDetail = () => {
           <>
             <div
               className="justify-center items-center mt-2 px-3 lg:mt-0
-          text-lg md:text-xl font-semibold pt-4 pb-3 text-gray-500"
+          text-lg md:text-xl font-semibold pb-3 text-gray-500"
             >
               Related video
             </div>
             <Videos
-              direction={window.screen.width >= 768 ? "column" : "row"}
+              direction={window.innerWidth >= 768 ? "column" : "row"}
               videos={relatedVideos}
             />
           </>

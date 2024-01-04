@@ -33,6 +33,7 @@ const SideBar = ({ selectedCategory, setSelectedCategory }) => (
           py-1
           md:px-3
           px-1
+          mb-1
           
           md:rounded-full
           rounded-xl
@@ -53,7 +54,7 @@ const SideBar = ({ selectedCategory, setSelectedCategory }) => (
         onClick={() => setSelectedCategory(category.name)}
         key={category.name}
       >
-        {window.screen.width >= 768 ? (
+        {window.innerWidth >= 768 ? (
           <span
             className={`flex mr-2  ${
               category.name === selectedCategory ? "text-red-600" : ""

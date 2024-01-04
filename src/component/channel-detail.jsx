@@ -46,7 +46,7 @@ const ChannelDetail = () => {
       <div className="flex md:mx-20">
         <div className="h-90vh flex-wrap" />
         <Videos
-          direction={window.screen.width >= 768 ? "row" : "column"}
+          direction={window.innerWidth >= 768 ? "row" : "column"}
           videos={channelVideos}
         />
       </div>
