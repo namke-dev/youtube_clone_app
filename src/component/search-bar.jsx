@@ -23,11 +23,12 @@ const SearchBar = () => {
       className="
         !rounded-full w-full 
         flex flex-row
-        mx-0 py-2 pl-4
-        !shadow"
+        mx-0 py-2 pl-4 
+        !shadow-inner !shadow-gray-200 
+        !bg-white/70"
     >
       <input
-        className="flex-grow focus:outline-none w-11/12"
+        className="flex-grow focus:outline-none w-11/12 !bg-white/0"
         placeholder="Search..."
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}

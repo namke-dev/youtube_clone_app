@@ -10,41 +10,42 @@ const Header = () => {
   return (
     <>
       <LoadingBar isLoading={isLoading} />
-
       <div
         className="
-      flex flex-col 
-      sticky mt-1.5
-      backdrop-blur-sm
-      rounded-full 
-      shadow
-      z-50 
-      md:mx-16
-      mx-3
-      pl-3
-      pr-2
-      py-2
-  "
+        sticky mt-1.5
+        backdrop-blur-sm
+        rounded-full 
+        shadow
+        z-50 
+        md:mx-16
+        mx-3
+        pl-3
+        pr-2
+        py-2
+        w-auto 
+        flex flex-row
+        "
       >
-        <div
-          className="
-            w-full flex 
-            text-lg 
-            text-gray-700
-          "
+        {/* Logo on the left */}
+        <Link
+          to="/"
+          className="flex flex-row items-center text-gray-700 font-bold md:mr-10 md:w-[10rem]"
         >
-          {/* Logo on the left */}
-          <Link to="/" className="flex items-center font-bold mr-10">
-            <img src={logo} alt="logo" className="h-8 mx-3" />
-            <span>DevTubes</span>
-            <p className="text-xs font-thin ml-3 mr-4 w-auto">namke-dev</p>
-          </Link>
-
-          {/* Centered SearchBar */}
-          <div className="flex items-center w-full">
-            <div className="mx-auto w-full">
-              <SearchBar />
+          <img src={logo} alt="logo" className="h-10 mr-3" />
+          {window.innerWidth > 768 ? (
+            <div className="flex flex-col">
+              <p>Dev-Tubes</p>
+              <p className="text-xs font-thin ml-3 mr-4">namke-dev</p>
             </div>
+          ) : (
+            ""
+          )}
+        </Link>
+
+        {/* Centered SearchBar */}
+        <div className="flex items-center w-full">
+          <div className="mx-auto w-full">
+            <SearchBar />
           </div>
         </div>
       </div>

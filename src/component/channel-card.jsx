@@ -12,8 +12,12 @@ const ChannelCard = ({ channelDetail, direction }) => {
       mx-auto mb-0 
       md:mb-0 mt-3 
       md:mt-0 
-      rounded-2xl 
-      items-center`}
+      items-center
+      border border-gray-200
+      shadow-gray-200 shadow-sm
+      !rounded-2xl
+      bg-white
+      `}
     >
       <Link
         to={`/channel/${id?.channelId}`}
@@ -22,7 +26,13 @@ const ChannelCard = ({ channelDetail, direction }) => {
         <img
           src={snippet?.thumbnails?.high?.url || demoProfilePicture}
           alt={snippet?.title}
-          className="rounded-full h-48 w-48 border border-gray-300 mb-2 justify-center"
+          className="rounded-full
+            h-48 w-48 
+            border border-gray-200 
+            mb-2 
+            justify-center
+            shadow-gray-200 !shadow-xl
+        "
         />
         <p className="text-xl font-semibold mb-3">
           {snippet?.title}

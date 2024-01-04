@@ -98,8 +98,7 @@ const HomePage = () => {
         md:mr-5
         md:mt-0
 
-        min-w-[12rem]
-        md:w-[14rem]
+        min-w-[10rem]
         
         mt-20
         mb-2 mx-2
@@ -110,6 +109,7 @@ const HomePage = () => {
 
         md:overflow-y-auto
         md:overflow-visible
+
         overflow-hidden
         overflow-x-auto`}
       >
