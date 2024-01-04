@@ -31,7 +31,7 @@ const ChannelCard = ({ channelDetail, direction }) => {
             border border-gray-200 
             mb-2 
             justify-center
-            shadow-gray-200 !shadow-xl
+            shadow-gray-200 !shadow-md
         "
         />
         <p className="text-xl font-semibold mb-3">

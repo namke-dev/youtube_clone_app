@@ -29,9 +29,9 @@ const Header = () => {
         {/* Logo on the left */}
         <Link
           to="/"
-          className="flex flex-row items-center text-gray-700 font-bold md:mr-10 md:w-[10rem]"
+          className="flex flex-row items-center text-gray-700 font-bold md:mr-10 md:w-[15rem]"
         >
-          <img src={logo} alt="logo" className="h-10 mr-3" />
+          <img src={logo} alt="logo" className="h-10 mx-3 md:h-12" />
           {window.innerWidth > 768 ? (
             <div className="flex flex-col">
               <p>Dev-Tubes</p>
