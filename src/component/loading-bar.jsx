@@ -4,6 +4,7 @@ export const LoadingBar = ({ isLoading }) => {
   return (
     <div
       className={`
+        fixed
         transition-all 
         duration-500 !z-50
         h-1 bg-red-700 opacity-60

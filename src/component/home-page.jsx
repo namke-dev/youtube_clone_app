@@ -28,13 +28,11 @@ const HomePage = () => {
   // Fetch more data when scrolling to the end
   const handleScroll = async () => {
     const feedContainer = feedContainerRef.current;
+
     if (feedContainer) {
       const { scrollHeight, scrollTop, clientHeight } = feedContainer;
 
-      // Use a small threshold to account for floating-point precision issues
-      const threshold = 1;
-
-      if (scrollHeight - scrollTop <= clientHeight + threshold) {
+      if (scrollHeight - scrollTop <= clientHeight + 1) {
         // User has scrolled to the bottom
         console.log("User has scrolled to the bottom");
         await fetchData(true);
@@ -100,18 +98,17 @@ const HomePage = () => {
       <div
         className={`
         md:mx-3
-        md:pt-20
+        md:pt-28
         pt-20
         md:mr-5
         mt-4
-        md:mt-12
-        mb-2 mx-2
+        mb-2
         
         
         h-auto
         md:h-[100vh]
 
-        w-[100vw]
+        w-full
         md:w-auto
 
         md:overflow-y-auto
