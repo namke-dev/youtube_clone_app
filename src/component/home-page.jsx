@@ -89,18 +89,19 @@ const HomePage = () => {
   }, [searchTerm]);
 
   return (
-    <div className="flex flex-col md:flex-row">
+    <div className="flex flex-col md:flex-row fixed top-0">
       {/* Side bar container */}
       <div
         className={`
         md:mx-3
         mb-2 mx-2
+        pt-20
         h-auto 
         md:mr-5
         min-w-[12rem]
         md:w-[14rem]
         overflow-hidden
-        md:overflow-y-auto md:h-[90vh]
+        md:overflow-y-auto md:h-[100vh]
         overflow-x-auto`}
       >
         <SideBar
@@ -112,7 +113,7 @@ const HomePage = () => {
       {/* Feed container */}
       <div
         ref={feedContainerRef}
-        className="flex-wrap overflow-y-auto h-[90vh] sm:px-1 lg:px-24 xl:px-1"
+        className="flex-wrap overflow-y-auto h-[100vh] sm:px-1 lg:px-16 xl:px-1 pt-20"
       >
         {window.innerWidth > 768 ? (
           <p className="text-gray-700 font-bold md:mt-2 mb-2 md:mb-5 text-3xl">
