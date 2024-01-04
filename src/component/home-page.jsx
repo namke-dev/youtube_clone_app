@@ -17,6 +17,8 @@ const HomePage = () => {
   const navigate = useNavigate();
   const feedContainerRef = useRef(null);
 
+  const isMobile = window.innerWidth < 768;
+
   // Pass category to searchTerm by URL param
   useEffect(() => {
     if (selectedCategory) {
@@ -27,6 +29,8 @@ const HomePage = () => {
 
   // Fetch more data when scrolling to the end
   const handleScroll = async () => {
+    console.log("Start Handle scroll");
+
     const feedContainer = feedContainerRef.current;
 
     if (feedContainer) {
@@ -86,6 +90,42 @@ const HomePage = () => {
     if (searchTerm) fetchData();
   }, [searchTerm]);
 
+  useEffect(() => {
+    let isFetching = false;
+
+    const handleScrollMobile = async () => {
+      if (isFetching) {
+        return;
+      }
+
+      // Check if the user has scrolled to the bottom of the page
+      if (
+        window.innerHeight + window.scrollY >=
+        document.body.offsetHeight - 100
+      ) {
+        console.log("User has scrolled to the bottom");
+
+        isFetching = true; // Set the flag to true
+
+        try {
+          await fetchData(true);
+        } catch (error) {
+          console.error(error);
+        } finally {
+          isFetching = false; // Reset the flag whether the fetch is successful or not
+        }
+      }
+    };
+
+    // Attach the scroll event listener
+    window.addEventListener("scroll", handleScrollMobile);
+
+    // Clean up the event listener when the component is unmounted
+    return () => {
+      window.removeEventListener("scroll", handleScrollMobile);
+    };
+  }, [videos, nextpageToken]);
+
   return (
     <div
       className="
@@ -142,7 +182,7 @@ const HomePage = () => {
           md:w-full
           "
       >
-        {window.innerWidth > 768 ? (
+        {!isMobile ? (
           <p className="text-gray-700 font-bold md:mt-2 mb-2 md:mb-5 text-3xl">
             {searchTerm} <span className="text-red-800"> videos</span>
           </p>
@@ -150,10 +190,7 @@ const HomePage = () => {
           ""
         )}
 
-        <Videos
-          direction={window.innerWidth >= 768 ? "row" : "column"}
-          videos={videos}
-        />
+        <Videos direction={!isMobile ? "row" : "column"} videos={videos} />
       </div>
     </div>
   );
