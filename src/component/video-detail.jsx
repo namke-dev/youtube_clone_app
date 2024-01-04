@@ -224,7 +224,10 @@ const VideoDetail = () => {
             >
               Related video
             </div>
-            <Videos direction="column" videos={relatedVideos} />
+            <Videos
+              direction={window.screen.width >= 640 ? "column" : "row"}
+              videos={relatedVideos}
+            />
           </div>
         )}
       </div>

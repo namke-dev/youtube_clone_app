@@ -1,5 +1,3 @@
-import { Stack } from "@mui/material";
-
 import ChannelCard from "./channel-card";
 import VideoCard from "./video-card";
 
@@ -8,9 +6,9 @@ const Videos = ({ videos, direction }) => {
     return "";
   }
   return (
-    <Stack
+    <div
       className={`flex ${
-        direction === "column" ? "!flex-col" : "!flex-row flex-wrap"
+        direction === "column" ? "flex-col" : "flex-row flex-wrap"
       }  
         justify-center
         gap-0 lg:gap-3 sm:gap-5`}
@@ -23,7 +21,7 @@ const Videos = ({ videos, direction }) => {
           )}
         </div>
       ))}
-    </Stack>
+    </div>
   );
 };
 
