@@ -26,6 +26,15 @@ export const categories = [
   { name: "Indie", icon: <MusicVideoIcon /> },
   { name: "Asmr", icon: <GraphicEqIcon /> },
   { name: "Cozy", icon: <MusicVideoIcon /> },
+  { name: "Cozy1", icon: <MusicVideoIcon /> },
+  { name: "Cozy2", icon: <MusicVideoIcon /> },
+  { name: "Cozy3", icon: <MusicVideoIcon /> },
+  { name: "Cozy4", icon: <MusicVideoIcon /> },
+  { name: "Cozy5", icon: <MusicVideoIcon /> },
+  { name: "Cozy6", icon: <MusicVideoIcon /> },
+  { name: "Cozy7", icon: <MusicVideoIcon /> },
+  { name: "Cozy8", icon: <MusicVideoIcon /> },
+  { name: "Cozy9", icon: <MusicVideoIcon /> },
 ];
 
 export const demoThumbnailUrl = "https://i.ibb.co/G2L2Gwp/API-Course.png";
