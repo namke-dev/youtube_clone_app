@@ -101,6 +101,7 @@ const HomePage = () => {
         className={`
         md:mx-3
         md:pt-20
+        pt-20
         md:mr-5
         mt-4
         md:mt-12
