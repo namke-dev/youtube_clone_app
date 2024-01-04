@@ -8,30 +8,47 @@ const Header = () => {
   const { isLoading } = useLoading();
 
   return (
-    <div className="flex flex-col sticky top-1.5 mx-16 backdrop-blur-xl rounded-xl z-50 mb-5">
+    <>
+      <LoadingBar isLoading={isLoading} />
+
       <div
         className="
-        w-full flex 
-        p-2 
-        text-lg 
-        "
+      flex flex-col 
+      sticky mt-1.5
+      bg-white
+      opacity-95
+      rounded-full 
+      shadow
+      z-50 
+      mx-16 
+      pl-3
+      pr-2
+      py-2
+  "
       >
-        {/* Logo on the left */}
-        <Link to="/" className="flex items-center font-bold mr-10">
-          <img src={logo} alt="logo" className="h-8 mx-3" />
-          <span>DevTubes</span>
-          <p className="text-xs font-thin ml-2">namke-dev</p>
-        </Link>
+        <div
+          className="
+      w-full flex 
+      text-lg 
+      text-gray-700
+      "
+        >
+          {/* Logo on the left */}
+          <Link to="/" className="flex items-center font-bold mr-10">
+            <img src={logo} alt="logo" className="h-8 mx-3" />
+            <span>DevTubes</span>
+            <p className="text-xs font-thin ml-3 mr-4 w-auto">namke-dev</p>
+          </Link>
 
-        {/* Centered SearchBar */}
-        <div className="flex items-center w-full">
-          <div className="mx-auto w-full">
-            <SearchBar />
+          {/* Centered SearchBar */}
+          <div className="flex items-center w-full">
+            <div className="mx-auto w-full">
+              <SearchBar />
+            </div>
           </div>
         </div>
       </div>
-      <LoadingBar isLoading={isLoading}></LoadingBar>
-    </div>
+    </>
   );
 };
 
