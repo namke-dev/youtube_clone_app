@@ -28,7 +28,7 @@ const ChannelDetail = () => {
         setChannelDetail(channelData?.items[0]);
 
         const VideosData = await fetchFromApi(
-          `search?channelId=${id}&part=snippet&order=date`
+          `search?channelId=${id}&part=snippet&order=date&maxResults=48`
         );
         setChannelVideos(VideosData.items);
       } catch (error) {
