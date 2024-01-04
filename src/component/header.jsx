@@ -18,9 +18,9 @@ const Header = () => {
           fixed
           flex items-center
           mt-1.5
-          ml-3
+          ml-[5vw]
           p-3
-          w-[97vw]
+          w-[90vw]
           backdrop-blur-sm
           rounded-full 
           shadow
