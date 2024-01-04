@@ -96,22 +96,23 @@ const HomePage = () => {
         md:mx-3
         md:pt-20
         md:mr-5
-        md:mt-0
-
-        min-w-[10rem]
-        
+        md:mt-0        
         mt-20
         mb-2 mx-2
         
-        h-auto 
+        
+        h-auto
         md:h-[100vh]
+
         w-[100vw]
+        md:w-auto
 
         md:overflow-y-auto
-        md:overflow-visible
+        overflow-x-auto
 
+        md:overflow-visible
         overflow-hidden
-        overflow-x-auto`}
+        `}
       >
         <SideBar
           selectedCategory={selectedCategory}
@@ -128,12 +129,15 @@ const HomePage = () => {
           lg:px-30
           xl:px-1
           2xl:px-1
-
           md:pt-20
-          overflow-y-scroll
           
-          h-[100vh] 
-          flex-wrap 
+          md:overflow-y-scroll
+          
+          md:h-[100vh] 
+          h-auto
+          
+          flex flex-wrap 
+          md:w-full
           "
       >
         {window.innerWidth > 768 ? (

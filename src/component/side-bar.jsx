@@ -20,13 +20,12 @@ const SideBar = ({ selectedCategory, setSelectedCategory }) => (
           rounded-xl
 
           text-gray-600
-          hover:bg-sky-200
+          hover:bg-gray-100
           hover:text-gray-800
 
           items-center
           justify-center
           transition-all
-          flex
           
           md:mt-3 
           mt-0
@@ -35,16 +34,20 @@ const SideBar = ({ selectedCategory, setSelectedCategory }) => (
           md:px-3
           px-1
           mb-1
-          
           md:ml-0
-          mr-4
-          min-w-[100px]
+          md:mr-7
+          
+          flex
+          flex-col
+          flex-wrap
+
+
+
           md:flex-row
           md:justify-start
 
-          flex-col
-          flex-wrap
-          w-full
+          min-w-[100px]
+          md:w-[9rem]
         ${
           category.name === selectedCategory
             ? "text-pink-800  shadow-inner shadow-gray-300"
