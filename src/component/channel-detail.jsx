@@ -38,8 +38,9 @@ const ChannelDetail = () => {
   }, [id]);
 
   return (
-    <div className="overflow-y h-[100vh] ">
-      <div className="mb-5 mt-3 py-5">
+    <div className="overflow-y h-[100vh]">
+      <div>..</div>
+      <div className="mb-5 py-5 mt-12">
         <ChannelCard channelDetail={channelDetail}></ChannelCard>
       </div>
 

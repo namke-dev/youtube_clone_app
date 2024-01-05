@@ -28,7 +28,7 @@ const HomePage = () => {
   }, [selectedCategory]);
 
   // Fetch more data when scrolling to the end
-  const handleScroll = async () => {
+  const handleScrollLargeDivice = async () => {
     console.log("Start Handle scroll");
 
     const feedContainer = feedContainerRef.current;
@@ -47,11 +47,11 @@ const HomePage = () => {
   useEffect(() => {
     // Attach the scroll event listener
     const feedContainer = feedContainerRef.current;
-    feedContainer.addEventListener("scroll", handleScroll);
+    feedContainer.addEventListener("scroll", handleScrollLargeDivice);
 
     // Clean up the event listener when the component is unmounted
     return () => {
-      feedContainer.removeEventListener("scroll", handleScroll);
+      feedContainer.removeEventListener("scroll", handleScrollLargeDivice);
     };
   }, [videos, nextpageToken]);
 
