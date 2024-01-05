@@ -7,7 +7,7 @@ export const LoadingBar = ({ isLoading }) => {
         fixed
         transition-all 
         duration-500 !z-50
-        h-1 bg-red-800 opacity-90
+        h-0.5 bg-blue-900 opacity-90
       ${isLoading ? "w-full" : "w-0"} `}
     ></div>
   );
