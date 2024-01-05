@@ -26,7 +26,7 @@ const VideoCard = ({ video }) => {
     mb-0 md:mb-0 mt-3 md:mt-0
     min-w-[280px] 
     flex flex-col
-
+    
     border border-gray-200
     shadow-gray-200 shadow-sm
     !rounded-2xl
@@ -71,7 +71,7 @@ const VideoCard = ({ video }) => {
         </div>
 
         {/* Channel info Section */}
-        <div className="px-4 pb-3 pt-3 flex items-end">
+        <div className="px-4 pb-3 pt-3 items-end">
           {/* channel title */}
           <a
             href={
@@ -79,7 +79,7 @@ const VideoCard = ({ video }) => {
                 ? `/channel/${snippet?.channelId}`
                 : demoChannelUrl
             }
-            className="text-sm md:text-sm text-gray-600 font-bold "
+            className="text-sm md:text-sm text-gray-600 font-bold justify-self-end"
           >
             {snippet?.channelTitle || demoChannelTitle}
           </a>
