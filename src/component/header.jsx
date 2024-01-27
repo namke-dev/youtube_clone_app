@@ -21,7 +21,7 @@ const Header = () => {
           ml-[7vw]
           p-3
           w-[86vw]
-          backdrop-blur-xl
+          bg-white/80
           rounded-full 
           shadow
           z-50 
