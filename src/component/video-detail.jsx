@@ -91,9 +91,9 @@ const VideoDetail = () => {
       : description;
 
   return (
-    <div className="flex flex-col lg:flex-row pb-12">
+    <div className="flex flex-col lg:flex-row pb-12 md:pt-16">
       <div>..</div>
-      <div className="flex-1 pt-8 md:pt-16">
+      <div className="flex-1">
         {/* First box */}
         <div className="mt-8 flex flex-col items-center md:w-85% lg:mr-4 lg:ml-14 mx-1">
           {/* Video Player */}
@@ -205,7 +205,7 @@ const VideoDetail = () => {
       {/* Related video*/}
       <div
         className="justify-center items-center lg:h-[85vh] lg:overflow-y-auto
-        lg:w-[29.5%] !xl:pl-8 md:mt-8  md:pt-16"
+        lg:w-[29.5%] !xl:pl-8 md:mt-8"
       >
         {/* Button to show related videos */}
         {!isShowRelatedVideos && (
