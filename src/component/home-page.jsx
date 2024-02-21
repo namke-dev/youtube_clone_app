@@ -140,7 +140,7 @@ const HomePage = () => {
         md:mx-2
         md:pr-3
         md:pt-36
-        pt-20
+        pt-24
         mb-2
         
         h-auto
@@ -178,6 +178,7 @@ const HomePage = () => {
           md:overflow-y-scroll
           md:h-[100vh] 
           md:w-full
+          
           "
       >
         {!isMobile ? (
@@ -188,7 +189,6 @@ const HomePage = () => {
         ) : (
           ""
         )}
-
         <Videos direction={!isMobile ? "row" : "column"} videos={videos} />
       </div>
     </div>
