@@ -21,7 +21,6 @@ export const categories = [
   { name: "Pursuit of Wonder", icon: <PodcastsIcon /> },
   { name: "Rich Roll", icon: <PodcastsIcon /> },
   { name: "The Diary Of CEO", icon: <PodcastsIcon /> },
-  { name: "Stanford Graduate Shool of Business", icon: <PodcastsIcon /> },
   { name: "Marques Brownlee", icon: <PodcastsIcon /> },
   { name: "Einzelgänger", icon: <PodcastsIcon /> },
   { name: "TED", icon: <PodcastsIcon /> },

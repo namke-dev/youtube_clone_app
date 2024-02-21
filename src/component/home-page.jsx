@@ -132,19 +132,16 @@ const HomePage = () => {
       flex 
       flex-col 
       md:flex-row 
-      md:fixed md:top-0
-      bg-neutral-50"
+      md:fixed md:top-0"
     >
       {/* Side bar container */}
       <div
         className={`
-        md:mx-3
-        md:pt-28
+        md:mx-2
+        md:pr-3
+        md:pt-36
         pt-20
-        md:mr-5
-        mt-4
         mb-2
-        
         
         h-auto
         md:h-[100vh]
