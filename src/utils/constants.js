@@ -14,9 +14,7 @@ export const logo = window.location.origin + "/logo.png";
 export const categories = [
   { name: "Kurzgesagt", icon: <PodcastsIcon /> },
   { name: "Abmbient Techno", icon: <MusicVideoIcon /> },
-
   { name: "Big think", icon: <PodcastsIcon /> },
-
   { name: "Andrew Huberman", icon: <PodcastsIcon /> },
   { name: "David Goggins", icon: <PodcastsIcon /> },
   { name: "Jordan B Peterson", icon: <PodcastsIcon /> },

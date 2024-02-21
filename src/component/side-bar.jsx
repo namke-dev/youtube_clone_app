@@ -8,6 +8,7 @@ const SideBar = ({ selectedCategory, setSelectedCategory }) => (
     flex-row
     md:flex-col 
     md:my-1
+    pb-32
     "
   >
     {categories.map((category) => (
@@ -50,24 +51,15 @@ const SideBar = ({ selectedCategory, setSelectedCategory }) => (
           md:w-[9rem]
         ${
           category.name === selectedCategory
-            ? "text-pink-800  shadow-inner shadow-gray-300"
-            : ""
+            ? "text-pink-700  shadow-inner shadow-gray-300"
+            : "shadow-sm shadow-gray-300"
         }`}
         onClick={() => setSelectedCategory(category.name)}
         key={category.name}
       >
-        {window.innerWidth >= 768 ? (
-          <span
-            className={`flex mr-2  ${
-              category.name === selectedCategory ? "text-red-600" : ""
-            }`}
-          >
-            {category.icon}
-          </span>
-        ) : (
-          ""
-        )}
-        <span className="flex pt-[0.5]">{category.name}</span>
+        <span className="flex pt-[0.5] text-left font-bold">
+          {category.name}
+        </span>
       </button>
     ))}
   </div>

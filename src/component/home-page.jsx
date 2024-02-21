@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { useLoading } from "../context/loading-context";
 
 const HomePage = () => {
-  const [selectedCategory, setSelectedCategory] = useState("Conan");
+  const [selectedCategory, setSelectedCategory] = useState("Kurzgesagt");
   const [videos, setVideos] = useState([]);
   const [nextpageToken, setNextPageToken] = useState("");
 
@@ -132,7 +132,8 @@ const HomePage = () => {
       flex 
       flex-col 
       md:flex-row 
-      md:fixed md:top-0"
+      md:fixed md:top-0
+      bg-neutral-50"
     >
       {/* Side bar container */}
       <div
@@ -183,8 +184,9 @@ const HomePage = () => {
           "
       >
         {!isMobile ? (
-          <p className="text-gray-700 font-bold md:mt-2 mb-2 md:mb-5 text-3xl">
-            {searchTerm} <span className="text-red-800"> videos</span>
+          <p className="text-pink-700 font-bold md:mt-2 mb-2 md:mb-5 text-3xl">
+            <span className="text-gray-500"> Search term: </span>
+            {searchTerm}
           </p>
         ) : (
           ""
