@@ -12,27 +12,24 @@ import CodeIcon from "@mui/icons-material/Code";
 export const logo = window.location.origin + "/logo.png";
 
 export const categories = [
-  { name: "Conan", icon: <LiveTvIcon /> },
-  { name: "Thắng", icon: <MusicNoteIcon /> },
-  { name: "Ngọt", icon: <MusicNoteIcon /> },
-  { name: "City Pop", icon: <MusicVideoIcon /> },
-  { name: "Làm Bánh", icon: <MicrowaveIcon /> },
-  { name: "Doraemon", icon: <LiveTvIcon /> },
-  { name: "Podcast", icon: <PodcastsIcon /> },
-  { name: "Markiplier", icon: <VideoLibraryIcon /> },
-  { name: "Ghibli", icon: <MusicNoteIcon /> },
-  { name: "Horror Game", icon: <SportsEsportsIcon /> },
-  { name: "ASP.NET", icon: <DeveloperModeIcon /> },
-  { name: "Indie", icon: <MusicVideoIcon /> },
-  { name: "Asmr", icon: <GraphicEqIcon /> },
-  { name: "Cozy", icon: <MusicVideoIcon /> },
-  { name: "Rain sound", icon: <MusicVideoIcon /> },
-  { name: "JSMaster", icon: <CodeIcon /> },
-  { name: "React", icon: <CodeIcon /> },
-  { name: "Redux", icon: <CodeIcon /> },
-  { name: "Microservice", icon: <CodeIcon /> },
-  { name: "JavaScript", icon: <CodeIcon /> },
-  { name: ".Net", icon: <CodeIcon /> },
+  { name: "Kurzgesagt", icon: <PodcastsIcon /> },
+  { name: "Abmbient Techno", icon: <MusicVideoIcon /> },
+
+  { name: "Big think", icon: <PodcastsIcon /> },
+
+  { name: "Andrew Huberman", icon: <PodcastsIcon /> },
+  { name: "David Goggins", icon: <PodcastsIcon /> },
+  { name: "Jordan B Peterson", icon: <PodcastsIcon /> },
+  { name: "Pursuit of Wonder", icon: <PodcastsIcon /> },
+  { name: "Rich Roll", icon: <PodcastsIcon /> },
+  { name: "The Diary Of CEO", icon: <PodcastsIcon /> },
+  { name: "Stanford Graduate Shool of Business", icon: <PodcastsIcon /> },
+  { name: "Marques Brownlee", icon: <PodcastsIcon /> },
+  { name: "Einzelgänger", icon: <PodcastsIcon /> },
+  { name: "TED", icon: <PodcastsIcon /> },
+  { name: "TED x Talk", icon: <PodcastsIcon /> },
+  { name: "Veritasium", icon: <PodcastsIcon /> },
+  { name: "Oddly Normal", icon: <PodcastsIcon /> },
 ];
 
 export const demoThumbnailUrl = "https://i.ibb.co/G2L2Gwp/API-Course.png";
