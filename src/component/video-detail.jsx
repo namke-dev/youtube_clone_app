@@ -91,8 +91,7 @@ const VideoDetail = () => {
       : description;
 
   return (
-    <div className="flex flex-col lg:flex-row pb-12 md:pt-16">
-      <div>..</div>
+    <div className="flex flex-col lg:flex-row pb-12 md:pt-16 pt-16">
       <div className="flex-1">
         {/* First box */}
         <div className="mt-8 flex flex-col items-center md:w-85% lg:mr-4 lg:ml-14 mx-1">
