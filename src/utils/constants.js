@@ -12,8 +12,9 @@ import CodeIcon from "@mui/icons-material/Code";
 export const logo = window.location.origin + "/logo.png";
 
 export const categories = [
-  { name: "Kurzgesagt", icon: <PodcastsIcon /> },
+  { name: "Kurzgesagt", icon: <LiveTvIcon /> },
   { name: "Abmbient Techno", icon: <MusicVideoIcon /> },
+  { name: "Melodic Techno", icon: <MusicVideoIcon /> },
   { name: "Big think", icon: <PodcastsIcon /> },
   { name: "Andrew Huberman", icon: <PodcastsIcon /> },
   { name: "David Goggins", icon: <PodcastsIcon /> },
