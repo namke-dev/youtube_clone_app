@@ -176,6 +176,7 @@ const HomePage = () => {
           flex flex-wrap 
           
           md:overflow-y-scroll
+          md:custom-scrollbar
           md:h-[100vh] 
           md:w-full
           
