@@ -1,7 +1,8 @@
 @tailwind base;
 @tailwind components;
-@tailwind utilities;
+@tailwind utilities;  
 
+@layer components {
 
   .overflow-hidden::-webkit-scrollbar {
     display: none;
@@ -14,4 +15,24 @@
     margin-bottom: 1rem; /* equivalent to mb-4 */
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); /* equivalent to shadow-md */
   }
+  
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background-color: gray;
+    width: 5px;
+    border-radius: 10px;
+  }
+
+  .custom-scrollbar-dark::-webkit-scrollbar-thumb {
+    background-color: black;
+  }
+  
+}
   
