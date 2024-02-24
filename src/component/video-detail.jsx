@@ -53,6 +53,7 @@ const VideoDetail = () => {
     stopLoading();
     scrollToTop();
   };
+
   useEffect(() => {
     if (!id) return;
     console.log(`Video id: ${id}`);
@@ -100,7 +101,8 @@ const VideoDetail = () => {
       <div
         className="flex-1
         pt-16
-        md:pt-24
+        md:pb-32
+        md:mx-4
         lg:h-[100vh] lg:overflow-y-scroll lg:overflow-hidden
         "
       >
@@ -120,7 +122,9 @@ const VideoDetail = () => {
           </div>
 
           {/* Video Title */}
-          <div className="text-xl font-bold mt-2 text-left w-full">{title}</div>
+          <div className="text-xl md:text-2xl md:mt-5 font-bold mt-2 text-left w-full">
+            {title}
+          </div>
 
           {/* Channel Details and Video Stats */}
           <div className="flex justify-between mt-2 w-full material-box">
@@ -237,7 +241,7 @@ const VideoDetail = () => {
           <>
             <div
               className="justify-center items-center mt-2 px-3 lg:mt-0
-          text-lg md:text-xl font-semibold pb-3 text-gray-500"
+              text-2xl font-semibold pb-3 text-gray-700"
             >
               Related video
             </div>

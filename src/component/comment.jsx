@@ -45,16 +45,16 @@ const Comment = ({ commentData }) => {
           />
           {likeCount > 0 && (
             <div>
-              <span className="align-middle">
-                {parseInt(likeCount).toLocaleString()}
-              </span>
               <ThumbUpIcon
                 style={{
                   fontSize: "16px",
-                  marginLeft: "4px",
+                  marginRight: "4px",
                   marginTop: "1px",
                 }}
               />
+              <span className="align-middle text-sm text-gray-600">
+                {parseInt(likeCount).toLocaleString()}
+              </span>
             </div>
           )}
         </div>
