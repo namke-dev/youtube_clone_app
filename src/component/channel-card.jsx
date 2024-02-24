@@ -8,10 +8,10 @@ const ChannelCard = ({ channelDetail, direction }) => {
 
   return (
     <div
-      className={`flex ${direction === "row" ? "sm:w-[300px]" : "w-11/12"} 
-      py-5
+      className={`flex ${direction === "row" ? "sm:w-[310px]" : "w-11/12"} 
+      p-3
       mx-auto mb-0 
-      md:mb-0 mt-3 
+      md:mb-5 mt-3 
       md:mt-0 
       items-center
       border border-gray-200
@@ -35,9 +35,9 @@ const ChannelCard = ({ channelDetail, direction }) => {
             shadow-gray-200 !shadow-md
         "
         />
-        <p className="text-xl font-semibold mb-3">
+        <p className="text-lg font-bold text-gray-600">
           {snippet?.title}
-          <CheckCircle className="text-gray-500 text-sm" />
+          <CheckCircle className="text-gray-500 ml-1" />
         </p>
 
         {statistics?.subscriberCount && (
