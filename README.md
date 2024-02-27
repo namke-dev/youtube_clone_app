@@ -1,6 +1,6 @@
 # Dev Tubes - Ad-Free Video Sharing Platform
 
-**Demo:** [Dev Tubes](https://dev-tubes.vercel.app)
+**Demo Dev Tubes:** [DevTube.online](https://devtube.online)
 
 **Project Completion:** Late 2023
 
