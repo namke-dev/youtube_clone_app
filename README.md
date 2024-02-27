@@ -1,6 +1,6 @@
 # Dev Tubes - Ad-Free Video Sharing Platform
 
-**Demo Dev Tubes:** [DevTube.online](https://devtube.online)
+**Demo Dev Tubes:** [www.devtube.online](https://www.devtube.online/)
 
 **Project Completion:** Late 2023
 
