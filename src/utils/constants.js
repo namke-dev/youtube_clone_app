@@ -13,21 +13,21 @@ export const logo = window.location.origin + "/logo.png";
 
 export const categories = [
   { name: "Kurzgesagt", icon: <LiveTvIcon /> },
-  { name: "Abmbient Techno", icon: <MusicVideoIcon /> },
-  { name: "Melodic Techno", icon: <MusicVideoIcon /> },
   { name: "Big think", icon: <PodcastsIcon /> },
   { name: "Andrew Huberman", icon: <PodcastsIcon /> },
   { name: "David Goggins", icon: <PodcastsIcon /> },
   { name: "Jordan B Peterson", icon: <PodcastsIcon /> },
   { name: "Pursuit of Wonder", icon: <PodcastsIcon /> },
-  { name: "Rich Roll", icon: <PodcastsIcon /> },
   { name: "The Diary Of CEO", icon: <PodcastsIcon /> },
+  { name: "Rich Roll", icon: <PodcastsIcon /> },
   { name: "Marques Brownlee", icon: <PodcastsIcon /> },
   { name: "Einzelgänger", icon: <PodcastsIcon /> },
   { name: "TED", icon: <PodcastsIcon /> },
   { name: "TED x Talk", icon: <PodcastsIcon /> },
   { name: "Veritasium", icon: <PodcastsIcon /> },
   { name: "Oddly Normal", icon: <PodcastsIcon /> },
+  { name: "Abmbient Techno", icon: <MusicVideoIcon /> },
+  { name: "Melodic Techno", icon: <MusicVideoIcon /> },
 ];
 
 export const demoThumbnailUrl = "https://i.ibb.co/G2L2Gwp/API-Course.png";
