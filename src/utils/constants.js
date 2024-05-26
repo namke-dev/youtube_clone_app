@@ -28,6 +28,9 @@ export const categories = [
   { name: "Oddly Normal", icon: <PodcastsIcon /> },
   { name: "Abmbient Techno", icon: <MusicVideoIcon /> },
   { name: "Melodic Techno", icon: <MusicVideoIcon /> },
+  { name: "Ben Böhmer", icon: <MusicVideoIcon /> },
+  { name: "Lane 8", icon: <MusicVideoIcon /> },
+  { name: "This Never Happened", icon: <MusicVideoIcon /> },
 ];
 
 export const demoThumbnailUrl = "https://i.ibb.co/G2L2Gwp/API-Course.png";
