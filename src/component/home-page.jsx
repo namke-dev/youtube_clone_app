@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { useLoading } from "../context/loading-context";
 
 const HomePage = () => {
-  const [selectedCategory, setSelectedCategory] = useState("Kurzgesagt");
+  const [selectedCategory, setSelectedCategory] = useState("Vox");
   const [videos, setVideos] = useState([]);
   const [nextpageToken, setNextPageToken] = useState("");
 
@@ -188,7 +188,6 @@ const HomePage = () => {
         >
           {!isMobile ? (
             <p className="text-pink-700 font-bold md:mt-2 mb-2 md:mb-5 text-3xl">
-              <span className="text-gray-500"> Search term: </span>
               {searchTerm}
             </p>
           ) : (
