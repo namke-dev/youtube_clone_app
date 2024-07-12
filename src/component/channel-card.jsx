@@ -16,8 +16,8 @@ const ChannelCard = ({ channelDetail, direction }) => {
       items-center
       border border-gray-200
       shadow-gray-200 shadow-sm
-      !rounded-2xl
-      bg-white
+      rounded-sm
+      bg-gray-50
       `}
     >
       <Link

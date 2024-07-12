@@ -9,19 +9,18 @@ const Header = () => {
   const { isLoading } = useLoading();
 
   return (
-    <>
+    <div className="w-full flex justify-center">
       <LoadingBar isLoading={isLoading} />
-
-      {/* Header container */}
       <div
         className="
           fixed
           flex items-center
           mt-1.5
-          ml-[7vw]
           p-3
+          
           w-[86vw]
-          bg-white/80
+          max-w-[1000px]
+          bg-gray-200/85
           rounded-full 
           shadow
           z-50 
@@ -46,7 +45,7 @@ const Header = () => {
           <SearchBar />
         </div>
       </div>
-    </>
+    </div>
   );
 };
 

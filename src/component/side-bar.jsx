@@ -17,14 +17,14 @@ const SideBar = ({ selectedCategory, setSelectedCategory }) => (
       <button
         className={`
           group
-          border-gray-200 border-b
+          border-gray-300 border-b
           font-semibold
           text-sm
-          rounded-xl
+          rounded-sm
 
-          text-gray-600
-          hover:bg-gray-100
-          hover:text-gray-800
+          text-gray-800
+          bg-gray-50
+          hover:bg-gray-200
 
           items-center
           justify-center
@@ -48,9 +48,7 @@ const SideBar = ({ selectedCategory, setSelectedCategory }) => (
           min-w-[100px]
           md:w-[11.5rem]
         ${
-          category.name === selectedCategory
-            ? "text-pink-700  shadow-inner shadow-gray-300"
-            : "shadow-sm shadow-gray-300"
+          category.name === selectedCategory ? "text-pink-700 bg-gray-300" : ""
         }`}
         onClick={() => setSelectedCategory(category.name)}
         key={category.name}

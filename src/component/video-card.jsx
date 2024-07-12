@@ -29,8 +29,8 @@ const VideoCard = ({ video }) => {
       
       border border-gray-200
       shadow-gray-200 shadow-sm
-      !rounded-2xl
-      bg-white
+      rounded-sm
+      bg-gray-50
     `}
     >
       <Link to={videoId ? `/video/${videoId}` : demoVideoUrl}>
@@ -41,7 +41,7 @@ const VideoCard = ({ video }) => {
               : demoThumbnailUrl
           }
           alt={snippet?.title}
-          className="aspect-video rounded-t-xl"
+          className="aspect-video rounded-t-sm"
         />
       </Link>
 

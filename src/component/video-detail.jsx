@@ -54,22 +54,6 @@ const VideoDetail = () => {
     scrollToTop();
   };
 
-  useEffect(() => {
-    if (!id) return;
-    console.log(`Video id: ${id}`);
-    fetchData();
-    fetchRelatedVideos();
-  }, [id]);
-
-  if (!videoDetail) {
-    return "";
-  }
-
-  const {
-    snippet: { title, channelId, channelTitle, description, publishedAt },
-    statistics: { viewCount, likeCount },
-  } = videoDetail;
-
   // Load comment
   const fetchComments = async () => {
     startLoading();
@@ -86,6 +70,23 @@ const VideoDetail = () => {
     stopLoading();
   };
 
+  useEffect(() => {
+    if (!id) return;
+    console.log(`Video id: ${id}`);
+    fetchData();
+    fetchRelatedVideos();
+    fetchComments();
+  }, [id]);
+
+  if (!videoDetail) {
+    return "";
+  }
+
+  const {
+    snippet: { title, channelId, channelTitle, description, publishedAt },
+    statistics: { viewCount, likeCount },
+  } = videoDetail;
+
   const truncatedDescription =
     description && !isDescriptionExpanded
       ? description.split(" ").slice(0, 50).join(" ") + "..."
@@ -95,7 +96,9 @@ const VideoDetail = () => {
     <div
       className="flex flex-col 
       lg:flex-row 
-      h-[100%]"
+      h-[100%]
+      max-w-[1600px]
+      m-auto"
     >
       {/* First box */}
       <div
@@ -175,8 +178,9 @@ const VideoDetail = () => {
 
           {description && (
             <div
-              className="text-gray-700 mt-2 whitespace-pre-line 
-              material-box 
+              className="text-gray-700 bg-gray-100 p-3 
+              rounded-sm mt-2 
+              whitespace-pre-line 
               text-sm w-full
               "
             >
@@ -198,9 +202,9 @@ const VideoDetail = () => {
           {/* {Comments} */}
           <div
             className="text-gray-700 my-2 whitespace-pre-line 
-              material-box 
               text-md w-full
-              "
+              bg-gray-100 p-3 
+              rounded-sm mt-2"
           >
             {/* Show comments btn */}
             {!isShowComments && (
@@ -238,18 +242,10 @@ const VideoDetail = () => {
         )}
 
         {isShowRelatedVideos && (
-          <>
-            <div
-              className="justify-center items-center mt-2 px-3 lg:mt-0
-              text-2xl font-semibold pb-3 text-gray-700"
-            >
-              Related video
-            </div>
-            <Videos
-              direction={window.innerWidth >= 768 ? "column" : "row"}
-              videos={relatedVideos}
-            />
-          </>
+          <Videos
+            direction={window.innerWidth >= 768 ? "column" : "row"}
+            videos={relatedVideos}
+          />
         )}
       </div>
     </div>

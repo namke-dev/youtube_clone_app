@@ -127,16 +127,20 @@ const HomePage = () => {
   }, [videos, nextpageToken]);
 
   return (
-    <div
-      className="
+    <div className="w-full h-full flex justify-center">
+      <div
+        className="
       flex 
       flex-col 
+      w-full
+      justify-between
       md:flex-row 
-      md:fixed md:top-0"
-    >
-      {/* Side bar container */}
-      <div
-        className={`
+      md:fixed md:top-0
+      max-w-[1600px]"
+      >
+        {/* Side bar container */}
+        <div
+          className={`
         md:mx-2
         md:pr-3
         md:pt-36
@@ -155,17 +159,17 @@ const HomePage = () => {
         md:overflow-visible
         overflow-hidden
         `}
-      >
-        <SideBar
-          selectedCategory={selectedCategory}
-          setSelectedCategory={setSelectedCategory}
-        />
-      </div>
+        >
+          <SideBar
+            selectedCategory={selectedCategory}
+            setSelectedCategory={setSelectedCategory}
+          />
+        </div>
 
-      {/* Feed container */}
-      <div
-        ref={feedContainerRef}
-        className="
+        {/* Feed container */}
+        <div
+          ref={feedContainerRef}
+          className="
           sm:px-1 
           md:px-1
           lg:px-30
@@ -181,16 +185,17 @@ const HomePage = () => {
           md:w-full
           
           "
-      >
-        {!isMobile ? (
-          <p className="text-pink-700 font-bold md:mt-2 mb-2 md:mb-5 text-3xl">
-            <span className="text-gray-500"> Search term: </span>
-            {searchTerm}
-          </p>
-        ) : (
-          ""
-        )}
-        <Videos direction={!isMobile ? "row" : "column"} videos={videos} />
+        >
+          {!isMobile ? (
+            <p className="text-pink-700 font-bold md:mt-2 mb-2 md:mb-5 text-3xl">
+              <span className="text-gray-500"> Search term: </span>
+              {searchTerm}
+            </p>
+          ) : (
+            ""
+          )}
+          <Videos direction={!isMobile ? "row" : "column"} videos={videos} />
+        </div>
       </div>
     </div>
   );
