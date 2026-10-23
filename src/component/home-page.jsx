@@ -6,12 +6,19 @@ import { topics, Icon, Status, Thumbnail } from "./ui";
 import SideBar from "./side-bar";
 import Videos from "./videos";
 import VideoLink from "./video-link";
+import { useAccount } from "../context/account-context";
+import { favoriteTopicBar, forYouQuery, interestScore } from "../utils/personalization";
 export default function HomePage() {
   const { searchTerm, topic } = useParams();
   const location = useLocation();
+  const account = useAccount();
   const selected =
     topics.find((t) => t.name.toLowerCase() === topic) || topics[0];
-  const query = searchTerm || selected.query;
+  const isForYou = !searchTerm && selected.name === topics[0].name;
+  const query = searchTerm || (isForYou ? forYouQuery(account.favorites) : selected.query);
+  const favoriteKey = JSON.stringify(account.favorites);
+  const userId = account.user?.id || null;
+  const visibleTopics = favoriteTopicBar(account.favorites, topics, topic ? selected.name : undefined);
   const [videos, setVideos] = useState([]);
   const [hasMore, setHasMore] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -40,7 +47,11 @@ export default function HomePage() {
     setVideos([]);
     setHasMore(false);
     setError(null);
-    discovery.discover(query, { includeChannels, watchedIds: new Set(JSON.parse(history)) })
+    if (account.loading) return () => { generation.current = current + 1; };
+    const personalInterest = isForYou
+      ? item => interestScore(item, JSON.parse(favoriteKey), readLibrary("history"))
+      : () => 0;
+    discovery.discover(query, { includeChannels, watchedIds: new Set(JSON.parse(history)), personalInterest })
       .then((data) => {
         if (current === generation.current) {
           setVideos(data.items);
@@ -54,7 +65,7 @@ export default function HomePage() {
         if (current === generation.current) setLoading(false);
       });
     return () => { generation.current = current + 1; };
-  }, [query, includeChannels, attempt, location.key, history]);
+  }, [query, includeChannels, attempt, location.key, history, account.loading, favoriteKey, userId, isForYou]);
   async function loadMore() {
     if (busy.current || !hasMore) return;
     busy.current = true;
@@ -67,6 +78,7 @@ export default function HomePage() {
         watchedIds: new Set(readLibrary("history").map(videoId)),
         loadMore: true,
         previous: videos,
+        personalInterest: isForYou ? item => interestScore(item, account.favorites, readLibrary("history")) : () => 0,
       });
       if (current !== generation.current) return;
       setVideos(data.items);
@@ -110,14 +122,16 @@ export default function HomePage() {
           </span>
         </div>
         <nav className="chips" aria-label="Video topics">
-          {topics.map((t) => (
-            <Link
+          {visibleTopics.map((t, index) => (
+            <React.Fragment key={t.name}><Link
               className={`chip ${!searchTerm && selected.name === t.name ? "selected" : ""}`}
               to={t.name === "For you" ? "/" : `/topic/${t.name.toLowerCase()}`}
-              key={t.name}
+              aria-current={!searchTerm && selected.name === t.name ? "page" : undefined}
             >
               {t.name}
             </Link>
+            {index === 0 && <Link className="chip topic-manage" to="/account" aria-label="Your account and favorite topics"><Icon name="account"/><span>Your topics</span></Link>}
+            </React.Fragment>
           ))}
         </nav>
         {home && featured && (

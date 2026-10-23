@@ -2,8 +2,10 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { readLibrary, clearLibrary, removeVideo } from "../utils/library";
 import SideBar from "./side-bar";
+import { useAccount } from "../context/account-context";
 import VideoCard from "./video-card";
 export default function LibraryPage({ type }) {
+  const { loading } = useAccount();
   const [items, setItems] = useState(() => readLibrary(type));
   const [notice, setNotice] = useState("");
   useEffect(() => {
@@ -26,6 +28,7 @@ export default function LibraryPage({ type }) {
         setNotice("Could not clear storage. Please check browser permissions.");
     }
   }
+    if (loading) return <div className="app-layout"><SideBar/><main id="main" className="feed"><p role="status">Loading your library…</p></main></div>;
   return (
     <div className="app-layout">
       <SideBar />

@@ -19,6 +19,7 @@ export default function SideBar() {
             </NavLink>
           ))}
         </nav>
+        <Link className="account-link" to="/account"><Icon name="account"/>Your account & topics</Link>
         <p className="eyebrow topic-label">Explore topics</p>
         <div className="topic-links">
           {topics.slice(1).map((t) => (

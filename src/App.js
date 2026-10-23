@@ -11,6 +11,8 @@ import HomePage from "./component/home-page";
 import VideoDetail from "./component/video-detail";
 import ChannelDetail from "./component/channel-detail";
 import LibraryPage from "./component/library-page";
+import AccountPage from "./component/account-page";
+import { AccountProvider } from "./context/account-context";
 function ScrollReset() {
   const { pathname } = useLocation();
   useEffect(() => {
@@ -21,7 +23,7 @@ function ScrollReset() {
 }
 export default function App() {
   return (
-    <BrowserRouter>
+    <AccountProvider><BrowserRouter>
       <a className="skip-link" href="#main">
         Skip to content
       </a>
@@ -34,6 +36,7 @@ export default function App() {
         <Route path="/search/:searchTerm" element={<HomePage />} />
         <Route path="/video/:id" element={<VideoDetail />} />
         <Route path="/channel/:id" element={<ChannelDetail />} />
+        <Route path="/account" element={<AccountPage />} />
         <Route path="/saved" element={<LibraryPage type="saved" />} />
         <Route path="/history" element={<LibraryPage type="history" />} />
         <Route
@@ -48,6 +51,6 @@ export default function App() {
           }
         />
       </Routes>
-    </BrowserRouter>
+    </BrowserRouter></AccountProvider>
   );
 }

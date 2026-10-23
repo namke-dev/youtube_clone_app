@@ -9,6 +9,7 @@ import {
   recordHistory,
 } from "../utils/library";
 import Videos from "./videos";
+import { useAccount } from "../context/account-context";
 import { readAutoFullscreen, saveAutoFullscreen, requestVideoFullscreen, isVideoFullscreen, exitVideoFullscreen, isMobilePlayback, isLandscapeVideo, setVideoLandscape } from "../utils/playback";
 import { rankCandidates } from "../utils/discovery";
 let autoplayListenerId = 0;
@@ -48,6 +49,7 @@ export default function VideoDetail() {
   return <VideoContent key={id} id={id} />;
 }
 function VideoContent({ id }) {
+  const { loading: accountLoading } = useAccount();
   const state = useResource(
     `videos?part=snippet,statistics,contentDetails&id=${encodeURIComponent(id)}`,
   );
@@ -161,13 +163,27 @@ function VideoContent({ id }) {
     setExpanded(false);
     setNotice("");
     setPlayerError(false);
-    setSaved(readLibrary("saved").some((v) => v.id === id));
   }, [id]);
+  useEffect(() => {
+    const changed = () => {
+      setSaved(readLibrary("saved").some(v => v.id === id));
+      setNotice("");
+    };
+    changed();
+    window.addEventListener("devtubes-library", changed);
+    window.addEventListener("storage", changed);
+    return () => {
+      window.removeEventListener("devtubes-library", changed);
+      window.removeEventListener("storage", changed);
+    };
+  }, [id, accountLoading]);
   function toggleSave() {
-    const success = saved ? removeVideo("saved", id) : saveVideo(video);
+    if (accountLoading) return;
+    const alreadySaved = readLibrary("saved").some(v => v.id === id);
+    const success = alreadySaved ? removeVideo("saved", id) : saveVideo(video);
     if (success) {
-      setSaved(!saved);
-      setNotice(saved ? "Removed from saved videos." : "Saved on this device.");
+      setSaved(!alreadySaved);
+      setNotice(alreadySaved ? "Removed from saved videos." : "Saved on this device.");
     } else
       setNotice(
         "Your browser could not save this video. Storage may be full or disabled.",
@@ -209,13 +225,13 @@ function VideoContent({ id }) {
               key={id}
               url={`https://www.youtube.com/watch?v=${encodeURIComponent(id)}`}
               controls
-              playing={true}
+              playing={!accountLoading}
               muted={muted}
               onReady={ready}
               playsinline={true}
               width="100%"
               height="100%"
-              onPlay={() => { setPlaybackBlocked(false); recordHistory(video); }}
+              onPlay={() => { setPlaybackBlocked(false); if (!accountLoading) recordHistory(video); }}
               onError={() => setPlayerError(true)}
             />
             {playerReady && (playbackBlocked || muted) && (
@@ -281,6 +297,7 @@ function VideoContent({ id }) {
                 className={`button ${saved ? "primary" : ""}`}
                 onClick={toggleSave}
                 aria-pressed={saved}
+                disabled={accountLoading}
               >
                 {saved ? "Saved" : "Save"}
               </button>

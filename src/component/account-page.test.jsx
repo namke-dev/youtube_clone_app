@@ -1,0 +1,41 @@
+import React from 'react';
+import {createRoot} from 'react-dom/client';
+import {act} from 'react-dom/test-utils';
+import {MemoryRouter,Routes,Route} from 'react-router-dom';
+import axios from 'axios';
+import AccountPage from './account-page';
+import HomePage from './home-page';
+import {AccountProvider} from '../context/account-context';
+jest.mock('axios');
+global.IS_REACT_ACT_ENVIRONMENT=true;
+let container,root,service;
+beforeEach(()=>{
+ localStorage.clear();axios.get.mockReset();
+ axios.get.mockResolvedValue({data:{items:[{id:{videoId:'personal-ai'},snippet:{title:'AI engineering agents',channelId:'ai',thumbnails:{}}}]}});
+ service={configured:false,getSession:async()=>null,subscribe:()=>()=>{},saveFavorites:jest.fn(),signIn:jest.fn()};
+ container=document.createElement('div');document.body.appendChild(container);root=createRoot(container);
+});
+afterEach(()=>{act(()=>root.unmount());container.remove();});
+const flush=callback=>act(async()=>{callback();});
+const mount=()=>flush(()=>root.render(<AccountProvider service={service}><MemoryRouter initialEntries={['/account']}><Routes><Route path="/account" element={<AccountPage/>}/><Route path="/" element={<HomePage/>}/></Routes></MemoryRouter></AccountProvider>));
+test('choosing favorite topics changes For you and its topic bar, and refresh reuses the pool',async()=>{
+ await mount();
+ await flush(()=>[...container.querySelectorAll('button')].find(b=>b.textContent==='AI').click());
+ await flush(()=>[...container.querySelectorAll('button')].find(b=>b.textContent==='Save topics').click());
+ const nav=container.querySelector('nav[aria-label="Video topics"]');
+ expect(nav.textContent).toContain('AI');
+ expect(nav.textContent).not.toContain('Entrepreneurship');
+ expect(container.querySelector('.video-card h3').textContent).toBe('AI engineering agents');
+ const endpoint=new URL(axios.get.mock.calls[0][0],'http://localhost').searchParams.get('endpoint');
+ expect(endpoint).toContain('q=ai%20engineering');
+ await flush(()=>[...container.querySelectorAll('button')].find(b=>b.textContent==='Refresh videos').click());
+ expect(axios.get).toHaveBeenCalledTimes(1);
+ expect(service.saveFavorites).not.toHaveBeenCalled();
+});
+test('Google sign-in errors are visible while guest topic selection remains usable',async()=>{
+ service.configured=true;service.signIn.mockRejectedValue(new Error('Google sign-in failed. Try again.'));
+ await mount();
+ await flush(()=>[...container.querySelectorAll('button')].find(b=>b.textContent==='Continue with Google').click());
+ expect(container.querySelector('[role="alert"]').textContent).toMatch(/Google sign-in failed/);
+ expect([...container.querySelectorAll('button')].find(b=>b.textContent==='AI').disabled).toBe(false);
+});

@@ -244,9 +244,30 @@ const assert = require("node:assert/strict");
   await page.waitForFunction(() => document.documentElement.classList.contains("video-expanded"));
   await page.evaluate(() => history.back());
   await page.waitForFunction(() => !document.documentElement.classList.contains("video-expanded"));
+  // Guest favorites persist, shape For you, and refresh without provider calls.
+  await page.goto("http://127.0.0.1:4173/account");
+  await page.getByRole("heading", {name:"Your favorite topics",exact:true}).waitFor();
+  assert.equal(await page.getByRole("button", {name:"Continue with Google",exact:true}).isVisible(), true);
+  await page.getByRole("button", {name:"AI",exact:true}).click();
+  await page.getByRole("button", {name:"Save topics",exact:true}).click();
+  await page.locator(".video-card").first().waitFor();
+  assert.equal(await page.locator(".chips .chip:not(.topic-manage)").count(), 2);
+  assert.equal(await page.locator(".chips .chip").last().textContent(), "AI");
+  const personalizedCalls = requests.length;
+  await page.getByRole("button", {name:"Refresh videos",exact:true}).click();
+  await page.waitForTimeout(100);
+  assert.equal(requests.length, personalizedCalls);
+  await page.reload();
+  await page.locator(".video-card").first().waitFor();
+  assert.equal(await page.locator(".chips .chip").last().textContent(), "AI");
+  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth > innerWidth),false);
+  await page.screenshot({path:"/tmp/devtubes-personalized-phone.png",fullPage:true});
+  await page.locator('.chips a[href="/account"]').click();
+  assert.equal(await page.getByRole("button", {name:"AI",exact:true}).getAttribute("aria-pressed"),"true");
+  await page.screenshot({path:"/tmp/devtubes-account-phone.png",fullPage:true});
   assert.deepEqual(errors, []);
   console.log(
-    "PASS desktop/mobile layout, Shorts filtering, unsupported fullscreen viewport fallback, manual/automatic fullscreen including related-video navigation, search, pagination deduplication, video actions, comments on demand, related videos, saved persistence/removal, quota/empty states, channel routing; no uncaught browser errors.",
+    "PASS guest topic selection/persistence/personalized refresh without extra requests, desktop/mobile layout, Shorts filtering, unsupported fullscreen viewport fallback, manual/automatic fullscreen including related-video navigation, search, pagination deduplication, video actions, comments on demand, related videos, saved persistence/removal, quota/empty states, channel routing; no uncaught browser errors.",
   );
   await browser.close();
   await new Promise((resolve) => server.close(resolve));

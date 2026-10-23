@@ -172,3 +172,48 @@ test('phone autoplay starts muted, enables sound during a tap, and rotates fulls
     document.documentElement.classList.remove('video-expanded', 'video-landscape');
   }
 });
+
+test('saved button follows library ownership when the account changes on the same video', async () => {
+  const { setLibraryOwner, saveVideo } = require('../utils/library');
+  localStorage.clear();
+  const video = {id:'owner-switch-watch',snippet:{title:'Owner switch',channelId:'a',thumbnails:{}}};
+  setLibraryOwner(null);
+  saveVideo(video);
+  axios.get.mockResolvedValue({data:{items:[video]}});
+  const container=document.createElement('div');document.body.appendChild(container);
+  const root=createRoot(container);
+  try {
+    await act(async()=>root.render(<MemoryRouter initialEntries={['/video/owner-switch-watch']}><Routes><Route path="/video/:id" element={<VideoDetail/>}/></Routes></MemoryRouter>));
+    const savedButton=()=>container.querySelector('.actions button');
+    expect(savedButton().textContent).toBe('Saved');
+    act(()=>setLibraryOwner('different-user'));
+    expect(savedButton().textContent).toBe('Save');
+    act(()=>savedButton().click());
+    expect(readLibrary('saved').map(v=>v.id)).toEqual(['owner-switch-watch']);
+    act(()=>setLibraryOwner(null));
+    expect(savedButton().textContent).toBe('Saved');
+  } finally {act(()=>root.unmount());container.remove();setLibraryOwner(null);}
+});
+
+test('autoplay and saving wait for account restoration without writing guest history', async () => {
+  const {AccountProvider}=require('../context/account-context');
+  localStorage.clear();
+  let restore;
+  const session=new Promise(resolve=>{restore=resolve;});
+  const service={configured:true,getSession:()=>session,subscribe:()=>()=>{},loadFavorites:async()=>[]};
+  const video={id:'pending-owner',snippet:{title:'Pending owner',channelId:'a',thumbnails:{}}};
+  axios.get.mockResolvedValue({data:{items:[video]}});
+  const container=document.createElement('div');document.body.appendChild(container);const root=createRoot(container);
+  try {
+    await act(async()=>root.render(<AccountProvider service={service}><MemoryRouter initialEntries={['/video/pending-owner']}><Routes><Route path="/video/:id" element={<VideoDetail/>}/></Routes></MemoryRouter></AccountProvider>));
+    expect(ReactPlayer.mock.calls.at(-1)[0].playing).toBe(false);
+    expect(container.querySelector('.actions button').disabled).toBe(true);
+    act(()=>ReactPlayer.mock.calls.at(-1)[0].onPlay());
+    expect(readLibrary('history')).toEqual([]);
+    await act(async()=>restore({user:{id:'restored-owner'}}));
+    expect(ReactPlayer.mock.calls.at(-1)[0].playing).toBe(true);
+    act(()=>ReactPlayer.mock.calls.at(-1)[0].onPlay());
+    expect(readLibrary('history').map(v=>v.id)).toEqual(['pending-owner']);
+    expect(localStorage.getItem('devtubes:history')).toBeNull();
+  } finally {act(()=>root.unmount());container.remove();}
+});

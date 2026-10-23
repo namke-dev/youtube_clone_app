@@ -5,6 +5,7 @@ import HistoryOutlined from "@mui/icons-material/HistoryOutlined";
 import BookmarkBorderOutlined from "@mui/icons-material/BookmarkBorderOutlined";
 import SearchOutlined from "@mui/icons-material/SearchOutlined";
 import PlayArrowOutlined from "@mui/icons-material/PlayArrowOutlined";
+import PersonOutlineRounded from "@mui/icons-material/PersonOutlineRounded";
 import ArrowForwardRounded from "@mui/icons-material/ArrowForwardRounded";
 import { fetchFromApi } from "../utils/fetchFromApi";
 export const icons = {
@@ -15,6 +16,7 @@ export const icons = {
   search: SearchOutlined,
   play: PlayArrowOutlined,
   arrow: ArrowForwardRounded,
+  account: PersonOutlineRounded,
 };
 export function Icon({ name, ...props }) {
   const Component = icons[name] || icons.play;
