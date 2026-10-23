@@ -995,6 +995,7 @@ svg.MuiSvgIcon-root {
 .playback-options label { display: flex; align-items: center; gap: 8px; cursor: pointer; }
 .playback-options input { accent-color: #242424; }
 .video-fullscreen:fullscreen { background: #000; }
+.video-expanded .watch-shell .player,
 .video-fullscreen:fullscreen .watch-shell .player {
   position: fixed;
   inset: 0;
@@ -1006,3 +1007,10 @@ svg.MuiSvgIcon-root {
 }
 .player:fullscreen { width: 100vw; height: 100vh; border-radius: 0; background: #000; }
 .player .fullscreen-exit { position: absolute; top: 12px; right: 12px; z-index: 2; }
+
+html.video-expanded, html.video-expanded body { overflow: hidden; }
+.video-expanded .watch-shell .player { height: 100dvh; }
+.player .fullscreen-exit {
+  top: max(12px, env(safe-area-inset-top));
+  right: max(12px, env(safe-area-inset-right));
+}

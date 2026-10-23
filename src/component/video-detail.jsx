@@ -9,7 +9,7 @@ import {
   recordHistory,
 } from "../utils/library";
 import Videos from "./videos";
-import { readAutoFullscreen, saveAutoFullscreen, requestVideoFullscreen } from "../utils/playback";
+import { readAutoFullscreen, saveAutoFullscreen, requestVideoFullscreen, isVideoFullscreen, exitVideoFullscreen } from "../utils/playback";
 import { rankCandidates } from "../utils/discovery";
 function Comments({ id }) {
   const state = useResource(
@@ -38,11 +38,9 @@ export default function VideoDetail() {
   // This wrapper survives watch-to-watch navigation. Cleanup belongs here,
   // rather than in the keyed content that is replaced for each video.
   useEffect(() => () => {
-    if (document.documentElement.classList.contains("video-fullscreen")) {
-      document.documentElement.classList.remove("video-fullscreen");
-      if (document.fullscreenElement && document.exitFullscreen) {
-        void document.exitFullscreen().catch(() => {});
-      }
+    if (document.documentElement.classList.contains("video-fullscreen") ||
+        document.documentElement.classList.contains("video-expanded")) {
+      void exitVideoFullscreen();
     }
   }, []);
   return <VideoContent key={id} id={id} />;
@@ -86,13 +84,22 @@ function VideoContent({ id }) {
   const playerElement = useRef(null);
   useEffect(() => {
     const changed = () => {
-      setFullscreen(Boolean(document.fullscreenElement));
+      setFullscreen(isVideoFullscreen());
       if (!document.fullscreenElement) document.documentElement.classList.remove("video-fullscreen");
     };
-    setFullscreen(Boolean(document.fullscreenElement));
+    setFullscreen(isVideoFullscreen());
+    const keydown = (event) => {
+      if (event.key === "Escape" && document.documentElement.classList.contains("video-expanded")) {
+        void exitVideoFullscreen();
+      }
+    };
     document.addEventListener("fullscreenchange", changed);
+    document.addEventListener("devtubes-fullscreen", changed);
+    document.addEventListener("keydown", keydown);
     return () => {
       document.removeEventListener("fullscreenchange", changed);
+      document.removeEventListener("devtubes-fullscreen", changed);
+      document.removeEventListener("keydown", keydown);
     };
   }, []);
   function changeAutoFullscreen(event) {
@@ -141,6 +148,9 @@ function VideoContent({ id }) {
   if (!video)
     return (
       <main id="main" className="watch-shell">
+        {fullscreen && (
+          <button className="button" onClick={() => { void exitVideoFullscreen(); }}>Exit fullscreen</button>
+        )}
         <Status {...state} empty={!state.loading && !state.error} />
         <Link className="text-link" to="/">
           Back to Discover
@@ -166,7 +176,7 @@ function VideoContent({ id }) {
             />
             {fullscreen && (
               <button className="button fullscreen-exit" onClick={() => {
-                void document.exitFullscreen?.().catch(() => {});
+                void exitVideoFullscreen();
               }}>Exit fullscreen</button>
             )}
           </div>

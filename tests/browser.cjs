@@ -217,9 +217,27 @@ const assert = require("node:assert/strict");
     ),
     false,
   );
+  // Simulate iPhone's missing element Fullscreen API, rather than only resizing Chrome.
+  await page.evaluate(() => {
+    Object.defineProperty(Element.prototype, "requestFullscreen", { configurable: true, value: undefined });
+    document.documentElement.requestFullscreen = undefined;
+  });
+  await page.locator(".video-card .thumbnail").first().click();
+  await page.waitForFunction(() => document.documentElement.classList.contains("video-expanded"));
+  await page.getByRole("button", { name: "Exit fullscreen", exact: true }).waitFor();
+  assert.equal(await page.evaluate(() => {
+    const rect = document.querySelector(".player").getBoundingClientRect();
+    return !document.fullscreenElement && Math.abs(rect.width - innerWidth) < 2 && Math.abs(rect.height - innerHeight) < 2;
+  }), true);
+  await page.getByRole("button", { name: "Exit fullscreen", exact: true }).click();
+  await page.waitForFunction(() => !document.documentElement.classList.contains("video-expanded"));
+  await page.getByRole("button", { name: "Fullscreen", exact: true }).click();
+  await page.waitForFunction(() => document.documentElement.classList.contains("video-expanded"));
+  await page.evaluate(() => history.back());
+  await page.waitForFunction(() => !document.documentElement.classList.contains("video-expanded"));
   assert.deepEqual(errors, []);
   console.log(
-    "PASS desktop/mobile layout, Shorts filtering, manual/automatic fullscreen including related-video navigation, search, pagination deduplication, video actions, comments on demand, related videos, saved persistence/removal, quota/empty states, channel routing; no uncaught browser errors.",
+    "PASS desktop/mobile layout, Shorts filtering, unsupported fullscreen viewport fallback, manual/automatic fullscreen including related-video navigation, search, pagination deduplication, video actions, comments on demand, related videos, saved persistence/removal, quota/empty states, channel routing; no uncaught browser errors.",
   );
   await browser.close();
   await new Promise((resolve) => server.close(resolve));

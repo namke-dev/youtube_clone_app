@@ -92,3 +92,45 @@ test('automatic fullscreen survives navigation from one watch page to a related 
     document.documentElement.classList.remove('video-fullscreen');
   }
 });
+
+
+test('unsupported fullscreen expands the video, offers an exit and restores inline view with Escape', async () => {
+  localStorage.clear();
+  axios.get.mockResolvedValue({ data: { items: [{ id: 'iphone-fallback', snippet: { title: 'iPhone fallback', channelId: 'a', thumbnails: {} } }] } });
+  const container = document.createElement('div');
+  document.body.appendChild(container);
+  const root = createRoot(container);
+  try {
+    await act(async () => root.render(<MemoryRouter initialEntries={['/video/iphone-fallback']}><Routes><Route path="/video/:id" element={<VideoDetail />} /></Routes></MemoryRouter>));
+    await act(async () => [...container.querySelectorAll('button')].find(b => b.textContent === 'Fullscreen').click());
+    expect(document.documentElement.classList.contains('video-expanded')).toBe(true);
+    expect([...container.querySelectorAll('button')].some(b => b.textContent === 'Exit fullscreen')).toBe(true);
+    await act(async () => document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' })));
+    expect(document.documentElement.classList.contains('video-expanded')).toBe(false);
+    expect([...container.querySelectorAll('button')].some(b => b.textContent === 'Exit fullscreen')).toBe(false);
+  } finally {
+    act(() => root.unmount());
+    container.remove();
+    document.documentElement.classList.remove('video-expanded');
+  }
+});
+
+test('expanded playback can be closed even when video metadata fails', async () => {
+  localStorage.clear();
+  document.documentElement.classList.add('video-expanded');
+  axios.get.mockRejectedValue(new Error('offline'));
+  const container = document.createElement('div');
+  document.body.appendChild(container);
+  const root = createRoot(container);
+  try {
+    await act(async () => root.render(<MemoryRouter initialEntries={['/video/iphone-failed-metadata']}><Routes><Route path="/video/:id" element={<VideoDetail />} /></Routes></MemoryRouter>));
+    const exit = [...container.querySelectorAll('button')].find(b => b.textContent === 'Exit fullscreen');
+    expect(exit).toBeDefined();
+    await act(async () => exit.click());
+    expect(document.documentElement.classList.contains('video-expanded')).toBe(false);
+  } finally {
+    act(() => root.unmount());
+    container.remove();
+    document.documentElement.classList.remove('video-expanded');
+  }
+});
