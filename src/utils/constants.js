@@ -9,7 +9,7 @@ import MusicVideoIcon from "@mui/icons-material/MusicVideo";
 import GraphicEqIcon from "@mui/icons-material/GraphicEq";
 import CodeIcon from "@mui/icons-material/Code";
 
-export const logo = window.location.origin + "/logo.png";
+export const logo = window.location.origin + "/logo.svg";
 
 export const categories = [
   { name: "Vox", icon: <PodcastsIcon /> },
