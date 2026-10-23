@@ -9,7 +9,6 @@ const links = [
 ];
 export default function SideBar() {
   return (
-    <>
       <aside className="sidebar">
         <nav aria-label="Main navigation">
           {links.map(([to, label, icon]) => (
@@ -33,6 +32,12 @@ export default function SideBar() {
           <span>A lot more possibility.</span>
         </div>
       </aside>
+
+  );
+}
+
+export function MobileNavigation() {
+  return (
       <nav className="bottom-nav" aria-label="Mobile navigation">
         {links.map(([to, label, icon]) => (
           <NavLink end key={to} to={to}>
@@ -41,6 +46,5 @@ export default function SideBar() {
           </NavLink>
         ))}
       </nav>
-    </>
   );
 }

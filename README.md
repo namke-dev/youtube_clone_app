@@ -68,3 +68,5 @@ npm run test:e2e
 The browser suite starts its own local static server on port 4173. It mocks provider responses and blocks YouTube network access, covering UI behavior without spending API quota. It does not prove live video playback or the current subscription works. Use `CHROMIUM_PATH=/path/to/chromium npm run test:e2e` for a separately installed browser.
 
 The custom-topics migration has been applied to the connected project. Its authenticated update path was checked with 40 custom topics inside a rolled-back transaction, preserving the existing preferences. The security advisor reports a pre-existing [disabled leaked-password check](https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection); Google sign-in does not use app passwords.
+
+The phone glass navigation dock is shared by the app shell and appears once on every page, including video, channel, account and not-found pages. Page content reserves space below it. The dock remains hidden on desktop and is outside the immersive fullscreen video layer.

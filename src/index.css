@@ -1039,6 +1039,9 @@ svg.MuiSvgIcon-root {
   .watch-shell {
     padding: 20px;
   }
+  #main {
+    padding-bottom: calc(112px + env(safe-area-inset-bottom, 0px));
+  }
   .player {
     border-radius: 14px;
   }

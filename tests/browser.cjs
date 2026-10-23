@@ -297,6 +297,21 @@ const assert = require("node:assert/strict");
   await page.getByRole('heading',{name:'C++ / .NET',exact:true}).waitFor();
   assert.equal(await page.locator('.chips .selected').textContent(),'C++ / .NET');
   assert.ok(requests.some(endpoint=>endpoint.includes('q=c%2B%2B%20%2F%20.net')));
+  // The same phone dock belongs to the app shell, including standalone pages.
+  for (const path of ['/video/test0', '/channel/channel1', '/account', '/not-a-page']) {
+    await page.goto('http://127.0.0.1:4173' + path);
+    const dock = page.getByRole('navigation', {name:'Mobile navigation'});
+    await dock.waitFor();
+    assert.equal(await page.locator('.bottom-nav').count(),1);
+    assert.equal(await dock.getByRole('link').count(),4);
+    assert.ok(await page.locator('#main').evaluate(el=>parseFloat(getComputedStyle(el).paddingBottom)) >= 112);
+    const dockBox=await dock.boundingBox();
+    assert.ok(dockBox.x > 0 && dockBox.x+dockBox.width < 390 && dockBox.y+dockBox.height < 844);
+    assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth > innerWidth),false);
+    if(path==='/video/test0') await page.screenshot({path:'/tmp/devtubes-watch-navigation-phone.png',fullPage:true});
+  }
+  await page.setViewportSize({width:1440,height:1100});
+  assert.equal(await page.locator('.bottom-nav').isVisible(),false);
   assert.deepEqual(errors, []);
   console.log(
     "PASS guest topic selection/persistence/personalized refresh without extra requests, desktop/mobile layout, Shorts filtering, unsupported fullscreen viewport fallback, manual/automatic fullscreen including related-video navigation, search, pagination deduplication, video actions, comments on demand, related videos, saved persistence/removal, quota/empty states, channel routing; no uncaught browser errors.",

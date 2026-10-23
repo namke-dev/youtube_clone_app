@@ -7,6 +7,7 @@ import {
   Link,
 } from "react-router-dom";
 import Header from "./component/header";
+import { MobileNavigation } from "./component/side-bar";
 import HomePage from "./component/home-page";
 import VideoDetail from "./component/video-detail";
 import ChannelDetail from "./component/channel-detail";
@@ -51,6 +52,7 @@ export default function App() {
           }
         />
       </Routes>
+      <MobileNavigation />
     </BrowserRouter></AccountProvider>
   );
 }
