@@ -16,7 +16,7 @@ export async function fetchFromApi(endpoint) {
           "The video service returned an unexpected response. Please try again.",
         );
       if (cache.size >= 80) cache.delete(cache.keys().next().value);
-      cache.set(endpoint, { data, expires: Date.now() + TTL });
+      cache.set(endpoint, { data, expires: Date.now() + (endpoint.startsWith("search?") ? 30 * 60 * 1000 : TTL) });
       return data;
     })
     .catch((error) => {

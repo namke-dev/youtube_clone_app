@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Link, useParams, useLocation } from "react-router-dom";
-import { fetchFromApi } from "../utils/fetchFromApi";
-import { videoId } from "../utils/library";
+import { discovery } from "../utils/discovery";
+import { readLibrary, videoId } from "../utils/library";
 import { topics, Icon, Status, Thumbnail } from "./ui";
 import SideBar from "./side-bar";
 import Videos from "./videos";
@@ -12,29 +12,38 @@ export default function HomePage() {
     topics.find((t) => t.name.toLowerCase() === topic) || topics[0];
   const query = searchTerm || selected.query;
   const [videos, setVideos] = useState([]);
-  const [token, setToken] = useState("");
+  const [hasMore, setHasMore] = useState(false);
   const [loading, setLoading] = useState(true);
   const [more, setMore] = useState(false);
   const [error, setError] = useState(null);
   const [attempt, setAttempt] = useState(0);
   const generation = useRef(0);
   const busy = useRef(false);
-  const resultKey = (item) =>
-    item.id?.channelId ? `channel:${item.id.channelId}` : videoId(item);
-  const endpoint = `search?part=snippet,id&type=${searchTerm ? "video,channel" : "video"}&maxResults=24&q=${encodeURIComponent(query)}`;
+  const includeChannels = Boolean(searchTerm);
+  const historyKey = () => JSON.stringify(readLibrary("history").map(videoId));
+  const [history, setHistory] = useState(historyKey);
+  useEffect(() => {
+    const changed = () => setHistory(historyKey());
+    window.addEventListener("devtubes-library", changed);
+    window.addEventListener("storage", changed);
+    return () => {
+      window.removeEventListener("devtubes-library", changed);
+      window.removeEventListener("storage", changed);
+    };
+  }, []);
   useEffect(() => {
     const current = ++generation.current;
     busy.current = false;
     setMore(false);
     setLoading(true);
     setVideos([]);
-    setToken("");
+    setHasMore(false);
     setError(null);
-    fetchFromApi(endpoint)
+    discovery.discover(query, { includeChannels, watchedIds: new Set(JSON.parse(history)) })
       .then((data) => {
         if (current === generation.current) {
           setVideos(data.items);
-          setToken(data.nextPageToken || "");
+          setHasMore(data.hasMore);
         }
       })
       .catch((e) => {
@@ -43,38 +52,24 @@ export default function HomePage() {
       .finally(() => {
         if (current === generation.current) setLoading(false);
       });
-    return () => {
-      generation.current = current + 1;
-    };
-  }, [endpoint, attempt]);
+    return () => { generation.current = current + 1; };
+  }, [query, includeChannels, attempt, location.key, history]);
   async function loadMore() {
-    if (busy.current || !token) return;
+    if (busy.current || !hasMore) return;
     busy.current = true;
     const current = generation.current;
     setMore(true);
     setError(null);
     try {
-      const data = await fetchFromApi(
-        `${endpoint}&pageToken=${encodeURIComponent(token)}`,
-      );
-      if (current !== generation.current) return;
-      setVideos((old) => {
-        const seen = new Set(old.map(resultKey));
-        return [
-          ...old,
-          ...data.items.filter((v) => {
-            const id = resultKey(v);
-            if (!id || seen.has(id)) return false;
-            seen.add(id);
-            return true;
-          }),
-        ];
+      const data = await discovery.discover(query, {
+        includeChannels,
+        watchedIds: new Set(readLibrary("history").map(videoId)),
+        loadMore: true,
+        previous: videos,
       });
-      setToken(
-        data.nextPageToken && data.nextPageToken !== token
-          ? data.nextPageToken
-          : "",
-      );
+      if (current !== generation.current) return;
+      setVideos(data.items);
+      setHasMore(data.hasMore);
     } catch (e) {
       if (current === generation.current) setError(e.message);
     } finally {
@@ -159,7 +154,9 @@ export default function HomePage() {
                   ? "Explore videos"
                   : `${selected.name}, in focus`}
           </h2>
-          <p>{!searchTerm && "A fresh perspective, every day."}</p>
+          <button className="button" onClick={() => setAttempt((n) => n + 1)} disabled={loading || more}>
+            Refresh videos
+          </button>
         </div>
         <Status
           loading={loading}
@@ -173,7 +170,7 @@ export default function HomePage() {
             {error}
           </p>
         )}
-        {token && (
+        {hasMore && (
           <div className="load-more">
             <button className="button" onClick={loadMore} disabled={more}>
               {more ? "Loading…" : "Explore more videos"}

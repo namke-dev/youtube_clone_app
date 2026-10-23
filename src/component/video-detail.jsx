@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import ReactPlayer from "react-player/youtube";
 import { Link, useParams } from "react-router-dom";
 import { useResource, Status, formatCount } from "./ui";
@@ -9,6 +9,7 @@ import {
   recordHistory,
 } from "../utils/library";
 import Videos from "./videos";
+import { rankCandidates } from "../utils/discovery";
 function Comments({ id }) {
   const state = useResource(
     `commentThreads?videoId=${encodeURIComponent(id)}&part=snippet&maxResults=20`,
@@ -43,9 +44,27 @@ function VideoContent({ id }) {
   const [related, setRelated] = useState(false);
   const relatedState = useResource(
     related
-      ? `search?relatedToVideoId=${encodeURIComponent(id)}&part=id,snippet&type=video&maxResults=12`
+      ? `search?relatedToVideoId=${encodeURIComponent(id)}&part=id,snippet&type=video&maxResults=50`
       : null,
   );
+  const [history, setHistory] = useState(() =>
+    JSON.stringify(readLibrary("history").map(v => v.id)),
+  );
+  useEffect(() => {
+    const changed = () => setHistory(JSON.stringify(readLibrary("history").map(v => v.id)));
+    window.addEventListener("devtubes-library", changed);
+    window.addEventListener("storage", changed);
+    return () => {
+      window.removeEventListener("devtubes-library", changed);
+      window.removeEventListener("storage", changed);
+    };
+  }, []);
+  const relatedTitle = video?.snippet?.title || "";
+  const relatedVideos = useMemo(() => rankCandidates(relatedState.data?.items || [], {
+    query: relatedTitle,
+    watchedIds: new Set([id, ...JSON.parse(history)]),
+    limit: 12,
+  }), [relatedState.data, relatedTitle, id, history]);
   const [comments, setComments] = useState(false);
   const [expanded, setExpanded] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -205,10 +224,10 @@ function VideoContent({ id }) {
                 empty={
                   !relatedState.loading &&
                   !relatedState.error &&
-                  !relatedState.data?.items.length
+                  !relatedVideos.length
                 }
               />
-              <Videos videos={relatedState.data?.items || []} />
+              <Videos videos={relatedVideos} />
             </>
           )}
           <Link className="text-link" to="/">

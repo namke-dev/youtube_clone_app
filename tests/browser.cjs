@@ -32,7 +32,7 @@ const assert = require("node:assert/strict");
         "Inside the next creative frontier",
         "A place to clear your mind",
       ][n % 3],
-      channelId: "channel1",
+      channelId: `channel${Math.floor(n / 2) + 1}`,
       channelTitle: "Field Journal",
       thumbnails: { high: { url: img } },
       description: "A slower perspective on a world in motion.",
@@ -111,6 +111,10 @@ const assert = require("node:assert/strict");
   await page.getByRole("heading", { name: "Worth your time" }).waitFor();
   await page.locator(".video-card").first().waitFor();
   assert.equal(await page.locator(".video-card").count(), 6);
+  const initialCalls = requests.length;
+  await page.getByRole("button", { name: "Refresh videos" }).click();
+  await page.waitForFunction(() => document.querySelectorAll(".video-card").length === 6);
+  assert.equal(requests.length, initialCalls);
   await page.screenshot({ path: "/tmp/devtubes-desktop.png", fullPage: true });
   await page.getByRole("button", { name: "Explore more videos" }).click();
   await page.waitForFunction(() => !document.querySelector(".load-more"));

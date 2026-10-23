@@ -12,7 +12,7 @@ function ChannelContent({ id }) {
   const state = useResource(
     `channels?part=snippet&id=${encodeURIComponent(id)}`,
   );
-  const endpoint = `search?channelId=${encodeURIComponent(id)}&part=snippet&type=video&order=date&maxResults=24`;
+  const endpoint = `search?channelId=${encodeURIComponent(id)}&part=snippet&type=video&order=date&maxResults=50`;
   const feed = useResource(endpoint);
   const [extra, setExtra] = useState([]);
   const [token, setToken] = useState("");
