@@ -221,14 +221,23 @@ const assert = require("node:assert/strict");
   await page.evaluate(() => {
     Object.defineProperty(Element.prototype, "requestFullscreen", { configurable: true, value: undefined });
     document.documentElement.requestFullscreen = undefined;
+    Object.defineProperty(navigator, "userAgent", { configurable: true, value: "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 Mobile Safari/604.1" });
   });
   await page.locator(".video-card .thumbnail").first().click();
   await page.waitForFunction(() => document.documentElement.classList.contains("video-expanded"));
   await page.getByRole("button", { name: "Exit fullscreen", exact: true }).waitFor();
   assert.equal(await page.evaluate(() => {
     const rect = document.querySelector(".player").getBoundingClientRect();
-    return !document.fullscreenElement && Math.abs(rect.width - innerWidth) < 2 && Math.abs(rect.height - innerHeight) < 2;
+    const stage = document.querySelector(".player-stage");
+    return !document.fullscreenElement && Math.abs(rect.width - innerWidth) < 2 && Math.abs(rect.height - innerHeight) < 2 &&
+      getComputedStyle(stage).transform !== "none" && Math.abs(stage.clientWidth - innerHeight) < 2 && Math.abs(stage.clientHeight - innerWidth) < 2;
   }), true);
+  await page.getByRole("button", { name: "Rotate view", exact: true }).click();
+  assert.equal(await page.evaluate(() => getComputedStyle(document.querySelector(".player-stage")).transform), "none");
+  await page.getByRole("button", { name: "Rotate view", exact: true }).click();
+  await page.setViewportSize({ width: 844, height: 390 });
+  assert.equal(await page.evaluate(() => getComputedStyle(document.querySelector(".player-stage")).transform), "none");
+  await page.setViewportSize({ width: 390, height: 844 });
   await page.getByRole("button", { name: "Exit fullscreen", exact: true }).click();
   await page.waitForFunction(() => !document.documentElement.classList.contains("video-expanded"));
   await page.getByRole("button", { name: "Fullscreen", exact: true }).click();

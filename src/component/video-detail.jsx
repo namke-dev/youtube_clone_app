@@ -9,8 +9,10 @@ import {
   recordHistory,
 } from "../utils/library";
 import Videos from "./videos";
-import { readAutoFullscreen, saveAutoFullscreen, requestVideoFullscreen, isVideoFullscreen, exitVideoFullscreen } from "../utils/playback";
+import { readAutoFullscreen, saveAutoFullscreen, requestVideoFullscreen, isVideoFullscreen, exitVideoFullscreen, isMobilePlayback, isLandscapeVideo, setVideoLandscape } from "../utils/playback";
 import { rankCandidates } from "../utils/discovery";
+let autoplayListenerId = 0;
+
 function Comments({ id }) {
   const state = useResource(
     `commentThreads?videoId=${encodeURIComponent(id)}&part=snippet&maxResults=20`,
@@ -82,6 +84,45 @@ function VideoContent({ id }) {
   const [autoFullscreen, setAutoFullscreen] = useState(readAutoFullscreen);
   const [fullscreen, setFullscreen] = useState(false);
   const playerElement = useRef(null);
+  const [mobile] = useState(isMobilePlayback);
+  const [muted, setMuted] = useState(isMobilePlayback);
+  const [playerReady, setPlayerReady] = useState(false);
+  const [playbackBlocked, setPlaybackBlocked] = useState(false);
+  const [landscape, setLandscape] = useState(true);
+  const internalPlayer = useRef(null);
+  const autoplayCleanup = useRef(null);
+  useEffect(() => () => autoplayCleanup.current?.(), []);
+  useEffect(() => { setLandscape(isLandscapeVideo(video)); }, [video]);
+  useEffect(() => {
+    setVideoLandscape(fullscreen && mobile && landscape);
+    return () => setVideoLandscape(false);
+  }, [fullscreen, mobile, landscape]);
+  function ready(player) {
+    autoplayCleanup.current?.();
+    const internal = player.getInternalPlayer();
+    internalPlayer.current = internal;
+    setPlayerReady(Boolean(internal));
+    // YouTube's documented dynamic event API takes a global function name.
+    const listener = `__devtubesAutoplayBlocked${++autoplayListenerId}`;
+    window[listener] = () => setPlaybackBlocked(true);
+    internal?.addEventListener?.("onAutoplayBlocked", listener);
+    autoplayCleanup.current = () => {
+      try { internal?.removeEventListener?.("onAutoplayBlocked", listener); }
+      finally { delete window[listener]; }
+    };
+  }
+  function playWithSound() {
+    // Call the iframe API directly during the tap. Waiting for a React update
+    // can lose iOS's permission to start audible playback.
+    try {
+      internalPlayer.current?.unMute?.();
+      internalPlayer.current?.playVideo?.();
+      setMuted(false);
+      setPlaybackBlocked(false);
+    } catch {
+      setPlaybackBlocked(true);
+    }
+  }
   useEffect(() => {
     const changed = () => {
       setFullscreen(isVideoFullscreen());
@@ -163,22 +204,36 @@ function VideoContent({ id }) {
       <div className="watch-layout">
         <div className="watch-main">
           <div className="player" ref={playerElement}>
+            <div className="player-stage">
             <ReactPlayer
               key={id}
               url={`https://www.youtube.com/watch?v=${encodeURIComponent(id)}`}
               controls
               playing={true}
+              muted={muted}
+              onReady={ready}
               playsinline={true}
               width="100%"
               height="100%"
-              onPlay={() => recordHistory(video)}
+              onPlay={() => { setPlaybackBlocked(false); recordHistory(video); }}
               onError={() => setPlayerError(true)}
             />
+            {playerReady && (playbackBlocked || muted) && (
+              <button className="button playback-start" onClick={playWithSound}>
+                {playbackBlocked ? "Tap to play" : "Tap for sound"}
+              </button>
+            )}
+            {fullscreen && mobile && (
+              <button className="button landscape-toggle" onClick={() => setLandscape(value => !value)} aria-pressed={landscape}>
+                Rotate view
+              </button>
+            )}
             {fullscreen && (
               <button className="button fullscreen-exit" onClick={() => {
                 void exitVideoFullscreen();
               }}>Exit fullscreen</button>
             )}
+            </div>
           </div>
           <div className="playback-options">
             <label>

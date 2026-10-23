@@ -48,6 +48,7 @@ test('watch page requests autoplay and saves opt-in fullscreen without recording
     const props = ReactPlayer.mock.calls.at(-1)[0];
     expect(props.playing).toBe(true);
     expect(props.playsinline).toBe(true);
+    expect(props.muted).toBe(false);
     expect(readLibrary('history')).toEqual([]);
     act(() => props.onPlay());
     expect(readLibrary('history').map(v => v.id)).toEqual(['autoplay-test']);
@@ -132,5 +133,42 @@ test('expanded playback can be closed even when video metadata fails', async () 
     act(() => root.unmount());
     container.remove();
     document.documentElement.classList.remove('video-expanded');
+  }
+});
+
+test('phone autoplay starts muted, enables sound during a tap, and rotates fullscreen with a portrait override', async () => {
+  localStorage.clear();
+  const userAgent = jest.spyOn(window.navigator, 'userAgent', 'get').mockReturnValue('Mozilla iPhone');
+  ReactPlayer.mockClear();
+  axios.get.mockResolvedValue({ data: { items: [{ id: 'mobile-autoplay-landscape', snippet: { title: 'Phone playback', channelId: 'a', thumbnails: {} } }] } });
+  const internal = { unMute: jest.fn(), playVideo: jest.fn(), addEventListener: jest.fn(), removeEventListener: jest.fn() };
+  const container = document.createElement('div');
+  document.body.appendChild(container);
+  const root = createRoot(container);
+  try {
+    await act(async () => root.render(<MemoryRouter initialEntries={['/video/mobile-autoplay-landscape']}><Routes><Route path="/video/:id" element={<VideoDetail />} /></Routes></MemoryRouter>));
+    let props = ReactPlayer.mock.calls.at(-1)[0];
+    expect(props.playing).toBe(true);
+    expect(props.muted).toBe(true);
+    act(() => props.onReady({ getInternalPlayer: () => internal }));
+    await act(async () => [...container.querySelectorAll('button')].find(b => b.textContent === 'Tap for sound').click());
+    expect(internal.unMute).toHaveBeenCalledTimes(1);
+    expect(internal.playVideo).toHaveBeenCalledTimes(1);
+    expect(ReactPlayer.mock.calls.at(-1)[0].muted).toBe(false);
+    await act(async () => [...container.querySelectorAll('button')].find(b => b.textContent === 'Fullscreen').click());
+    expect(document.documentElement.classList.contains('video-landscape')).toBe(true);
+    act(() => [...container.querySelectorAll('button')].find(b => b.textContent === 'Rotate view').click());
+    expect(document.documentElement.classList.contains('video-landscape')).toBe(false);
+    const blocked = internal.addEventListener.mock.calls.find(([event]) => event === 'onAutoplayBlocked')[1];
+    expect(typeof blocked).toBe('string');
+    act(() => window[blocked]());
+    expect([...container.querySelectorAll('button')].some(b => b.textContent === 'Tap to play')).toBe(true);
+    await act(async () => [...container.querySelectorAll('button')].find(b => b.textContent === 'Tap to play').click());
+    expect(internal.playVideo).toHaveBeenCalledTimes(2);
+  } finally {
+    act(() => root.unmount());
+    container.remove();
+    userAgent.mockRestore();
+    document.documentElement.classList.remove('video-expanded', 'video-landscape');
   }
 });

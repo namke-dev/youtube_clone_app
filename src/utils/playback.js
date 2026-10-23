@@ -17,6 +17,45 @@ export function saveAutoFullscreen(enabled) {
   }
 }
 
+export function isMobilePlayback(device = navigator) {
+  return /Android|iPhone|iPad|iPod/i.test(device.userAgent || "") ||
+    (device.platform === "MacIntel" && device.maxTouchPoints > 1);
+}
+
+// Most search/video responses omit source dimensions. Use the standard wide
+// YouTube view in that case; the viewer can override it with Rotate view.
+export function isLandscapeVideo(video) {
+  const width = Number(video?.width || video?.videoDetails?.width);
+  const height = Number(video?.height || video?.videoDetails?.height);
+  return !(width > 0 && height > width);
+}
+
+let orientationOwner = null;
+let orientationRequest = 0;
+export function setVideoLandscape(enabled) {
+  document.documentElement.classList.toggle("video-landscape", enabled);
+  const request = ++orientationRequest;
+  if (!enabled) {
+    try { orientationOwner?.unlock?.(); } catch { /* Not supported by every browser. */ }
+    orientationOwner = null;
+    return;
+  }
+  const orientation = window.screen?.orientation;
+  if (!orientation?.lock) return;
+  orientationOwner = orientation;
+  try {
+    Promise.resolve(orientation.lock("landscape")).then(() => {
+      if (request !== orientationRequest && !document.documentElement.classList.contains("video-landscape")) {
+        orientation.unlock?.();
+      }
+    }).catch(() => {
+      if (request === orientationRequest) orientationOwner = null;
+    });
+  } catch {
+    orientationOwner = null;
+  }
+}
+
 export function isVideoFullscreen() {
   return Boolean(document.fullscreenElement ||
     document.documentElement.classList.contains("video-expanded"));
@@ -34,6 +73,7 @@ function expandVideo(element) {
 }
 
 export async function exitVideoFullscreen() {
+  setVideoLandscape(false);
   document.documentElement.classList.remove("video-expanded", "video-fullscreen");
   document.dispatchEvent(new Event("devtubes-fullscreen"));
   if (document.fullscreenElement && document.exitFullscreen) {
