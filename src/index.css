@@ -753,33 +753,38 @@ svg.MuiSvgIcon-root {
 }
 @media (max-width: 640px) {
   :root {
-    --header: 52px;
+    --header: 32px;
   }
   body:has(.header.search-open) {
-    --header: 108px;
+    --header: 86px;
   }
   .header {
-    padding: 0 16px;
-    gap: 4px;
-    background: rgba(251, 251, 253, 0.94);
-    border-bottom-color: rgba(229, 229, 234, 0.5);
+    padding: 0 14px;
+    gap: 7px;
+    background: transparent;
+    border: 0;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
   }
   .brand {
-    min-height: 44px;
-    gap: 7px;
-    color: #565b65;
-    font-size: 17px;
+    height: 28px;
+    min-height: 28px;
+    gap: 5px;
+    padding: 3px 8px 3px 4px;
+    border-radius: 18px;
+    color: #263448;
+    font-size: 12px;
     font-weight: 650;
-    letter-spacing: -0.45px;
+    letter-spacing: -0.3px;
   }
   .brand-mark {
-    width: 24px;
-    height: 24px;
-    border-radius: 8px;
-    background: #595e68;
+    width: 18px;
+    height: 18px;
+    border-radius: 7px;
+    background: #435268;
   }
   .brand-mark svg.MuiSvgIcon-root {
-    font-size: 16px;
+    font-size: 12px;
   }
   .header .search {
     display: none;
@@ -789,30 +794,32 @@ svg.MuiSvgIcon-root {
     place-items: center;
     margin-left: auto;
     background: none;
-    color: #737986;
-    height: 44px;
-    width: 44px;
+    color: #344055;
+    height: 28px;
+    width: 28px;
+    padding: 0;
+    border-radius: 50%;
   }
   .mobile-search svg.MuiSvgIcon-root,
   .library-mark svg.MuiSvgIcon-root {
-    font-size: 18px;
+    font-size: 15px;
   }
   .library-mark {
-    height: 44px;
-    width: 44px;
+    height: 28px;
+    width: 28px;
     background: none;
-    color: #737986;
+    color: #344055;
   }
   .header.search-open {
     height: var(--header);
-    padding-bottom: 56px;
+    padding-bottom: 54px;
   }
   .header.search-open .search {
     position: absolute;
     display: flex;
-    bottom: 8px;
-    left: 16px;
-    right: 16px;
+    bottom: 6px;
+    left: 14px;
+    right: 14px;
     height: 40px;
     max-width: none;
   }
@@ -932,21 +939,40 @@ svg.MuiSvgIcon-root {
     z-index: 30;
     isolation: isolate;
     padding: 6px;
-    border: 1px solid rgba(255, 255, 255, 0.88);
     border-radius: 36px;
-    background: rgba(247, 248, 251, 0.97);
+  }
+  /* One glass material for the tiny header bubbles and the navigation dock. */
+  .header .brand,
+  .header .mobile-search,
+  .header .library-mark,
+  .header.search-open .search,
+  .bottom-nav {
+    border: 1px solid rgba(255, 255, 255, 0.94);
+    background: rgba(244, 247, 252, 0.97);
     box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.98),
-      inset 0 -1px 0 rgba(148, 158, 179, 0.14),
-      0 12px 36px -10px rgba(31, 42, 65, 0.24),
-      0 2px 8px rgba(31, 42, 65, 0.06);
+      inset 0 1px 1px rgba(255, 255, 255, 1),
+      inset 1px 0 0 rgba(255, 255, 255, 0.7),
+      inset 0 -1px 1px rgba(69, 91, 130, 0.2),
+      0 0 0 0.5px rgba(74, 94, 126, 0.14),
+      0 5px 16px -5px rgba(24, 42, 73, 0.3);
   }
   @supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    .header .brand,
+    .header .mobile-search,
+    .header .library-mark,
+    .header.search-open .search,
     .bottom-nav {
-      background: linear-gradient(155deg, rgba(255, 255, 255, 0.82), rgba(244, 247, 253, 0.68));
-      -webkit-backdrop-filter: blur(24px) saturate(180%);
-      backdrop-filter: blur(24px) saturate(180%);
+      background:
+        linear-gradient(135deg, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.12) 32%, rgba(255, 255, 255, 0.08) 68%, rgba(255, 255, 255, 0.56)),
+        rgba(238, 245, 255, 0.58);
+      -webkit-backdrop-filter: blur(14px) saturate(210%) contrast(1.04);
+      backdrop-filter: blur(14px) saturate(210%) contrast(1.04);
     }
+  }
+  .header .brand:active,
+  .header .mobile-search:active,
+  .header .library-mark:active {
+    transform: scale(0.94);
   }
   .bottom-nav a {
     display: flex;
@@ -958,7 +984,7 @@ svg.MuiSvgIcon-root {
     min-height: 56px;
     padding: 7px 4px;
     border-radius: 28px;
-    color: #373d49;
+    color: #1d2430;
     font-size: 10px;
     font-weight: 600;
     line-height: 1.2;
@@ -1115,6 +1141,10 @@ html.video-expanded, html.video-expanded body { overflow: hidden; }
 }
 
 @media (max-width: 640px) and (prefers-reduced-transparency: reduce) {
+  .header .brand,
+  .header .mobile-search,
+  .header .library-mark,
+  .header.search-open .search,
   .bottom-nav {
     background: #f5f6f9;
     -webkit-backdrop-filter: none;
@@ -1122,7 +1152,11 @@ html.video-expanded, html.video-expanded body { overflow: hidden; }
   }
 }
 @media (max-width: 640px) and (forced-colors: active) {
-  .bottom-nav { background: Canvas; border-color: ButtonText; box-shadow: none; }
+  .header .brand,
+  .header .mobile-search,
+  .header .library-mark,
+  .header.search-open .search,
+  .bottom-nav { background: Canvas; color: ButtonText; border-color: ButtonText; box-shadow: none; }
   .bottom-nav a { color: LinkText; }
   .bottom-nav a.active { background: Highlight; color: HighlightText; box-shadow: none; }
 }
