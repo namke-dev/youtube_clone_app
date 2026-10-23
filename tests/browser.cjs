@@ -101,7 +101,10 @@ const assert = require("node:assert/strict");
       });
     return route.fulfill({
       json: {
-        items: Array.from({ length: 6 }, (_, n) => item(n)),
+        items: [
+          ...Array.from({ length: 6 }, (_, n) => item(n)),
+          { ...item(99), id: { videoId: "short-result" }, isShort: true },
+        ],
         ...(!endpoint.includes("pageToken") ? { nextPageToken: "second" } : {}),
       },
     });
@@ -111,6 +114,7 @@ const assert = require("node:assert/strict");
   await page.getByRole("heading", { name: "Worth your time" }).waitFor();
   await page.locator(".video-card").first().waitFor();
   assert.equal(await page.locator(".video-card").count(), 6);
+  assert.equal(await page.locator('a[href="/video/short-result"]').count(), 0);
   const initialCalls = requests.length;
   await page.getByRole("button", { name: "Refresh videos" }).click();
   await page.waitForFunction(() => document.querySelectorAll(".video-card").length === 6);
@@ -121,6 +125,21 @@ const assert = require("node:assert/strict");
   assert.equal(await page.locator(".video-card").count(), 6);
   await page.locator(".video-card .thumbnail").first().click();
   await page.getByRole("button", { name: "Save", exact: true }).waitFor();
+  await page.getByRole("checkbox", { name: "Open videos in fullscreen" }).check();
+  await page.getByRole("button", { name: "Fullscreen", exact: true }).click();
+  await page.waitForFunction(() => document.fullscreenElement?.classList.contains("player"));
+  await page.getByRole("button", { name: "Exit fullscreen", exact: true }).click();
+  await page.waitForFunction(() => !document.fullscreenElement);
+  await page.getByRole("link", { name: "Dev Tubes home" }).click();
+  await page.locator(".video-card .thumbnail").first().click();
+  await page.waitForFunction(() => document.fullscreenElement === document.documentElement);
+  await page.getByRole("button", { name: "Exit fullscreen", exact: true }).waitFor();
+  assert.equal(await page.evaluate(() => {
+    const rect = document.querySelector(".player").getBoundingClientRect();
+    return Math.abs(rect.width - innerWidth) < 2 && Math.abs(rect.height - innerHeight) < 2;
+  }), true);
+  await page.getByRole("button", { name: "Exit fullscreen", exact: true }).click();
+  await page.waitForFunction(() => !document.fullscreenElement);
   await page.getByRole("button", { name: "Save", exact: true }).click();
   await page.getByText("Saved on this device.", { exact: true }).waitFor();
   assert.equal(
@@ -131,6 +150,16 @@ const assert = require("node:assert/strict");
   await page.getByText("A thoughtful film.").waitFor();
   await page.getByRole("button", { name: "Find related videos" }).click();
   await page.locator(".watch-next .video-card").first().waitFor();
+  await page.locator(".watch-next .video-card .thumbnail").first().click();
+  await page.waitForFunction(() => document.fullscreenElement === document.documentElement);
+  await page.getByRole("button", { name: "Exit fullscreen", exact: true }).waitFor();
+  assert.equal(await page.evaluate(() => {
+    const rect = document.querySelector(".player").getBoundingClientRect();
+    return document.documentElement.classList.contains("video-fullscreen") &&
+      Math.abs(rect.width - innerWidth) < 2 && Math.abs(rect.height - innerHeight) < 2;
+  }), true);
+  await page.getByRole("button", { name: "Exit fullscreen", exact: true }).click();
+  await page.waitForFunction(() => !document.fullscreenElement);
   await page.screenshot({ path: "/tmp/devtubes-watch.png", fullPage: true });
   await page.getByRole("link", { name: "Open saved videos" }).click();
   await page.locator(".video-card").first().waitFor();
@@ -190,7 +219,7 @@ const assert = require("node:assert/strict");
   );
   assert.deepEqual(errors, []);
   console.log(
-    "PASS desktop/mobile layout, search, pagination deduplication, video actions, comments on demand, related videos, saved persistence/removal, quota/empty states, channel routing; no uncaught browser errors.",
+    "PASS desktop/mobile layout, Shorts filtering, manual/automatic fullscreen including related-video navigation, search, pagination deduplication, video actions, comments on demand, related videos, saved persistence/removal, quota/empty states, channel routing; no uncaught browser errors.",
   );
   await browser.close();
   await new Promise((resolve) => server.close(resolve));

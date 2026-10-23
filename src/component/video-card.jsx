@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { Thumbnail, formatCount } from "./ui";
+import VideoLink from "./video-link";
 import { videoId } from "../utils/library";
 export default function VideoCard({ video }) {
   const id = videoId(video);
@@ -8,17 +9,17 @@ export default function VideoCard({ video }) {
   const s = video.snippet || {};
   return (
     <article className="video-card">
-      <Link
+      <VideoLink
         className="thumbnail"
         to={`/video/${encodeURIComponent(id)}`}
         aria-label={`Watch ${s.title || "video"}`}
       >
         <Thumbnail item={video} />
-      </Link>
+      </VideoLink>
       <h3>
-        <Link to={`/video/${encodeURIComponent(id)}`}>
+        <VideoLink to={`/video/${encodeURIComponent(id)}`}>
           {s.title || "Untitled video"}
-        </Link>
+        </VideoLink>
       </h3>
       <div className="video-meta">
         {s.channelId ? (

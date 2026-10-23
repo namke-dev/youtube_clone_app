@@ -981,3 +981,28 @@ svg.MuiSvgIcon-root {
     scroll-behavior: auto !important;
   }
 }
+
+/* Fullscreen is requested during the original video-link click, before routing. */
+.playback-options {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 14px;
+  color: #6b6b76;
+  font-size: 13px;
+}
+.playback-options label { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+.playback-options input { accent-color: #242424; }
+.video-fullscreen:fullscreen { background: #000; }
+.video-fullscreen:fullscreen .watch-shell .player {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  width: 100vw;
+  height: 100vh;
+  border-radius: 0;
+  background: #000;
+}
+.player:fullscreen { width: 100vw; height: 100vh; border-radius: 0; background: #000; }
+.player .fullscreen-exit { position: absolute; top: 12px; right: 12px; z-index: 2; }

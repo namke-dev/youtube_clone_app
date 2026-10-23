@@ -1,5 +1,6 @@
 import { fetchFromApi } from './fetchFromApi';
 import { videoId } from './library';
+import { isShort } from './shorts';
 
 const POOL_TTL = 30 * 60 * 1000;
 const normalize = value => value.trim().replace(/\s+/g, ' ').toLowerCase();
@@ -26,7 +27,7 @@ export function rankCandidates(items, {
   const candidates = [];
   items.forEach((item, index) => {
     const key = resultKey(item);
-    if (!key || !item.snippet || seen.has(key)) return;
+    if (!key || !item.snippet || seen.has(key) || isShort(item)) return;
     seen.add(key);
     if (!item.id?.channelId && watchedIds.has(videoId(item))) return;
     const title = (item.snippet.title || '').toLowerCase();

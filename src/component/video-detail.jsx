@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useRef } from "react";
 import ReactPlayer from "react-player/youtube";
 import { Link, useParams } from "react-router-dom";
 import { useResource, Status, formatCount } from "./ui";
@@ -9,6 +9,7 @@ import {
   recordHistory,
 } from "../utils/library";
 import Videos from "./videos";
+import { readAutoFullscreen, saveAutoFullscreen, requestVideoFullscreen } from "../utils/playback";
 import { rankCandidates } from "../utils/discovery";
 function Comments({ id }) {
   const state = useResource(
@@ -34,6 +35,16 @@ function Comments({ id }) {
 }
 export default function VideoDetail() {
   const { id } = useParams();
+  // This wrapper survives watch-to-watch navigation. Cleanup belongs here,
+  // rather than in the keyed content that is replaced for each video.
+  useEffect(() => () => {
+    if (document.documentElement.classList.contains("video-fullscreen")) {
+      document.documentElement.classList.remove("video-fullscreen");
+      if (document.fullscreenElement && document.exitFullscreen) {
+        void document.exitFullscreen().catch(() => {});
+      }
+    }
+  }, []);
   return <VideoContent key={id} id={id} />;
 }
 function VideoContent({ id }) {
@@ -70,6 +81,32 @@ function VideoContent({ id }) {
   const [saved, setSaved] = useState(false);
   const [notice, setNotice] = useState("");
   const [playerError, setPlayerError] = useState(false);
+  const [autoFullscreen, setAutoFullscreen] = useState(readAutoFullscreen);
+  const [fullscreen, setFullscreen] = useState(false);
+  const playerElement = useRef(null);
+  useEffect(() => {
+    const changed = () => {
+      setFullscreen(Boolean(document.fullscreenElement));
+      if (!document.fullscreenElement) document.documentElement.classList.remove("video-fullscreen");
+    };
+    setFullscreen(Boolean(document.fullscreenElement));
+    document.addEventListener("fullscreenchange", changed);
+    return () => {
+      document.removeEventListener("fullscreenchange", changed);
+    };
+  }, []);
+  function changeAutoFullscreen(event) {
+    const enabled = event.target.checked;
+    setAutoFullscreen(enabled);
+    if (!saveAutoFullscreen(enabled)) {
+      setNotice("Your browser could not save this preference. Fullscreen is still available below.");
+    }
+  }
+  async function enterFullscreen() {
+    if (!await requestVideoFullscreen(playerElement.current)) {
+      setNotice("Fullscreen is unavailable here. You can try the video's fullscreen control.");
+    }
+  }
   useEffect(() => {
     setRelated(false);
     setComments(false);
@@ -115,17 +152,30 @@ function VideoContent({ id }) {
     <main id="main" className="watch-shell">
       <div className="watch-layout">
         <div className="watch-main">
-          <div className="player">
+          <div className="player" ref={playerElement}>
             <ReactPlayer
               key={id}
               url={`https://www.youtube.com/watch?v=${encodeURIComponent(id)}`}
               controls
-              playing={false}
+              playing={true}
+              playsinline={true}
               width="100%"
               height="100%"
               onPlay={() => recordHistory(video)}
               onError={() => setPlayerError(true)}
             />
+            {fullscreen && (
+              <button className="button fullscreen-exit" onClick={() => {
+                void document.exitFullscreen?.().catch(() => {});
+              }}>Exit fullscreen</button>
+            )}
+          </div>
+          <div className="playback-options">
+            <label>
+              <input type="checkbox" checked={autoFullscreen} onChange={changeAutoFullscreen} />
+              Open videos in fullscreen
+            </label>
+            <button className="button" onClick={enterFullscreen}>Fullscreen</button>
           </div>
           {playerError && (
             <p role="alert" className="inline-error">

@@ -5,6 +5,7 @@ import { readLibrary, videoId } from "../utils/library";
 import { topics, Icon, Status, Thumbnail } from "./ui";
 import SideBar from "./side-bar";
 import Videos from "./videos";
+import VideoLink from "./video-link";
 export default function HomePage() {
   const { searchTerm, topic } = useParams();
   const location = useLocation();
@@ -129,19 +130,19 @@ export default function HomePage() {
                 you’ve never been.
               </h2>
               <p>A slower perspective on a world in motion.</p>
-              <Link className="button light" to={`/video/${videoId(featured)}`}>
+              <VideoLink className="button light" to={`/video/${videoId(featured)}`}>
                 <Icon name="play" />
                 Watch video
-              </Link>
+              </VideoLink>
             </div>
-            <Link
+            <VideoLink
               className="hero-art"
               to={`/video/${videoId(featured)}`}
               aria-label={`Watch ${featured.snippet?.title}`}
             >
               <Thumbnail item={featured} />
               <span className="hero-caption">{featured.snippet?.title}</span>
-            </Link>
+            </VideoLink>
           </section>
         )}
         <div className="section-heading">

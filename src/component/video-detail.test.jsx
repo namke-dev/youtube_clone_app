@@ -1,11 +1,14 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
-import { act } from 'react-dom/test-utils';
+import { act, Simulate } from 'react-dom/test-utils';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import axios from 'axios';
 import VideoDetail from './video-detail';
-import { recordHistory } from '../utils/library';
+import { recordHistory, readLibrary } from '../utils/library';
+import ReactPlayer from 'react-player/youtube';
+import { readAutoFullscreen } from '../utils/playback';
 jest.mock('axios');
+jest.mock('react-player/youtube', () => ({ __esModule: true, default: jest.fn(() => null) }));
 global.IS_REACT_ACT_ENVIRONMENT = true;
 
 test('related discovery requests 50 but selects 12 diverse, unwatched videos', async () => {
@@ -29,5 +32,63 @@ test('related discovery requests 50 but selects 12 diverse, unwatched videos', a
   } finally {
     act(() => root.unmount());
     container.remove();
+  }
+});
+
+
+test('watch page requests autoplay and saves opt-in fullscreen without recording history before playback', async () => {
+  localStorage.clear();
+  ReactPlayer.mockClear();
+  axios.get.mockResolvedValue({ data: { items: [{ id: 'autoplay-test', snippet: { title: 'Autoplay test', channelId: 'creator', thumbnails: {} } }] } });
+  const container = document.createElement('div');
+  document.body.appendChild(container);
+  const root = createRoot(container);
+  try {
+    await act(async () => root.render(<MemoryRouter initialEntries={['/video/autoplay-test']}><Routes><Route path="/video/:id" element={<VideoDetail />} /></Routes></MemoryRouter>));
+    const props = ReactPlayer.mock.calls.at(-1)[0];
+    expect(props.playing).toBe(true);
+    expect(props.playsinline).toBe(true);
+    expect(readLibrary('history')).toEqual([]);
+    act(() => props.onPlay());
+    expect(readLibrary('history').map(v => v.id)).toEqual(['autoplay-test']);
+    const checkbox = container.querySelector('input[type="checkbox"]');
+    expect(checkbox.checked).toBe(false);
+    act(() => Simulate.change(checkbox, { target: { checked: true } }));
+    expect(readAutoFullscreen()).toBe(true);
+    const requestFullscreen = jest.fn().mockResolvedValue();
+    container.querySelector('.player').requestFullscreen = requestFullscreen;
+    await act(async () => [...container.querySelectorAll('button')].find(b => b.textContent === 'Fullscreen').click());
+    expect(requestFullscreen).toHaveBeenCalledTimes(1);
+  } finally {
+    act(() => root.unmount());
+    container.remove();
+  }
+});
+
+test('automatic fullscreen survives navigation from one watch page to a related video', async () => {
+  localStorage.clear();
+  localStorage.setItem('devtubes:auto-fullscreen', 'true');
+  const item = id => ({ id, snippet: { title: id, channelId: id, thumbnails: {} } });
+  axios.get.mockImplementation(url => {
+    const endpoint = new URL(url, 'https://local.test').searchParams.get('endpoint');
+    if (endpoint.includes('relatedToVideoId=fullscreen-from')) return Promise.resolve({ data: { items: [item('fullscreen-to')] } });
+    return Promise.resolve({ data: { items: [item(endpoint.includes('id=fullscreen-to') ? 'fullscreen-to' : 'fullscreen-from')] } });
+  });
+  document.documentElement.requestFullscreen = jest.fn().mockResolvedValue();
+  const container = document.createElement('div');
+  document.body.appendChild(container);
+  const root = createRoot(container);
+  try {
+    await act(async () => root.render(<MemoryRouter initialEntries={['/video/fullscreen-from']}><Routes><Route path="/video/:id" element={<VideoDetail />} /></Routes></MemoryRouter>));
+    await act(async () => [...container.querySelectorAll('button')].find(b => b.textContent === 'Find related videos').click());
+    await act(async () => container.querySelector('.watch-next a.thumbnail').click());
+    expect(document.documentElement.requestFullscreen).toHaveBeenCalledTimes(1);
+    expect(container.querySelector('h1').textContent).toBe('fullscreen-to');
+    expect(document.documentElement.classList.contains('video-fullscreen')).toBe(true);
+  } finally {
+    act(() => root.unmount());
+    container.remove();
+    delete document.documentElement.requestFullscreen;
+    document.documentElement.classList.remove('video-fullscreen');
   }
 });

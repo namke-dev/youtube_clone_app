@@ -31,6 +31,12 @@ Verify `/api/youtube?endpoint=search%3Fpart%3Dsnippet%26q%3Ddesign%26maxResults%
 - Ranking exposes `personalInterest(item)`, `watchedPenalty(item)` and `repeatedChannelPenalty(item, selectedChannelCount)` hooks; they default to zero until account/progress data is available. Guest history exclusion applies independently of these hooks. Comments and related results continue to load only on demand.
 - Provider errors, missing configuration, quota exhaustion, empty results and unavailable thumbnails have explicit UI states. No demo videos are shown as live results.
 
+## Playback and Shorts
+
+Videos request autoplay when opened, while keeping YouTube's playback controls available. Browsers can still block audible autoplay. The watch page includes a device-local **Open videos in fullscreen** preference (off by default) and a manual **Fullscreen** button. Automatic fullscreen is requested from normal video-link clicks, including the featured video and saved/history cards; modified clicks and new-tab links keep normal browser behavior. Unsupported or denied fullscreen requests fall back to inline playback. Escape or **Exit fullscreen** returns to the page.
+
+Discovery/search and related-video ranking exclude explicit provider Shorts flags, Shorts URLs and `#short`/`#shorts` title/description labels without extra API calls. The current provider's search snippets do not consistently identify Shorts: unlabeled Shorts can still appear. Duration alone is not used to exclude ordinary brief videos. Creator pages and saved/history listings remain intact.
+
 ## Verification
 
 ```sh
