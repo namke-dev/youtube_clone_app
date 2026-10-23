@@ -1,203 +1,194 @@
-import { SideBar, Videos } from ".";
-import { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import { Link, useParams, useLocation } from "react-router-dom";
 import { fetchFromApi } from "../utils/fetchFromApi";
-import { useState } from "react";
-import { useParams } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
-import { useLoading } from "../context/loading-context";
-
-const HomePage = () => {
-  const [selectedCategory, setSelectedCategory] = useState("Vox");
+import { videoId } from "../utils/library";
+import { topics, Icon, Status, Thumbnail } from "./ui";
+import SideBar from "./side-bar";
+import Videos from "./videos";
+export default function HomePage() {
+  const { searchTerm, topic } = useParams();
+  const location = useLocation();
+  const selected =
+    topics.find((t) => t.name.toLowerCase() === topic) || topics[0];
+  const query = searchTerm || selected.query;
   const [videos, setVideos] = useState([]);
-  const [nextpageToken, setNextPageToken] = useState("");
-
-  const { startLoading, stopLoading } = useLoading();
-  const { searchTerm } = useParams();
-
-  const navigate = useNavigate();
-  const feedContainerRef = useRef(null);
-
-  const isMobile = window.innerWidth < 768;
-
-  // Pass category to searchTerm by URL param
+  const [token, setToken] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [more, setMore] = useState(false);
+  const [error, setError] = useState(null);
+  const [attempt, setAttempt] = useState(0);
+  const generation = useRef(0);
+  const busy = useRef(false);
+  const resultKey = (item) =>
+    item.id?.channelId ? `channel:${item.id.channelId}` : videoId(item);
+  const endpoint = `search?part=snippet,id&type=${searchTerm ? "video,channel" : "video"}&maxResults=24&q=${encodeURIComponent(query)}`;
   useEffect(() => {
-    if (selectedCategory) {
-      console.log(`==>> /search/${selectedCategory}`);
-      navigate(`/search/${selectedCategory}`);
-    }
-  }, [selectedCategory]);
-
-  // Fetch more data when scrolling to the end
-  const handleScrollLargeDivice = async () => {
-    console.log("Start Handle scroll");
-
-    const feedContainer = feedContainerRef.current;
-
-    if (feedContainer) {
-      const { scrollHeight, scrollTop, clientHeight } = feedContainer;
-
-      if (scrollHeight - scrollTop <= clientHeight + 1) {
-        // User has scrolled to the bottom
-        console.log("User has scrolled to the bottom");
-        await fetchData(true);
-      }
-    }
-  };
-
-  useEffect(() => {
-    // Attach the scroll event listener
-    const feedContainer = feedContainerRef.current;
-    feedContainer.addEventListener("scroll", handleScrollLargeDivice);
-
-    // Clean up the event listener when the component is unmounted
-    return () => {
-      feedContainer.removeEventListener("scroll", handleScrollLargeDivice);
-    };
-  }, [videos, nextpageToken]);
-
-  // Fetch data from searchTerm
-  const fetchData = async (loadMore = false) => {
-    startLoading();
-    try {
-      const regionCode = "VN";
-      const maxResults = 48;
-      const order = "relevance";
-      const data = await fetchFromApi(
-        `search?part=snippet,id&q=${encodeURI(
-          searchTerm
-        )}&regionCode=${regionCode}&maxResults=${maxResults}&order=${order}&pageToken=${
-          loadMore ? nextpageToken : ""
-        }`
-      );
-
-      if (loadMore) {
-        // Append the new videos to the existing ones
-        setVideos((prevVideos) => [...prevVideos, ...data.items]);
-      } else {
-        // Replace existing videos with new data
-        setVideos(data.items);
-      }
-
-      setNextPageToken(data.nextPageToken);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      stopLoading();
-    }
-  };
-
-  useEffect(() => {
-    if (searchTerm) fetchData();
-  }, [searchTerm]);
-
-  useEffect(() => {
-    let isFetching = false;
-
-    const handleScrollMobile = async () => {
-      if (isFetching) {
-        return;
-      }
-
-      // Check if the user has scrolled to the bottom of the page
-      if (
-        window.innerHeight + window.scrollY >=
-        document.body.offsetHeight - 100
-      ) {
-        console.log("User has scrolled to the bottom");
-
-        isFetching = true; // Set the flag to true
-
-        try {
-          await fetchData(true);
-        } catch (error) {
-          console.error(error);
-        } finally {
-          isFetching = false; // Reset the flag whether the fetch is successful or not
+    const current = ++generation.current;
+    busy.current = false;
+    setMore(false);
+    setLoading(true);
+    setVideos([]);
+    setToken("");
+    setError(null);
+    fetchFromApi(endpoint)
+      .then((data) => {
+        if (current === generation.current) {
+          setVideos(data.items);
+          setToken(data.nextPageToken || "");
         }
-      }
-    };
-
-    // Attach the scroll event listener
-    window.addEventListener("scroll", handleScrollMobile);
-
-    // Clean up the event listener when the component is unmounted
+      })
+      .catch((e) => {
+        if (current === generation.current) setError(e.message);
+      })
+      .finally(() => {
+        if (current === generation.current) setLoading(false);
+      });
     return () => {
-      window.removeEventListener("scroll", handleScrollMobile);
+      generation.current = current + 1;
     };
-  }, [videos, nextpageToken]);
-
+  }, [endpoint, attempt]);
+  async function loadMore() {
+    if (busy.current || !token) return;
+    busy.current = true;
+    const current = generation.current;
+    setMore(true);
+    setError(null);
+    try {
+      const data = await fetchFromApi(
+        `${endpoint}&pageToken=${encodeURIComponent(token)}`,
+      );
+      if (current !== generation.current) return;
+      setVideos((old) => {
+        const seen = new Set(old.map(resultKey));
+        return [
+          ...old,
+          ...data.items.filter((v) => {
+            const id = resultKey(v);
+            if (!id || seen.has(id)) return false;
+            seen.add(id);
+            return true;
+          }),
+        ];
+      });
+      setToken(
+        data.nextPageToken && data.nextPageToken !== token
+          ? data.nextPageToken
+          : "",
+      );
+    } catch (e) {
+      if (current === generation.current) setError(e.message);
+    } finally {
+      if (current === generation.current) {
+        busy.current = false;
+        setMore(false);
+      }
+    }
+  }
+  const home = !searchTerm && !topic && location.pathname === "/";
+  const featured = videos.find(videoId);
   return (
-    <div className="w-full h-full flex justify-center">
-      <div
-        className="
-      flex 
-      flex-col 
-      w-full
-      justify-between
-      md:flex-row 
-      md:fixed md:top-0
-      max-w-[1600px]"
-      >
-        {/* Side bar container */}
-        <div
-          className={`
-        md:mx-2
-        md:pr-3
-        md:pt-36
-        pt-24
-        mb-2
-        
-        h-auto
-        md:h-[100vh]
-
-        w-full
-        md:w-auto
-
-        md:overflow-y-auto
-        overflow-x-auto
-
-        md:overflow-visible
-        overflow-hidden
-        `}
-        >
-          <SideBar
-            selectedCategory={selectedCategory}
-            setSelectedCategory={setSelectedCategory}
-          />
+    <div className="app-layout">
+      <SideBar />
+      <main id="main" className="feed">
+        <div className="intro">
+          <div>
+            <h1 className={home ? "desktop-title" : ""}>
+              {searchTerm
+                ? `Results for “${searchTerm}”`
+                : topic
+                  ? selected.name
+                  : home
+                    ? "Find your next rabbit hole."
+                    : "Made for curious minds."}
+            </h1>
+            {home && (
+              <h1 className="mobile-title">
+                A little less noise.
+                <br />A lot more wonder.
+              </h1>
+            )}
+            <p>Extraordinary stories. Room to explore.</p>
+          </div>
+          <span className="eyebrow">
+            {searchTerm ? "SEARCH" : "DISCOVER SOMETHING NEW"}
+          </span>
         </div>
-
-        {/* Feed container */}
-        <div
-          ref={feedContainerRef}
-          className="
-          sm:px-1 
-          md:px-1
-          lg:px-30
-          xl:px-1
-          2xl:px-1
-          md:pt-20
-
-          flex flex-wrap 
-          
-          md:overflow-y-scroll
-          md:custom-scrollbar
-          md:h-[100vh] 
-          md:w-full
-          
-          "
-        >
-          {!isMobile ? (
-            <p className="text-pink-700 font-bold md:mt-2 mb-2 md:mb-5 text-3xl">
-              {searchTerm}
-            </p>
-          ) : (
-            ""
-          )}
-          <Videos direction={!isMobile ? "row" : "column"} videos={videos} />
+        <nav className="chips" aria-label="Video topics">
+          {topics.map((t) => (
+            <Link
+              className={`chip ${!searchTerm && selected.name === t.name ? "selected" : ""}`}
+              to={t.name === "For you" ? "/" : `/topic/${t.name.toLowerCase()}`}
+              key={t.name}
+            >
+              {t.name}
+            </Link>
+          ))}
+        </nav>
+        {home && featured && (
+          <section className="hero">
+            <div className="hero-copy">
+              <span className="eyebrow">THE DISCOVERY EDIT</span>
+              <h2>
+                Go somewhere
+                <br />
+                you’ve never been.
+              </h2>
+              <p>A slower perspective on a world in motion.</p>
+              <Link className="button light" to={`/video/${videoId(featured)}`}>
+                <Icon name="play" />
+                Watch video
+              </Link>
+            </div>
+            <Link
+              className="hero-art"
+              to={`/video/${videoId(featured)}`}
+              aria-label={`Watch ${featured.snippet?.title}`}
+            >
+              <Thumbnail item={featured} />
+              <span className="hero-caption">{featured.snippet?.title}</span>
+            </Link>
+          </section>
+        )}
+        <div className="section-heading">
+          <h2>
+            {searchTerm
+              ? "Search results"
+              : home
+                ? "Worth your time"
+                : selected.name === "For you"
+                  ? "Explore videos"
+                  : `${selected.name}, in focus`}
+          </h2>
+          <p>{!searchTerm && "A fresh perspective, every day."}</p>
         </div>
-      </div>
+        <Status
+          loading={loading}
+          error={!videos.length && error}
+          retry={() => setAttempt((n) => n + 1)}
+          empty={!loading && !error && !videos.length}
+        />
+        <Videos videos={videos} />
+        {videos.length > 0 && error && (
+          <p role="alert" className="inline-error">
+            {error}
+          </p>
+        )}
+        {token && (
+          <div className="load-more">
+            <button className="button" onClick={loadMore} disabled={more}>
+              {more ? "Loading…" : "Explore more videos"}
+            </button>
+          </div>
+        )}
+        {home && (
+          <div className="section-heading ending">
+            <h2>Made for curious minds</h2>
+            <Link to="/explore">
+              Explore all topics <Icon name="arrow" />
+            </Link>
+          </div>
+        )}
+      </main>
     </div>
   );
-};
-
-export default HomePage;
+}

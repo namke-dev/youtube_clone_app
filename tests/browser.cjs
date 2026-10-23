@@ -1,0 +1,196 @@
+const { chromium } = require("playwright");
+const assert = require("node:assert/strict");
+(async () => {
+  const express = require("express");
+  const app = express();
+  app.use(express.static("build"));
+  app.get("*", (req, res) => res.sendFile(process.cwd() + "/build/index.html"));
+  const server = await new Promise((resolve) => {
+    const s = app.listen(4173, "127.0.0.1", () => resolve(s));
+  });
+  const browser = await chromium.launch({
+    headless: true,
+    executablePath: process.env.CHROMIUM_PATH || undefined,
+    args: ["--no-sandbox", "--disable-dev-shm-usage"],
+  });
+  const page = await browser.newPage({
+    viewport: { width: 1440, height: 1100 },
+  });
+  const errors = [];
+  page.on("pageerror", (e) => errors.push(e.message));
+  const requests = [];
+  const img =
+    "data:image/svg+xml," +
+    encodeURIComponent(
+      '<svg xmlns="http://www.w3.org/2000/svg" width="800" height="450"><rect width="800" height="450" fill="#244852"/><circle cx="600" cy="130" r="80" fill="#96c3c4"/><path d="M0 450L240 60L550 450Z" fill="#3b747a"/></svg>',
+    );
+  const item = (n) => ({
+    id: { videoId: "test" + n },
+    snippet: {
+      title: [
+        "The beauty of making less",
+        "Inside the next creative frontier",
+        "A place to clear your mind",
+      ][n % 3],
+      channelId: "channel1",
+      channelTitle: "Field Journal",
+      thumbnails: { high: { url: img } },
+      description: "A slower perspective on a world in motion.",
+      publishedAt: "2025-01-01T00:00:00Z",
+    },
+  });
+  await page.route("**/api/youtube?**", async (route) => {
+    const endpoint = new URL(route.request().url()).searchParams.get(
+      "endpoint",
+    );
+    requests.push(endpoint);
+    const path = endpoint.split("?")[0];
+    if (endpoint.includes("q=quota"))
+      return route.fulfill({ status: 429, json: { error: "limit" } });
+    if (endpoint.includes("q=creators"))
+      return route.fulfill({
+        json: {
+          items: [
+            {
+              id: { channelId: "creator-result" },
+              snippet: {
+                title: "Creator result",
+                thumbnails: { high: { url: img } },
+              },
+            },
+            item(0),
+          ],
+          ...(!endpoint.includes("pageToken") ? { nextPageToken: "next" } : {}),
+        },
+      });
+    if (endpoint.includes("q=empty"))
+      return route.fulfill({ json: { items: [] } });
+    if (path === "videos")
+      return route.fulfill({
+        json: {
+          items: [
+            {
+              ...item(0),
+              id: "test0",
+              statistics: { viewCount: "12000", likeCount: "250" },
+            },
+          ],
+        },
+      });
+    if (path === "channels")
+      return route.fulfill({
+        json: { items: [{ ...item(0), id: "channel1" }] },
+      });
+    if (path === "commentThreads")
+      return route.fulfill({
+        json: {
+          items: [
+            {
+              id: "comment",
+              snippet: {
+                topLevelComment: {
+                  snippet: {
+                    authorDisplayName: "Reader",
+                    textOriginal: "A thoughtful film.",
+                  },
+                },
+              },
+            },
+          ],
+        },
+      });
+    return route.fulfill({
+      json: {
+        items: Array.from({ length: 6 }, (_, n) => item(n)),
+        ...(!endpoint.includes("pageToken") ? { nextPageToken: "second" } : {}),
+      },
+    });
+  });
+  await page.route("**/youtube.com/**", (route) => route.abort());
+  await page.goto("http://127.0.0.1:4173");
+  await page.getByRole("heading", { name: "Worth your time" }).waitFor();
+  await page.locator(".video-card").first().waitFor();
+  assert.equal(await page.locator(".video-card").count(), 6);
+  await page.screenshot({ path: "/tmp/devtubes-desktop.png", fullPage: true });
+  await page.getByRole("button", { name: "Explore more videos" }).click();
+  await page.waitForFunction(() => !document.querySelector(".load-more"));
+  assert.equal(await page.locator(".video-card").count(), 6);
+  await page.locator(".video-card .thumbnail").first().click();
+  await page.getByRole("button", { name: "Save", exact: true }).waitFor();
+  await page.getByRole("button", { name: "Save", exact: true }).click();
+  await page.getByText("Saved on this device.", { exact: true }).waitFor();
+  assert.equal(
+    requests.filter((s) => s.startsWith("commentThreads")).length,
+    0,
+  );
+  await page.getByRole("button", { name: "Load comments" }).click();
+  await page.getByText("A thoughtful film.").waitFor();
+  await page.getByRole("button", { name: "Find related videos" }).click();
+  await page.locator(".watch-next .video-card").first().waitFor();
+  await page.screenshot({ path: "/tmp/devtubes-watch.png", fullPage: true });
+  await page.getByRole("link", { name: "Open saved videos" }).click();
+  await page.locator(".video-card").first().waitFor();
+  assert.equal(await page.locator(".video-card").count(), 1);
+  await page.reload();
+  await page.locator(".video-card").first().waitFor();
+  await page.getByRole("button", { name: "Remove", exact: true }).click();
+  await page
+    .getByRole("heading", { name: "Something worth coming back to." })
+    .waitFor();
+  await page.goto("http://127.0.0.1:4173/search/quota");
+  await page.getByRole("alert").waitFor();
+  assert.match(await page.getByRole("alert").innerText(), /request limit/);
+  await page.goto("http://127.0.0.1:4173/search/empty");
+  await page.getByRole("heading", { name: "Nothing here yet." }).waitFor();
+  await page.goto("http://127.0.0.1:4173/search/creators");
+  await page.locator(".channel-result").waitFor();
+  assert.equal(await page.locator(".channel-result").count(), 1);
+  await page.getByRole("button", { name: "Explore more videos" }).click();
+  await page.waitForFunction(() => !document.querySelector(".load-more"));
+  assert.equal(await page.locator(".channel-result").count(), 1);
+  assert.ok(
+    requests.some(
+      (s) => s.includes("type=video,channel") && s.includes("q=creators"),
+    ),
+  );
+  await page.goto("http://127.0.0.1:4173/channel/channel1");
+  await page.locator(".channel-heading").waitFor();
+  await page.locator(".video-card").first().waitFor();
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("http://127.0.0.1:4173");
+  await page.locator(".hero").waitFor();
+  assert.equal(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth > innerWidth,
+    ),
+    false,
+  );
+  await page.screenshot({ path: "/tmp/devtubes-mobile.png", fullPage: true });
+  await page.getByRole("button", { name: "Open search" }).click();
+  await page
+    .getByRole("searchbox")
+    .count()
+    .then(async (n) => {
+      const input = page.getByRole("textbox", { name: "Search videos" });
+      await input.fill("architecture");
+      await input.press("Enter");
+    });
+  await page
+    .getByRole("heading", { name: "Results for “architecture”" })
+    .waitFor();
+  assert.equal(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth > innerWidth,
+    ),
+    false,
+  );
+  assert.deepEqual(errors, []);
+  console.log(
+    "PASS desktop/mobile layout, search, pagination deduplication, video actions, comments on demand, related videos, saved persistence/removal, quota/empty states, channel routing; no uncaught browser errors.",
+  );
+  await browser.close();
+  await new Promise((resolve) => server.close(resolve));
+})().catch((e) => {
+  console.error(e);
+  process.exit(1);
+});

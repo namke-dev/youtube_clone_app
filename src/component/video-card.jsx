@@ -1,92 +1,37 @@
 import React from "react";
-import {
-  demoThumbnailUrl,
-  demoVideoUrl,
-  demoVideoTitle,
-  demoChannelUrl,
-  demoChannelTitle,
-} from "../utils/constants";
-import { CardMedia } from "@mui/material";
 import { Link } from "react-router-dom";
-import { normalzeVideoTitle } from "../utils/utils";
-import { formatRelativeTime } from "../utils/utils";
-import { HtmlContent } from "../utils/utils";
-
-const VideoCard = ({ video }) => {
-  const snippet = video.snippet;
-  const videoId = video.id.videoId;
-
-  if (!snippet?.thumbnails?.high?.url) return null;
-
+import { Thumbnail, formatCount } from "./ui";
+import { videoId } from "../utils/library";
+export default function VideoCard({ video }) {
+  const id = videoId(video);
+  if (!id) return null;
+  const s = video.snippet || {};
   return (
-    <div
-      className={` 
-      sm:w-[310px] w-11/12
-      mx-0
-      mb-0 md:mb-5 mt-3 md:mt-0
-      min-w-[280px] 
-      flex flex-col
-      
-      border border-gray-200
-      shadow-gray-200 shadow-sm
-      rounded-sm
-      bg-gray-50
-    `}
-    >
-      <Link to={videoId ? `/video/${videoId}` : demoVideoUrl}>
-        <CardMedia
-          image={
-            snippet?.thumbnails?.high?.url
-              ? snippet?.thumbnails?.high?.url
-              : demoThumbnailUrl
-          }
-          alt={snippet?.title}
-          className="aspect-video rounded-t-sm"
-        />
+    <article className="video-card">
+      <Link
+        className="thumbnail"
+        to={`/video/${encodeURIComponent(id)}`}
+        aria-label={`Watch ${s.title || "video"}`}
+      >
+        <Thumbnail item={video} />
       </Link>
-
-      {/* Text part */}
-      <div className="flex flex-col">
-        {/* Video info Section */}
-        <div className="px-4 ">
-          {/* pushlished time */}
-          <p className="pb-2 font-thin text-xs pt-2 self-end">
-            {formatRelativeTime(snippet?.publishedAt)}
-          </p>
-          {/* Video title */}
-          <Link
-            className="text-base md:text-sm font-semibold pb-1 text-gray-800"
-            to={videoId ? `/video/${videoId}` : demoVideoUrl}
-            title={snippet?.title}
-          >
-            <HtmlContent
-              content={
-                normalzeVideoTitle(snippet?.title.slice(0, 92)) ||
-                demoVideoTitle.slice(0, 92)
-              }
-            />
-
-            {snippet?.title.length > 92 ? " . . ." : ""}
+      <h3>
+        <Link to={`/video/${encodeURIComponent(id)}`}>
+          {s.title || "Untitled video"}
+        </Link>
+      </h3>
+      <div className="video-meta">
+        {s.channelId ? (
+          <Link to={`/channel/${encodeURIComponent(s.channelId)}`}>
+            {s.channelTitle}
           </Link>
-        </div>
-
-        {/* Channel info Section */}
-        <div className="px-4 pb-3 pt-3 items-end">
-          {/* channel title */}
-          <a
-            href={
-              snippet?.channelId
-                ? `/channel/${snippet?.channelId}`
-                : demoChannelUrl
-            }
-            className="text-sm md:text-sm text-gray-600 font-bold justify-self-end"
-          >
-            {snippet?.channelTitle || demoChannelTitle}
-          </a>
-        </div>
+        ) : (
+          s.channelTitle
+        )}
+        {video.statistics?.viewCount && (
+          <span> · {formatCount(video.statistics.viewCount)} views</span>
+        )}
       </div>
-    </div>
+    </article>
   );
-};
-
-export default VideoCard;
+}

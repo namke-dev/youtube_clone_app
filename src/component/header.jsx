@@ -1,52 +1,66 @@
-import React from "react";
-import { Link } from "react-router-dom";
-import { logo } from "../utils/constants";
-import SearchBar from "./search-bar";
-import { useLoading } from "../context/loading-context";
-import { LoadingBar } from "./loading-bar";
-
-const Header = () => {
-  const { isLoading } = useLoading();
-
+import React, { useEffect, useRef, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { Icon } from "./ui";
+export default function Header() {
+  const [query, setQuery] = useState("");
+  const [open, setOpen] = useState(false);
+  const input = useRef();
+  const navigate = useNavigate();
+  useEffect(() => {
+    const handler = (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+        e.preventDefault();
+        setOpen(true);
+        input.current?.focus();
+      }
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, []);
+  function search(e) {
+    e.preventDefault();
+    if (query.trim()) {
+      navigate(`/search/${encodeURIComponent(query.trim())}`);
+      setOpen(false);
+      input.current?.blur();
+    }
+  }
   return (
-    <div className="w-full flex justify-center">
-      <LoadingBar isLoading={isLoading} />
-      <div
-        className="
-          fixed
-          flex items-center
-          mt-1.5
-          p-3
-          
-          w-[86vw]
-          max-w-[1000px]
-          bg-gray-200/85
-          rounded-full 
-          shadow
-          z-50 
-        "
+    <header className={`header ${open ? "search-open" : ""}`}>
+      <Link className="brand" to="/" aria-label="Dev Tubes home">
+        <span className="brand-mark">
+          <Icon name="play" />
+        </span>
+        <span>devtubes</span>
+      </Link>
+      <form className="search" onSubmit={search} role="search">
+        <Icon name="search" />
+        <input
+          ref={input}
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder="Search videos, creators, ideas"
+          aria-label="Search videos"
+          maxLength={150}
+        />
+        <button type="submit" aria-label="Submit search">
+          <span className="keyboard">↵</span>
+        </button>
+      </form>
+      <span className="header-note">A little less noise.</span>
+      <button
+        className="mobile-search icon-button"
+        aria-label={open ? "Close search" : "Open search"}
+        onClick={() => {
+          setOpen(!open);
+          setTimeout(() => input.current?.focus(), 0);
+        }}
       >
-        {/* Logo on the left */}
-        <Link
-          to="/"
-          className="flex items-center text-gray-700 font-bold md:mr-10"
-        >
-          <img src={logo} alt="logo" className="h-10 md:h-12" />
-          {window.innerWidth > 768 && (
-            <div className="flex flex-col ml-3">
-              <p>Dev-Tubes</p>
-              <p className="text-xs font-thin">namke-dev</p>
-            </div>
-          )}
-        </Link>
-
-        {/* Centered SearchBar */}
-        <div className="flex-grow">
-          <SearchBar />
-        </div>
-      </div>
-    </div>
+        <Icon name="search" />
+      </button>
+      <Link className="library-mark" to="/saved" aria-label="Open saved videos">
+        <Icon name="saved" />
+      </Link>
+    </header>
   );
-};
-
-export default Header;
+}

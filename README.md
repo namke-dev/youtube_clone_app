@@ -1,46 +1,41 @@
-# Dev Tubes - Ad-Free Video Sharing Platform
+# Dev Tubes
 
-**Demo Dev Tubes:** [www.devtube.online](https://www.devtube.online/)
+A calm video discovery interface built with React 18, React Router and YouTube embeds. The Quiet Cinema redesign includes responsive discovery, search for videos and creators, video playback, channel pages, browser-local saved videos and watch history.
 
-**Project Completion:** Late 2023
+Design: https://www.figma.com/design/Ek0NyWC7fkcBu8SXUfbRFZ
 
-Dev Tubes is a user-friendly video-sharing platform optimized for both mobile and PC use. Our primary focus is to elevate the user experience by eliminating all advertisements, providing a seamless and distraction-free environment for content consumption.
+## Run
 
-## Key Features
-
-**Ad-Free Experience:**
-
-- Say goodbye to interruptions! Dev Tubes is designed to provide users with an ad-free video-sharing experience, allowing them to enjoy content without any distractions.
-
-**Responsive Design:**
-
-- Our platform is optimized for a variety of screen sizes, ensuring a consistent and enjoyable user experience whether you're accessing Dev Tubes on a mobile device or a PC.
-
-## Technologies and Skills Demonstrated
-
-- **Integration of 3rd Party APIs:**
-
-  - Learn how to incorporate external APIs to enhance the functionality of your application, opening up possibilities for new features and content.
-
-- **Client-Side Rendering (CSR) based on Screen Size:**
-
-  - Implement dynamic client-side rendering based on the user's screen size, optimizing the application's performance and user interface.
-
-- **User Interface Design for Diverse Users:**
-  - Explore techniques for creating a friendly and intuitive UI that caters to a diverse user base, providing a positive experience for users with varying preferences and needs.
-
-### create apps
-
-```bash
-npm create-react-app
-```
-
-### start app
-
-```bash
+```sh
+npm ci
 npm start
 ```
 
-### setup env
+`npm start` runs the frontend only. API-backed development requires Vercel's local development server (`vercel dev`) with the project's environment configured. The frontend requests `/api/youtube`; it no longer sends a RapidAPI key to the browser.
 
-($env:REACT_APP_NOT_SECRET_CODE = "abcdef") -and (npm start)
+## Vercel configuration
+
+Use the existing `namke-youtube` project with the CRA build command (`npm run build`) and output directory (`build`). The root `api/youtube.js` is a Node serverless function. Set `RAPIDAPI_KEY` in the server environment. The existing `REACT_APP_API_KEY` name is accepted by the function for migration compatibility; source code does not reference it in the frontend. Never commit keys.
+
+Verify `/api/youtube?endpoint=search%3Fpart%3Dsnippet%26q%3Ddesign%26maxResults%3D1` returns video metadata in the preview before promoting production. Verify a direct `/video/<id>` page loads and playback works. Vercel team access and the active RapidAPI subscription are required for those live checks.
+
+## API capabilities and limits
+
+- Search, video metadata, channels, related results and read-only comments use the existing `youtube-v31.p.rapidapi.com` service. Endpoint availability depends on the active provider subscription.
+- Saved videos and watch history live only in the current browser (100 entries each). They do not sync to a YouTube account. History is recorded when playback starts.
+- YouTube like counts are read-only. There is no account login, writable likes, subscriptions or comment posting.
+- The player uses YouTube's controls. Embedded advertising, captions, quality and playback availability remain controlled by YouTube; ad-free or guaranteed 4K playback is not promised.
+- Browse/search uses 24 results per request. Comments and related results load on demand. Reads are cached for five minutes in the browser and at the Vercel CDN. This reduces requests but is not a hard global spending/rate limit. Check quota and billing limits in RapidAPI before opening to substantial traffic.
+- Provider errors, missing configuration, quota exhaustion, empty results and unavailable thumbnails have explicit UI states. No demo videos are shown as live results.
+
+## Verification
+
+```sh
+CI=true npm test -- --watchAll=false --runInBand
+npm run test:proxy
+npm run build
+npx playwright install chromium
+npm run test:e2e
+```
+
+The browser suite starts its own local static server on port 4173. It mocks provider responses and blocks YouTube network access, covering UI behavior without spending API quota. It does not prove live video playback or the current subscription works. Use `CHROMIUM_PATH=/path/to/chromium npm run test:e2e` for a separately installed browser.

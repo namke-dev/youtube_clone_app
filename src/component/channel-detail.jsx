@@ -1,62 +1,87 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import { fetchFromApi } from "../utils/fetchFromApi";
-import ChannelCard from "./channel-card";
+import { useParams, Link } from "react-router-dom";
+import { useResource, Status, Thumbnail } from "./ui";
 import Videos from "./videos";
-import { useLoading } from "../context/loading-context";
-
-const ChannelDetail = () => {
-  const [channelDetail, setChannelDetail] = useState(null);
-  const [channelVideos, setChannelVideos] = useState(null);
-
+import { fetchFromApi } from "../utils/fetchFromApi";
+import { videoId } from "../utils/library";
+export default function ChannelDetail() {
   const { id } = useParams();
-  const { startLoading, stopLoading } = useLoading();
-
-  useEffect(() => {
-    if (!id) return;
-    console.log(`Channel id: ${id}`);
-    startLoading();
-
-    const fetchData = async () => {
-      try {
-        const channelData = await fetchFromApi(
-          `channels?part=snippet&id=${id}`
-        );
-        setChannelDetail(channelData?.items[0]);
-
-        const VideosData = await fetchFromApi(
-          `search?channelId=${id}&part=snippet&order=date&maxResults=48`
-        );
-        setChannelVideos(VideosData.items);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      } finally {
-        stopLoading();
-      }
-    };
-    fetchData();
-  }, [id]);
-
-  return (
-    <div
-      className="
-      h-[100vh]
-      overflow-y-auto overflow-hidden"
-    >
-      <div>..</div>
-      <div className="mb-5 py-5 mt-12">
-        <ChannelCard channelDetail={channelDetail}></ChannelCard>
-      </div>
-
-      <div className="flex md:mx-20">
-        <div className="h-90vh flex-wrap" />
-        <Videos
-          direction={window.innerWidth >= 768 ? "row" : "column"}
-          videos={channelVideos}
-        />
-      </div>
-    </div>
+  return <ChannelContent key={id} id={id} />;
+}
+function ChannelContent({ id }) {
+  const state = useResource(
+    `channels?part=snippet&id=${encodeURIComponent(id)}`,
   );
-};
-
-export default ChannelDetail;
+  const endpoint = `search?channelId=${encodeURIComponent(id)}&part=snippet&type=video&order=date&maxResults=24`;
+  const feed = useResource(endpoint);
+  const [extra, setExtra] = useState([]);
+  const [token, setToken] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState("");
+  useEffect(() => {
+    setExtra([]);
+    setToken(feed.data?.nextPageToken || "");
+    setError("");
+  }, [feed.data]);
+  const channel = state.data?.items[0];
+  async function more() {
+    setBusy(true);
+    setError("");
+    try {
+      const data = await fetchFromApi(
+        `${endpoint}&pageToken=${encodeURIComponent(token)}`,
+      );
+      setExtra((old) => {
+        const seen = new Set(
+          [...(feed.data?.items || []), ...old].map(videoId),
+        );
+        return [
+          ...old,
+          ...data.items.filter((v) => {
+            const key = videoId(v);
+            if (!key || seen.has(key)) return false;
+            seen.add(key);
+            return true;
+          }),
+        ];
+      });
+      setToken(data.nextPageToken === token ? "" : data.nextPageToken || "");
+    } catch (e) {
+      setError(e.message);
+    } finally {
+      setBusy(false);
+    }
+  }
+  return (
+    <main id="main" className="channel-page">
+      <Link className="text-link" to="/">
+        ← Discover
+      </Link>
+      <Status {...state} />
+      {channel && (
+        <section className="channel-heading">
+          <Thumbnail item={channel} />
+          <div>
+            <span className="eyebrow">CREATOR CHANNEL</span>
+            <h1>{channel.snippet?.title}</h1>
+            <p>{channel.snippet?.description}</p>
+          </div>
+        </section>
+      )}
+      <h2>Latest videos</h2>
+      <Status
+        {...feed}
+        empty={!feed.loading && !feed.error && !feed.data?.items.length}
+      />
+      <Videos videos={[...(feed.data?.items || []), ...extra]} />
+      {error && <p role="alert">{error}</p>}
+      {token && (
+        <div className="load-more">
+          <button className="button" disabled={busy} onClick={more}>
+            {busy ? "Loading…" : "Load more videos"}
+          </button>
+        </div>
+      )}
+    </main>
+  );
+}
