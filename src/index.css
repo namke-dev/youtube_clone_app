@@ -857,16 +857,42 @@ svg.MuiSvgIcon-root {
     top: var(--header);
     z-index: 15;
     gap: 7px;
-    margin: 0 -20px 18px;
-    padding: 6px 20px;
-    background: rgba(251, 251, 253, 0.96);
-    -webkit-backdrop-filter: blur(14px);
-    backdrop-filter: blur(14px);
+    margin: 0 -20px 16px;
+    padding: 8px 14px;
+    background: transparent;
+    scroll-padding-inline: 14px;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
   }
-  .chip {
-    font-size: 13px;
-    padding: 11px 14px;
-    min-height: 42px;
+  .chips .chip {
+    min-height: 32px;
+    padding: 6px 12px;
+    gap: 6px;
+    border-radius: 22px;
+    color: #263448;
+    font-size: 11.5px;
+    font-weight: 600;
+    line-height: 1.4;
+    letter-spacing: -0.1px;
+  }
+  .chips .chip.selected {
+    color: #0055ad;
+    background: linear-gradient(145deg, rgba(225, 237, 255, 0.96), rgba(221, 234, 254, 0.62));
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.95), 0 2px 6px rgba(64, 109, 174, 0.12);
+  }
+  .chips .chip.selected::before {
+    content: "";
+    width: 4px;
+    height: 4px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background: currentColor;
+  }
+  .chips .chip:active {
+    transform: scale(0.96);
+  }
+  .chips .chip:focus-visible {
+    outline-offset: -3px;
   }
   .hero {
     border-radius: 18px;
@@ -941,11 +967,12 @@ svg.MuiSvgIcon-root {
     padding: 6px;
     border-radius: 36px;
   }
-  /* One glass material for the tiny header bubbles and the navigation dock. */
+  /* One glass material for the header bubbles, topic pills and navigation dock. */
   .header .brand,
   .header .mobile-search,
   .header .library-mark,
   .header.search-open .search,
+  .chips .chip,
   .bottom-nav {
     border: 1px solid rgba(255, 255, 255, 0.94);
     background: rgba(244, 247, 252, 0.97);
@@ -961,6 +988,7 @@ svg.MuiSvgIcon-root {
     .header .mobile-search,
     .header .library-mark,
     .header.search-open .search,
+    .chips .chip,
     .bottom-nav {
       background:
         linear-gradient(135deg, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.12) 32%, rgba(255, 255, 255, 0.08) 68%, rgba(255, 255, 255, 0.56)),
@@ -1145,6 +1173,7 @@ html.video-expanded, html.video-expanded body { overflow: hidden; }
   .header .mobile-search,
   .header .library-mark,
   .header.search-open .search,
+  .chips .chip,
   .bottom-nav {
     background: #f5f6f9;
     -webkit-backdrop-filter: none;
@@ -1156,7 +1185,10 @@ html.video-expanded, html.video-expanded body { overflow: hidden; }
   .header .mobile-search,
   .header .library-mark,
   .header.search-open .search,
+  .chips .chip,
   .bottom-nav { background: Canvas; color: ButtonText; border-color: ButtonText; box-shadow: none; }
-  .bottom-nav a { color: LinkText; }
+  .bottom-nav a,
+  .chips .chip { color: LinkText; }
+  .chips .chip.selected { background: Highlight; color: HighlightText; box-shadow: none; }
   .bottom-nav a.active { background: Highlight; color: HighlightText; box-shadow: none; }
 }

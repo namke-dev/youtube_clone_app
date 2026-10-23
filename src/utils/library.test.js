@@ -27,3 +27,18 @@ test("corrupt storage and unavailable storage do not crash playback", () => {
   localStorage.setItem("devtubes:saved", "{}");
   expect(readLibrary("saved")).toEqual([]);
 });
+
+test('account libraries remain isolated and signing out restores guest data', () => {
+  const { setLibraryOwner } = require('./library');
+  setLibraryOwner(null);
+  saveVideo(a);
+  setLibraryOwner('user-a');
+  expect(readLibrary('saved')).toEqual([]);
+  saveVideo({id:'private-a', snippet:{title:'A personal video'}});
+  setLibraryOwner('user-b');
+  expect(readLibrary('saved')).toEqual([]);
+  setLibraryOwner('user-a');
+  expect(readLibrary('saved').map(v => v.id)).toEqual(['private-a']);
+  setLibraryOwner(null);
+  expect(readLibrary('saved').map(v => v.id)).toEqual(['a']);
+});

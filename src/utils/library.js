@@ -1,4 +1,11 @@
-const key = (type) => `devtubes:${type}`;
+let owner = null;
+const key = (type) => owner ? `devtubes:user:${owner}:${type}` : `devtubes:${type}`;
+export function setLibraryOwner(userId) {
+  const next = userId || null;
+  if (owner === next) return;
+  owner = next;
+  window.dispatchEvent(new Event("devtubes-library"));
+}
 export const videoId = (video) =>
   typeof video?.id === "string" ? video.id : video?.id?.videoId;
 export function readLibrary(type) {
