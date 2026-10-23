@@ -27,7 +27,7 @@ test('choosing favorite topics changes For you and its topic bar, and refresh re
  expect(nav.textContent).not.toContain('Entrepreneurship');
  expect(container.querySelector('.video-card h3').textContent).toBe('AI engineering agents');
  const endpoint=new URL(axios.get.mock.calls[0][0],'http://localhost').searchParams.get('endpoint');
- expect(endpoint).toContain('q=ai%20engineering');
+ expect(endpoint).toContain('q=ai');
  await flush(()=>[...container.querySelectorAll('button')].find(b=>b.textContent==='Refresh videos').click());
  expect(axios.get).toHaveBeenCalledTimes(1);
  expect(service.saveFavorites).not.toHaveBeenCalled();
@@ -38,4 +38,22 @@ test('Google sign-in errors are visible while guest topic selection remains usab
  await flush(()=>[...container.querySelectorAll('button')].find(b=>b.textContent==='Continue with Google').click());
  expect(container.querySelector('[role="alert"]').textContent).toMatch(/Google sign-in failed/);
  expect([...container.querySelectorAll('button')].find(b=>b.textContent==='AI').disabled).toBe(false);
+});
+
+test('account settings accept more than eight topics and a custom topic',async()=>{
+ const {Simulate}=require('react-dom/test-utils');
+ await mount();
+ const options=[...container.querySelectorAll('.favorite-option')];
+ for(const option of options.slice(0,10)) await flush(()=>option.click());
+ expect(options[10].disabled).toBe(false);
+ const input=container.querySelector('input[aria-label="New topic"]');
+ expect(input).not.toBeNull();
+ await flush(()=>Simulate.change(input,{target:{value:'Urban gardening'}}));
+ await flush(()=>Simulate.submit(container.querySelector('.custom-topic-form')));
+ expect([...container.querySelectorAll('.favorite-option')].some(b=>b.textContent.includes('Urban gardening'))).toBe(true);
+ await flush(()=>[...container.querySelectorAll('button')].find(b=>b.textContent==='Save topics').click());
+ expect(JSON.parse(localStorage.getItem('devtubes:favorites'))).toHaveLength(11);
+ const customLink=[...container.querySelectorAll('.chips a')].find(a=>a.textContent==='Urban gardening');
+ expect(customLink.getAttribute('href')).toBe('/topic/urban%20gardening');
+ expect(container.querySelector('.chips a[href="/account"]')).toBeNull();
 });

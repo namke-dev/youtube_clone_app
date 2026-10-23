@@ -115,6 +115,10 @@ const assert = require("node:assert/strict");
   await page.locator(".video-card").first().waitFor();
   assert.equal(await page.locator(".video-card").count(), 6);
   assert.equal(await page.locator('a[href="/video/short-result"]').count(), 0);
+  assert.equal(await page.locator('.header a[href="/account"]').count(), 1);
+  assert.equal(await page.locator('.chips a[href="/account"], .sidebar a[href="/account"]').count(), 0);
+  const desktopAccount = await page.locator('.header a[href="/account"]').boundingBox();
+  assert.ok(Math.abs(desktopAccount.x + desktopAccount.width - (1440 - 24)) < 1);
   const initialCalls = requests.length;
   await page.getByRole("button", { name: "Refresh videos" }).click();
   await page.waitForFunction(() => document.querySelectorAll(".video-card").length === 6);
@@ -198,6 +202,11 @@ const assert = require("node:assert/strict");
     ),
     false,
   );
+  const phoneAccount = await page.locator('.header a[href="/account"]').boundingBox();
+  assert.ok(Math.abs(phoneAccount.x + phoneAccount.width - (390 - 14)) < 1);
+  assert.equal(phoneAccount.height, 28);
+  assert.equal((await page.locator(".header").boundingBox()).height, 32);
+  assert.equal(await page.locator(".header .header-saved").isVisible(), false);
   await page.screenshot({ path: "/tmp/devtubes-mobile.png", fullPage: true });
   await page.getByRole("button", { name: "Open search" }).click();
   await page
@@ -251,7 +260,7 @@ const assert = require("node:assert/strict");
   await page.getByRole("button", {name:"AI",exact:true}).click();
   await page.getByRole("button", {name:"Save topics",exact:true}).click();
   await page.locator(".video-card").first().waitFor();
-  assert.equal(await page.locator(".chips .chip:not(.topic-manage)").count(), 2);
+  assert.equal(await page.locator(".chips .chip").count(), 2);
   assert.equal(await page.locator(".chips .chip").last().textContent(), "AI");
   const personalizedCalls = requests.length;
   await page.getByRole("button", {name:"Refresh videos",exact:true}).click();
@@ -262,9 +271,32 @@ const assert = require("node:assert/strict");
   assert.equal(await page.locator(".chips .chip").last().textContent(), "AI");
   assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth > innerWidth),false);
   await page.screenshot({path:"/tmp/devtubes-personalized-phone.png",fullPage:true});
-  await page.locator('.chips a[href="/account"]').click();
+  await page.locator('.header a[href="/account"]').click();
   assert.equal(await page.getByRole("button", {name:"AI",exact:true}).getAttribute("aria-pressed"),"true");
   await page.screenshot({path:"/tmp/devtubes-account-phone.png",fullPage:true});
+  const presets = await page.locator('.favorite-option').all();
+  let extraSelections = 0;
+  for (const preset of presets) {
+    if (await preset.textContent() !== 'AI' && extraSelections < 9) {
+      await preset.click(); extraSelections++;
+    }
+  }
+  await page.getByRole('textbox', {name:'New topic',exact:true}).fill('C++ / .NET');
+  await page.getByRole('button', {name:'Add topic',exact:true}).click();
+  assert.equal(await page.getByRole('button', {name:'C++ / .NET',exact:true}).getAttribute('aria-pressed'),'true');
+  await page.getByRole('textbox', {name:'New topic',exact:true}).fill('W'.repeat(80));
+  await page.getByRole('button', {name:'Add topic',exact:true}).click();
+  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth > innerWidth),false);
+  await page.screenshot({path:'/tmp/devtubes-custom-topics-phone.png',fullPage:true});
+  await page.getByRole('button', {name:'Save topics',exact:true}).click();
+  await page.locator('.video-card').first().waitFor();
+  assert.equal(await page.evaluate(()=>JSON.parse(localStorage.getItem('devtubes:favorites')).length),12);
+  assert.equal(await page.locator('.chips a[href="/account"]').count(),0);
+  const customTopic = page.locator('.chips a').filter({hasText:'C++ / .NET'});
+  await customTopic.click();
+  await page.getByRole('heading',{name:'C++ / .NET',exact:true}).waitFor();
+  assert.equal(await page.locator('.chips .selected').textContent(),'C++ / .NET');
+  assert.ok(requests.some(endpoint=>endpoint.includes('q=c%2B%2B%20%2F%20.net')));
   assert.deepEqual(errors, []);
   console.log(
     "PASS guest topic selection/persistence/personalized refresh without extra requests, desktop/mobile layout, Shorts filtering, unsupported fullscreen viewport fallback, manual/automatic fullscreen including related-video navigation, search, pagination deduplication, video actions, comments on demand, related videos, saved persistence/removal, quota/empty states, channel routing; no uncaught browser errors.",

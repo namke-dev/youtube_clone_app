@@ -64,3 +64,43 @@ test('a slow previous search cannot replace the current search results', async (
   await flush(() => finishSlow({ data: { items } }));
   expect(cards().every(a => a.getAttribute('href').startsWith('/video/fast-'))).toBe(true);
 });
+
+test('a custom topic route searches its own name rather than the For you query',async()=>{
+ await flush(()=>root.render(<MemoryRouter initialEntries={['/topic/urban%20gardening']}><Routes><Route path="/topic/:topic" element={<HomePage/>}/></Routes></MemoryRouter>));
+ const endpoint=new URL(axios.get.mock.calls[0][0],'http://localhost').searchParams.get('endpoint');
+ expect(endpoint).toContain('q=urban%20gardening');
+ expect(container.querySelector('h1').textContent).toBe('urban gardening');
+});
+
+test.each(['design%20systems','%20'])('custom topic %s is decoded exactly once',async name=>{
+ await flush(()=>root.render(<MemoryRouter initialEntries={[`/topic/${encodeURIComponent(name)}`]}><Routes><Route path="/topic/:topic" element={<HomePage/>}/></Routes></MemoryRouter>));
+ const endpoint=new URL(axios.get.mock.calls[0][0],'http://localhost').searchParams.get('endpoint');
+ expect(endpoint).toContain('q='+encodeURIComponent(name));
+ expect(container.querySelector('h1').textContent).toBe(name);
+});
+
+test('direct topic links tolerate a trailing route slash',async()=>{
+ await flush(()=>root.render(<MemoryRouter initialEntries={['/topic/physics/']}><Routes><Route path="/topic/:topic" element={<HomePage/>}/></Routes></MemoryRouter>));
+ expect(container.querySelector('h1').textContent).toBe('Physics');
+});
+
+test('large For you lists refresh locally until the candidate window expires',async()=>{
+ const {AccountProvider}=require('../context/account-context');
+ const {writeCachedFavorites}=require('../utils/account-service');
+ const now=jest.spyOn(Date,'now').mockReturnValue(0);
+ writeCachedFavorites(null,Array.from({length:40},(_,i)=>`Favorite subject ${i}`));
+ const service={configured:false,getSession:async()=>null,subscribe:()=>()=>{}};
+ try {
+  await flush(()=>root.render(<AccountProvider service={service}><MemoryRouter><HomePage/></MemoryRouter></AccountProvider>));
+  expect(cards()).toHaveLength(24);
+  expect(axios.get).toHaveBeenCalledTimes(1);
+  const first=axios.get.mock.calls[0][0];
+  now.mockReturnValue(10000);
+  await flush(()=>button('Refresh videos').click());
+  expect(axios.get).toHaveBeenCalledTimes(1);
+  now.mockReturnValue(30*60*1000+1);
+  await flush(()=>button('Refresh videos').click());
+  expect(axios.get).toHaveBeenCalledTimes(2);
+  expect(axios.get.mock.calls[1][0]).not.toBe(first);
+ } finally {now.mockRestore();}
+});

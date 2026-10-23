@@ -161,6 +161,8 @@ svg.MuiSvgIcon-root {
   border-radius: 50%;
   color: #555965;
 }
+.account-mark, .header-saved { flex-shrink: 0; }
+.account-initial { font-size: 13px; font-weight: 700; line-height: 1; }
 .mobile-search {
   display: none;
 }
@@ -810,6 +812,7 @@ svg.MuiSvgIcon-root {
     background: none;
     color: #344055;
   }
+  .header .header-saved { display: none; }
   .header.search-open {
     height: var(--header);
     padding-bottom: 54px;
@@ -1217,13 +1220,15 @@ html.video-expanded, html.video-expanded body { overflow: hidden; }
 .account-save > span { color: var(--muted); font-size: 12px; }
 .account-error { color: #9d2929; line-height: 1.6; }
 .account-error .button { margin-top: 10px; }
-.sidebar .account-link { display: flex; align-items: center; gap: 8px; margin-top: 18px; font-size: 12px; min-height: 36px; }
-.chips .topic-manage { gap: 5px; }
-.chips .topic-manage svg { font-size: 16px; }
 @media (max-width: 640px) {
   .account-card { padding: 18px; border-radius: 20px; }
   .account-card h2 { font-size: 20px; }
   .account-save { align-items: flex-start; flex-direction: column; }
-  .chips .topic-manage span { display: none; }
-  .chips .topic-manage { padding-inline: 8px; min-width: 32px; }
 }
+
+.custom-topic-form { margin-top: 20px; }
+.custom-topic-form label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 8px; }
+.custom-topic-form > div { display: flex; gap: 8px; }
+.custom-topic-form input { flex: 1; min-width: 0; border: 1px solid var(--line); border-radius: 22px; padding: 10px 14px; background: var(--surface); color: var(--ink); font: inherit; }
+.custom-topic-form [role="alert"] { color: #9d2929; font-size: 13px; }
+.favorite-option { max-width: 100%; overflow-wrap: anywhere; }

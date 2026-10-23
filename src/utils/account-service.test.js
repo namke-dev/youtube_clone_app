@@ -17,11 +17,11 @@ test('preferences load and save are scoped to the authenticated user ID', async 
   const upsert=jest.fn().mockResolvedValue({error:null});
   const from=jest.fn().mockReturnValue({select:()=>({eq}),upsert});
   const service=createAccountService({from});
-  expect(await service.loadFavorites('alice')).toEqual(['AI']);
+  expect(await service.loadFavorites('alice')).toEqual(['AI','unknown']);
   expect(eq).toHaveBeenCalledWith('user_id','alice');
   await service.saveFavorites('alice',['AI','unknown']);
   expect(from).toHaveBeenCalledWith('user_preferences');
-  expect(upsert).toHaveBeenCalledWith(expect.objectContaining({user_id:'alice',favorite_topics:['AI']}),{onConflict:'user_id'});
+  expect(upsert).toHaveBeenCalledWith(expect.objectContaining({user_id:'alice',favorite_topics:['AI','unknown']}),{onConflict:'user_id'});
 });
 test('server preference failures are surfaced and never reported as saved', async () => {
   const service=createAccountService({from:()=>({upsert:async()=>({error:{message:'denied'}})})});

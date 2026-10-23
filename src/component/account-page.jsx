@@ -3,7 +3,7 @@ import {useNavigate} from 'react-router-dom';
 import GoogleIcon from '@mui/icons-material/Google';
 import {useAccount} from '../context/account-context';
 import {topics} from '../utils/topics';
-import {MAX_FAVORITES} from '../utils/personalization';
+import {cleanFavorites, MAX_TOPIC_LENGTH} from '../utils/personalization';
 import SideBar from './side-bar';
 
 export default function AccountPage() {
@@ -11,11 +11,23 @@ export default function AccountPage() {
   const navigate=useNavigate();
   const [draft,setDraft]=useState(account.favorites);
   const [starting,setStarting]=useState(false);
+  const [customTopic,setCustomTopic]=useState('');
+  const [topicError,setTopicError]=useState('');
   useEffect(()=>{setDraft(account.favorites);},[account.favorites]);
   const blocked=account.loading||account.saving||(account.user&&!account.profileReady);
   function toggle(name) {
-    setDraft(old=>old.includes(name)?old.filter(value=>value!==name):old.length<MAX_FAVORITES?[...old,name]:old);
+    setDraft(old=>old.includes(name)?old.filter(value=>value!==name):[...old,name]);
   }
+  function addTopic(event) {
+    event.preventDefault();
+    const names=cleanFavorites([...draft,customTopic]);
+    if(names.length===draft.length) {
+      setTopicError('Enter a new topic that is not already selected.');
+      return;
+    }
+    setDraft(names);setCustomTopic('');setTopicError('');
+  }
+  const options=[...topics.slice(1).map(topic=>topic.name),...draft.filter(name=>!topics.some(topic=>topic.name===name))];
   async function save() {
     if(await account.saveFavorites(draft)) navigate('/');
   }
@@ -42,10 +54,15 @@ export default function AccountPage() {
       </>}
     </section>
     <section className="account-card" aria-labelledby="favorites-heading">
-      <div className="account-section-heading"><h2 id="favorites-heading">Your favorite topics</h2><span aria-live="polite">{draft.length} / {MAX_FAVORITES}</span></div>
-      <p>Choose up to {MAX_FAVORITES}. We’ll pin them in your topic bar and use them to shape For you.</p>
+      <div className="account-section-heading"><h2 id="favorites-heading">Your favorite topics</h2><span aria-live="polite">{draft.length} selected</span></div>
+      <p>Choose as many as you like, or add your own. We’ll use them to shape For you and your topic bar.</p>
+      <form className="custom-topic-form" onSubmit={addTopic}>
+        <label htmlFor="custom-topic">Add your own topic</label>
+        <div><input id="custom-topic" aria-label="New topic" value={customTopic} onChange={event=>{setCustomTopic(event.target.value);setTopicError('');}} maxLength={MAX_TOPIC_LENGTH} placeholder="e.g. Urban gardening" disabled={blocked}/><button className="button" disabled={blocked||!customTopic.trim()} type="submit">Add topic</button></div>
+        {topicError&&<p role="alert">{topicError}</p>}
+      </form>
       <div className="favorite-options" aria-label="Choose favorite topics">
-        {topics.slice(1).map(topic=><button key={topic.name} className={`favorite-option ${draft.includes(topic.name)?'selected':''}`} aria-pressed={draft.includes(topic.name)} disabled={blocked||(!draft.includes(topic.name)&&draft.length>=MAX_FAVORITES)} onClick={()=>toggle(topic.name)}>{topic.name}</button>)}
+        {options.map(name=><button key={name} className={`favorite-option ${draft.includes(name)?'selected':''}`} aria-pressed={draft.includes(name)} disabled={blocked} onClick={()=>toggle(name)}>{name}</button>)}
       </div>
       <div className="account-save"><button className="button primary" disabled={blocked} onClick={save}>{account.saving?'Saving…':'Save topics'}</button><span>{account.user?'Saved to your account.':'Saved on this device.'}</span></div>
     </section>

@@ -2,7 +2,7 @@ export const topics = [
   {
     name: "For you",
     query:
-      "AI product building communication practical philosophy",
+      "AI | product building | communication | philosophy",
   },
 
   // Kinh doanh và xây sản phẩm

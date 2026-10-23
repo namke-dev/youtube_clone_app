@@ -6,11 +6,11 @@ const topics = [
   { name: 'Physics', query: 'physics science universe' },
   { name: 'Apple', query: 'Apple Mac iPhone' },
 ];
-test('favorites are known, deduplicated and capped', () => {
-  expect(cleanFavorites(['AI', 'missing', 'AI', 'Physics', 'For you'], topics)).toEqual(['AI', 'Physics']);
+test('favorites are deduplicated and preserve custom names', () => {
+  expect(cleanFavorites(['AI', 'missing', 'AI', 'Physics', 'For you'], topics)).toEqual(['AI', 'missing', 'Physics']);
   expect(cleanFavorites('AI', topics)).toEqual([]);
   const catalog = Array.from({length: 12}, (_, i) => ({name: String(i+1)}));
-  expect(cleanFavorites(catalog.map(t => t.name), [{name:'For you'}, ...catalog])).toHaveLength(8);
+  expect(cleanFavorites(catalog.map(t => t.name), [{name:'For you'}, ...catalog])).toHaveLength(12);
 });
 test('favorite topic bar puts For you first, includes current topic and keeps guest catalog when empty', () => {
   expect(favoriteTopicBar(['Physics'], topics).map(t => t.name)).toEqual(['For you', 'Physics']);
@@ -18,7 +18,7 @@ test('favorite topic bar puts For you first, includes current topic and keeps gu
   expect(favoriteTopicBar([], topics)).toEqual(topics);
 });
 test('For you creates one combined favorite query and keeps default guest query', () => {
-  expect(forYouQuery(['AI', 'Physics'], topics)).toBe('AI engineering agents | physics science universe');
+  expect(forYouQuery(['AI', 'Physics'], topics)).toBe('AI | Physics');
   expect(forYouQuery([], topics)).toBe('curious ideas');
 });
 test('favorite relevance boosts discovery without false AI substring matches', () => {
@@ -33,4 +33,28 @@ test('own watch history supplies a bounded channel-interest bonus', () => {
   expect(interestScore(item, [], [{id:'old', snippet:{channelId:'known'}}], topics)).toBeGreaterThan(0);
   expect(interestScore(item, [], [], topics)).toBe(0);
   expect(interestScore(item, [], Array(100).fill({snippet:{channelId:'known'}}), topics)).toBeLessThanOrEqual(0.15);
+});
+
+test('custom topics keep their names, normalize duplicates and have no eight-topic cap',()=>{
+ const names=Array.from({length:40},(_,i)=>`My topic ${i}`);
+ expect(cleanFavorites(names)).toEqual(names);
+ expect(cleanFavorites(['  Urban   gardening ','urban gardening',' ai ','For YOU',null,''])).toEqual(['Urban gardening','AI']);
+ expect(cleanFavorites(['x'.repeat(81)])).toEqual([]);
+});
+test('custom topic links resolve to their own query instead of For you',()=>{
+ const {topicFromName}=require('./personalization');
+ expect(topicFromName('urban gardening')).toEqual({name:'urban gardening',query:'urban gardening'});
+ expect(favoriteTopicBar(['Urban gardening'],topics).map(t=>t.name)).toEqual(['For you','Urban gardening']);
+ expect(interestScore({snippet:{title:'Urban gardening on a balcony'}},['Urban gardening'])).toBeGreaterThan(0);
+});
+test('large favorite lists make a bounded query and rotate coverage across cache windows',()=>{
+ const names=Array.from({length:35},(_,i)=>`Topic number ${i}`);
+ const covered=new Set();
+ for(let slot=0;slot<names.length;slot++){
+  const q=forYouQuery(names,topics,slot*30*60*1000);
+  expect(q.length).toBeLessThanOrEqual(150);
+  q.split(' | ').forEach(term=>covered.add(term));
+ }
+ expect([...covered].sort()).toEqual([...names].sort());
+ expect(forYouQuery(names,topics,1)).toBe(forYouQuery(names,topics,10000));
 });

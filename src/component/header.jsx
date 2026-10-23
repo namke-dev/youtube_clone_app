@@ -1,7 +1,11 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Icon } from "./ui";
+import { useAccount } from "../context/account-context";
 export default function Header() {
+  const { user } = useAccount();
+  const accountName = user?.user_metadata?.full_name || user?.email || "Your account";
+  const initial = Array.from(accountName.trim())[0]?.toUpperCase() || "?";
   const [query, setQuery] = useState("");
   const [open, setOpen] = useState(false);
   const input = useRef();
@@ -58,8 +62,11 @@ export default function Header() {
       >
         <Icon name="search" />
       </button>
-      <Link className="library-mark" to="/saved" aria-label="Open saved videos">
+      <Link className="library-mark header-saved" to="/saved" aria-label="Open saved videos">
         <Icon name="saved" />
+      </Link>
+      <Link className="library-mark account-mark" to="/account" aria-label="Your account and favorite topics" title={user ? accountName : "Sign in and choose your topics"}>
+        {user ? <span className="account-initial" aria-hidden="true">{initial}</span> : <Icon name="account" />}
       </Link>
     </header>
   );

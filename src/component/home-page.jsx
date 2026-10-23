@@ -7,15 +7,22 @@ import SideBar from "./side-bar";
 import Videos from "./videos";
 import VideoLink from "./video-link";
 import { useAccount } from "../context/account-context";
-import { favoriteTopicBar, forYouQuery, interestScore } from "../utils/personalization";
+import { favoriteTopicBar, forYouQuery, interestScore, topicFromName } from "../utils/personalization";
 export default function HomePage() {
   const { searchTerm, topic } = useParams();
   const location = useLocation();
   const account = useAccount();
-  const selected =
-    topics.find((t) => t.name.toLowerCase() === topic) || topics[0];
+  let topicName = topic;
+  if (topic) {
+    // Read the encoded path directly: this router version decodes % sequences
+    // twice in params, which changes custom names such as "Design%20systems".
+    try { topicName = decodeURIComponent(location.pathname.slice('/topic/'.length).replace(/\/+$/, '')); }
+    catch { topicName = topic; }
+  }
+  const selected = topic ? topicFromName(account.favorites.find(name => name.toLowerCase() === topicName.toLowerCase()) || topicName) : topics[0];
+  const [queryTime, setQueryTime] = useState(Date.now);
   const isForYou = !searchTerm && selected.name === topics[0].name;
-  const query = searchTerm || (isForYou ? forYouQuery(account.favorites) : selected.query);
+  const query = searchTerm || (isForYou ? forYouQuery(account.favorites, topics, queryTime) : selected.query);
   const favoriteKey = JSON.stringify(account.favorites);
   const userId = account.user?.id || null;
   const visibleTopics = favoriteTopicBar(account.favorites, topics, topic ? selected.name : undefined);
@@ -66,6 +73,11 @@ export default function HomePage() {
       });
     return () => { generation.current = current + 1; };
   }, [query, includeChannels, attempt, location.key, history, account.loading, favoriteKey, userId, isForYou]);
+  function refresh() {
+    const now = Date.now();
+    if (now - queryTime >= 30 * 60 * 1000) setQueryTime(now);
+    setAttempt(n => n + 1);
+  }
   async function loadMore() {
     if (busy.current || !hasMore) return;
     busy.current = true;
@@ -122,16 +134,14 @@ export default function HomePage() {
           </span>
         </div>
         <nav className="chips" aria-label="Video topics">
-          {visibleTopics.map((t, index) => (
-            <React.Fragment key={t.name}><Link
+          {visibleTopics.map((t) => (
+            <Link key={t.name}
               className={`chip ${!searchTerm && selected.name === t.name ? "selected" : ""}`}
-              to={t.name === "For you" ? "/" : `/topic/${t.name.toLowerCase()}`}
+              to={t.name === "For you" ? "/" : `/topic/${encodeURIComponent(t.name.toLowerCase())}`}
               aria-current={!searchTerm && selected.name === t.name ? "page" : undefined}
             >
               {t.name}
             </Link>
-            {index === 0 && <Link className="chip topic-manage" to="/account" aria-label="Your account and favorite topics"><Icon name="account"/><span>Your topics</span></Link>}
-            </React.Fragment>
           ))}
         </nav>
         {home && featured && (
@@ -169,14 +179,14 @@ export default function HomePage() {
                   ? "Explore videos"
                   : `${selected.name}, in focus`}
           </h2>
-          <button className="button" onClick={() => setAttempt((n) => n + 1)} disabled={loading || more}>
+          <button className="button" onClick={refresh} disabled={loading || more}>
             Refresh videos
           </button>
         </div>
         <Status
           loading={loading}
           error={!videos.length && error}
-          retry={() => setAttempt((n) => n + 1)}
+          retry={refresh}
           empty={!loading && !error && !videos.length}
         />
         <Videos videos={videos} />
