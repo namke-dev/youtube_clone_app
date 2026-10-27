@@ -1278,8 +1278,17 @@ html.video-expanded, html.video-expanded body { overflow: hidden; }
 }
 .short-content { height: 100%; max-width: 470px; margin: auto; display: flex; flex-direction: column; gap: 8px; padding-bottom: 12px; }
 .short-stage { flex: 1; min-height: 0; display: flex; gap: 8px; }
-.short-media { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 8px; }
-.short-player, .short-poster { flex: 1; min-height: 0; overflow: hidden; border-radius: 18px; background: #111; }
+.short-media { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 8px; container-type: size; }
+.short-player, .short-poster {
+  /* Leave 44px for playback actions and an 8px gap beneath the portrait frame. */
+  width: min(100%, calc((100cqh - 52px) * 9 / 16));
+  aspect-ratio: 9 / 16;
+  flex: none;
+  align-self: center;
+  overflow: hidden;
+  border-radius: 18px;
+  background: #111;
+}
 .short-poster img { width: 100%; height: 100%; object-fit: contain; }
 .short-poster .thumbnail-fallback { height: 100%; }
 .short-actions { display: flex; justify-content: center; gap: 6px; }

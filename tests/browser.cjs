@@ -321,6 +321,17 @@ const assert = require("node:assert/strict");
   // Shorts has its own phone navigation destination and snap-scrolling feed.
   await page.getByRole('navigation', {name:'Mobile navigation'}).getByRole('link', {name:'Shorts',exact:true}).click();
   await page.locator('.short-card[data-active="true"]').waitFor();
+  const assertPortraitFrames = async () => {
+    const frames = await page.locator('.short-player, .short-poster').evaluateAll(elements => elements.map(el => {
+      const {width,height} = el.getBoundingClientRect();
+      const media = el.closest('.short-media').getBoundingClientRect();
+      return {width,height,availableWidth:media.width,availableHeight:media.height};
+    }));
+    for (const frame of frames) {
+      assert.ok(Math.abs(frame.width / frame.height - 9 / 16) < 0.005,'Shorts players and posters keep a 9:16 ratio');
+      assert.ok(frame.width <= frame.availableWidth && frame.height + 52 <= frame.availableHeight + 1,'Portrait video and controls fit in the available space');
+    }
+  };
   const shortsCalls = requests.length;
   const firstShort = await page.locator('.short-card[data-active="true"]').getAttribute('data-video-id');
   await page.locator('.short-card[data-active="true"] .short-scroll-rail').hover();
@@ -338,8 +349,12 @@ const assert = require("node:assert/strict");
     const feedBox=await page.locator('.shorts-feed').boundingBox();
     const dockBox=await dock.boundingBox();
     assert.ok(feedBox.y+feedBox.height<dockBox.y);
+    await assertPortraitFrames();
   }
+  await page.setViewportSize({width:1440,height:1100});
+  await assertPortraitFrames();
   await page.setViewportSize({width:320,height:568});
+  await assertPortraitFrames();
   const smallFeedBox=await page.locator('.shorts-feed').boundingBox();
   const smallDockBox=await page.locator('.bottom-nav').boundingBox();
   assert.ok(smallFeedBox.y+smallFeedBox.height<smallDockBox.y,'Shorts stays above the dock on a small phone');
@@ -360,7 +375,7 @@ const assert = require("node:assert/strict");
   assert.equal(await page.locator('.bottom-nav').isVisible(),false);
   assert.deepEqual(errors, []);
   console.log(
-    "PASS Shorts navigation, snap scrolling, cached refresh and bounded pagination; guest topic selection/persistence/personalized refresh without extra requests, desktop/mobile layout, Shorts filtering, unsupported fullscreen viewport fallback, manual/automatic fullscreen including related-video navigation, search, pagination deduplication, video actions, comments on demand, related videos, saved persistence/removal, quota/empty states, channel routing; no uncaught browser errors.",
+    "PASS 9:16 Shorts player/poster sizing on desktop and phones; Shorts navigation, snap scrolling, cached refresh and bounded pagination; guest topic selection/persistence/personalized refresh without extra requests, desktop/mobile layout, Shorts filtering, unsupported fullscreen viewport fallback, manual/automatic fullscreen including related-video navigation, search, pagination deduplication, video actions, comments on demand, related videos, saved persistence/removal, quota/empty states, channel routing; no uncaught browser errors.",
   );
   await browser.close();
   await new Promise((resolve) => server.close(resolve));
