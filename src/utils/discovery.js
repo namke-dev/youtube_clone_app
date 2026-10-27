@@ -12,7 +12,7 @@ const channelKey = item => item?.id?.channelId || item?.snippet?.channelId;
 // History is excluded by default. Hooks can later consume account interests or
 // progress without changing the shared, unpersonalized candidate pool.
 export function rankCandidates(items, {
-  query = '', watchedIds = new Set(), previous = [], limit = 24,
+  query = '', format = 'videos', watchedIds = new Set(), previous = [], limit = 24,
   now = Date.now(), random = Math.random,
   personalInterest = () => 0, watchedPenalty = () => 0,
   repeatedChannelPenalty = () => 0,
@@ -27,7 +27,7 @@ export function rankCandidates(items, {
   const candidates = [];
   items.forEach((item, index) => {
     const key = resultKey(item);
-    if (!key || !item.snippet || seen.has(key) || isShort(item)) return;
+    if (!key || !item.snippet || seen.has(key) || (format === 'shorts' ? !isShort(item) : isShort(item))) return;
     seen.add(key);
     if (!item.id?.channelId && watchedIds.has(videoId(item))) return;
     const title = (item.snippet.title || '').toLowerCase();
@@ -73,14 +73,18 @@ export function createDiscovery(fetcher = fetchFromApi, clock = Date.now) {
   return {
     async discover(query, options = {}) {
       const normalized = normalize(query);
-      const endpoint = `search?part=snippet,id&type=${options.includeChannels ? 'video,channel' : 'video'}&maxResults=50&q=${encodeURIComponent(normalized)}`;
+      const shorts = options.format === 'shorts';
+      const providerQuery = shorts
+        ? normalized.split('|').map(part => `${part.trim()} #shorts`).join(' | ')
+        : normalized;
+      const endpoint = `search?part=snippet,id&type=${options.includeChannels && !shorts ? 'video,channel' : 'video'}&maxResults=50&q=${encodeURIComponent(providerQuery)}`;
       const { pool, fresh } = await getPool(endpoint);
       const watchedIds = options.watchedIds || new Set();
-      const previous = options.loadMore && !fresh
-        ? (options.previous || []).filter(item => item.id?.channelId || !watchedIds.has(videoId(item))) : [];
+      const previous = options.loadMore && (!fresh || shorts)
+        ? (options.previous || []).filter(item => shorts ? isShort(item) : item.id?.channelId || !watchedIds.has(videoId(item))) : [];
       const selection = { ...options, query: normalized, previous, watchedIds, now: clock() };
       let items = rankCandidates(pool.items, selection);
-      // Explicit pagination alone may spend another call. Never prefetch for
+      // Pagination alone may spend another call. Never prefetch for
       // refresh, even if history or channel diversity leaves a short selection.
       if (options.loadMore && !fresh && !items.length && pool.token) {
         if (!pool.more) {

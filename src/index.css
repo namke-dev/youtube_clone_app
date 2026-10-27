@@ -687,7 +687,7 @@ svg.MuiSvgIcon-root {
 }
 @media (min-width: 1700px) {
   .video-grid {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(5, minmax(0, 1fr));
   }
 }
 @media (max-width: 1200px) {
@@ -957,7 +957,7 @@ svg.MuiSvgIcon-root {
   /* Floating glass dock, confined to the existing phone breakpoint. */
   .bottom-nav {
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(5, minmax(0, 1fr));
     gap: 4px;
     position: fixed;
     bottom: calc(12px + env(safe-area-inset-bottom, 0px));
@@ -1235,3 +1235,80 @@ html.video-expanded, html.video-expanded body { overflow: hidden; }
 .custom-topic-form input { flex: 1; min-width: 0; border: 1px solid var(--line); border-radius: 22px; padding: 10px 14px; background: var(--surface); color: var(--ink); font: inherit; }
 .custom-topic-form [role="alert"] { color: #9d2929; font-size: 13px; }
 .favorite-option { max-width: 100%; overflow-wrap: anywhere; }
+
+.content-types {
+  display: flex;
+  gap: 4px;
+  width: fit-content;
+  padding: 4px;
+  margin-bottom: 12px;
+  border-radius: 24px;
+  background: var(--surface);
+}
+.content-types a { padding: 7px 18px; border-radius: 20px; color: var(--muted); font-weight: 600; }
+.content-types a[aria-current="page"] { background: var(--ink); color: white; }
+.shorts-page {
+  height: calc(100dvh - var(--header));
+  min-height: 580px;
+  display: flex;
+  flex-direction: column;
+  padding-block: 16px;
+}
+.shorts-page .intro { margin-bottom: 8px; flex-shrink: 0; }
+.shorts-page .intro h1 { font-size: 24px; }
+.shorts-page .intro p, .shorts-page .intro .eyebrow { display: none; }
+.shorts-page .content-types, .shorts-page .chips, .shorts-page .section-heading { flex-shrink: 0; }
+.shorts-page .chips { margin-bottom: 0; }
+.shorts-page .section-heading { margin: 8px 0; }
+.shorts-page .section-heading h2 { font-size: 17px; }
+.shorts-feed {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+  scroll-snap-type: y mandatory;
+  scrollbar-width: thin;
+  scroll-padding: 0;
+  border-radius: 18px;
+}
+.short-card {
+  height: 100%;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+}
+.short-content { height: 100%; max-width: 470px; margin: auto; display: flex; flex-direction: column; gap: 8px; padding-bottom: 12px; }
+.short-stage { flex: 1; min-height: 0; display: flex; gap: 8px; }
+.short-media { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 8px; }
+.short-player, .short-poster { flex: 1; min-height: 0; overflow: hidden; border-radius: 18px; background: #111; }
+.short-poster img { width: 100%; height: 100%; object-fit: contain; }
+.short-poster .thumbnail-fallback { height: 100%; }
+.short-actions { display: flex; justify-content: center; gap: 6px; }
+.short-actions .button { min-height: 44px; padding: 8px 12px; font-size: 12px; }
+.short-scroll-rail { width: 44px; flex-shrink: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; touch-action: pan-y; }
+.short-scroll-rail .button { width: 44px; height: 44px; padding: 0; font-size: 24px; }
+.short-scroll-rail span { writing-mode: vertical-rl; font-size: 11px; color: var(--muted); }
+.short-scroll-rail button:disabled { opacity: 0.3; cursor: default; }
+.short-caption { min-height: 56px; }
+.short-caption h2 { font-size: 15px; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; letter-spacing: -0.2px; }
+.short-caption a, .short-caption p { color: var(--muted); font-size: 12px; }
+.shorts-end { min-height: 100%; scroll-snap-align: start; display: flex; align-items: center; justify-content: center; text-align: center; padding: 20px; color: var(--muted); }
+@media (max-width: 640px) {
+  .content-types { margin-bottom: 6px; background: transparent; }
+  .content-types a { padding: 6px 16px; font-size: 12px; }
+  .shorts-page { padding: 10px 14px calc(112px + env(safe-area-inset-bottom, 0px)); }
+  .shorts-page .intro h1 { font-size: 20px; }
+  .shorts-page .chips { margin-inline: -14px; }
+  .shorts-page .section-heading { margin: 4px 0 8px; }
+  .shorts-page .section-heading h2 { font-size: 13px; }
+  .shorts-page .section-heading .button { min-height: 32px; padding: 6px 12px; font-size: 12px; }
+}
+@media (max-width: 640px) and (max-height: 700px) {
+  /* Keep the portrait player usable above the dock on compact phones. */
+  .shorts-page { position: relative; min-height: 530px; }
+  .shorts-page .intro { display: none; }
+  .shorts-page .section-heading { position: absolute; top: 10px; right: 14px; margin: 0; }
+  .shorts-page .section-heading h2 { display: none; }
+  .shorts-page .content-types { margin-bottom: 0; }
+  .shorts-page .short-content { padding-bottom: 8px; }
+  .shorts-page .short-caption { min-height: 48px; }
+}

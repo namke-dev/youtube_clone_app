@@ -5,6 +5,7 @@ import { readLibrary, videoId } from "../utils/library";
 import { topics, Icon, Status, Thumbnail } from "./ui";
 import SideBar from "./side-bar";
 import Videos from "./videos";
+import ShortsFeed from "./shorts-feed";
 import VideoLink from "./video-link";
 import { useAccount } from "../context/account-context";
 import { favoriteTopicBar, forYouQuery, interestScore, topicFromName } from "../utils/personalization";
@@ -12,6 +13,8 @@ export default function HomePage() {
   const { searchTerm, topic } = useParams();
   const location = useLocation();
   const account = useAccount();
+  const shorts = location.pathname === "/shorts" || new URLSearchParams(location.search).get("format") === "shorts";
+  const format = shorts ? "shorts" : "videos";
   let topicName = topic;
   if (topic) {
     // Read the encoded path directly: this router version decodes % sequences
@@ -34,9 +37,11 @@ export default function HomePage() {
   const [attempt, setAttempt] = useState(0);
   const generation = useRef(0);
   const busy = useRef(false);
-  const includeChannels = Boolean(searchTerm);
+  const includeChannels = Boolean(searchTerm) && !shorts;
   const historyKey = () => JSON.stringify(readLibrary("history").map(videoId));
   const [history, setHistory] = useState(historyKey);
+  // Recording playback must not reshuffle the Short that is currently playing.
+  const watchedHistory = shorts ? null : history;
   useEffect(() => {
     const changed = () => setHistory(historyKey());
     window.addEventListener("devtubes-library", changed);
@@ -58,7 +63,7 @@ export default function HomePage() {
     const personalInterest = isForYou
       ? item => interestScore(item, JSON.parse(favoriteKey), readLibrary("history"))
       : () => 0;
-    discovery.discover(query, { includeChannels, watchedIds: new Set(JSON.parse(history)), personalInterest })
+    discovery.discover(query, { format, includeChannels, watchedIds: new Set(watchedHistory ? JSON.parse(watchedHistory) : readLibrary("history").map(videoId)), personalInterest })
       .then((data) => {
         if (current === generation.current) {
           setVideos(data.items);
@@ -72,7 +77,7 @@ export default function HomePage() {
         if (current === generation.current) setLoading(false);
       });
     return () => { generation.current = current + 1; };
-  }, [query, includeChannels, attempt, location.key, history, account.loading, favoriteKey, userId, isForYou]);
+  }, [query, includeChannels, attempt, location.key, watchedHistory, format, account.loading, favoriteKey, userId, isForYou]);
   function refresh() {
     const now = Date.now();
     if (now - queryTime >= 30 * 60 * 1000) setQueryTime(now);
@@ -86,7 +91,7 @@ export default function HomePage() {
     setError(null);
     try {
       const data = await discovery.discover(query, {
-        includeChannels,
+        includeChannels, format,
         watchedIds: new Set(readLibrary("history").map(videoId)),
         loadMore: true,
         previous: videos,
@@ -104,12 +109,14 @@ export default function HomePage() {
       }
     }
   }
-  const home = !searchTerm && !topic && location.pathname === "/";
+  const home = !shorts && !searchTerm && !topic && location.pathname === "/";
+  const videoPath = location.pathname === "/shorts" ? "/" : location.pathname;
+  const shortsPath = ["/", "/explore", "/shorts"].includes(location.pathname) ? "/shorts" : `${location.pathname}?format=shorts`;
   const featured = videos.find(videoId);
   return (
     <div className="app-layout">
       <SideBar />
-      <main id="main" className="feed">
+      <main id="main" className={`feed ${shorts ? "shorts-page" : ""}`}>
         <div className="intro">
           <div>
             <h1 className={home ? "desktop-title" : ""}>
@@ -117,7 +124,9 @@ export default function HomePage() {
                 ? `Results for “${searchTerm}”`
                 : topic
                   ? selected.name
-                  : home
+                  : shorts
+                    ? "Shorts"
+                    : home
                     ? "Find your next rabbit hole."
                     : "Made for curious minds."}
             </h1>
@@ -133,11 +142,15 @@ export default function HomePage() {
             {searchTerm ? "SEARCH" : "DISCOVER SOMETHING NEW"}
           </span>
         </div>
+        <nav className="content-types" aria-label="Content type">
+          <Link to={videoPath} aria-current={!shorts ? "page" : undefined}>Videos</Link>
+          <Link to={shortsPath} aria-current={shorts ? "page" : undefined}>Shorts</Link>
+        </nav>
         <nav className="chips" aria-label="Video topics">
           {visibleTopics.map((t) => (
             <Link key={t.name}
               className={`chip ${!searchTerm && selected.name === t.name ? "selected" : ""}`}
-              to={t.name === "For you" ? "/" : `/topic/${encodeURIComponent(t.name.toLowerCase())}`}
+              to={t.name === "For you" ? (shorts ? "/shorts" : "/") : `/topic/${encodeURIComponent(t.name.toLowerCase())}${shorts ? "?format=shorts" : ""}`}
               aria-current={!searchTerm && selected.name === t.name ? "page" : undefined}
             >
               {t.name}
@@ -171,7 +184,7 @@ export default function HomePage() {
         )}
         <div className="section-heading">
           <h2>
-            {searchTerm
+            {shorts ? "Scroll to discover." : searchTerm
               ? "Search results"
               : home
                 ? "Worth your time"
@@ -180,7 +193,7 @@ export default function HomePage() {
                   : `${selected.name}, in focus`}
           </h2>
           <button className="button" onClick={refresh} disabled={loading || more}>
-            Refresh videos
+            {shorts ? "Refresh Shorts" : "Refresh videos"}
           </button>
         </div>
         <Status
@@ -189,16 +202,18 @@ export default function HomePage() {
           retry={refresh}
           empty={!loading && !error && !videos.length}
         />
-        <Videos videos={videos} />
+        {shorts && videos.length > 0
+          ? <ShortsFeed key={`${query}:${attempt}:${userId}:${favoriteKey}`} videos={videos} hasMore={hasMore} more={more} onLoadMore={loadMore} />
+          : <Videos videos={videos} />}
         {videos.length > 0 && error && (
           <p role="alert" className="inline-error">
             {error}
           </p>
         )}
-        {hasMore && (
+        {hasMore && (!shorts || !videos.length) && (
           <div className="load-more">
             <button className="button" onClick={loadMore} disabled={more}>
-              {more ? "Loading…" : "Explore more videos"}
+              {more ? "Loading…" : shorts ? "Find more Shorts" : "Explore more videos"}
             </button>
           </div>
         )}

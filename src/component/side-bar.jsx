@@ -4,6 +4,7 @@ import { Icon, topics } from "./ui";
 const links = [
   ["/", "Discover", "home"],
   ["/explore", "Explore", "explore"],
+  ["/shorts", "Shorts", "shorts"],
   ["/history", "History", "history"],
   ["/saved", "Saved videos", "saved"],
 ];

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import SlowMotionVideoOutlined from "@mui/icons-material/SlowMotionVideoOutlined";
 import HomeOutlined from "@mui/icons-material/HomeOutlined";
 import GridViewOutlined from "@mui/icons-material/GridViewOutlined";
 import HistoryOutlined from "@mui/icons-material/HistoryOutlined";
@@ -10,6 +11,7 @@ import ArrowForwardRounded from "@mui/icons-material/ArrowForwardRounded";
 import { fetchFromApi } from "../utils/fetchFromApi";
 export const icons = {
   home: HomeOutlined,
+  shorts: SlowMotionVideoOutlined,
   explore: GridViewOutlined,
   history: HistoryOutlined,
   saved: BookmarkBorderOutlined,

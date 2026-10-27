@@ -25,3 +25,34 @@ test('cached searches and refreshes exclude Shorts without additional API calls'
   expect((await discovery.discover('SOFTWARE')).items.map(v => v.id.videoId)).toEqual(['normal']);
   expect(fetcher).toHaveBeenCalledTimes(1);
 });
+
+test('Shorts ranking separates formats, excludes watched videos, and caps each creator', () => {
+  const short = (id, channelId) => video(id, { isShort: true, snippet: { title: 'Software #shorts', channelId } });
+  const items = [video('normal'), { id: { channelId: 'channel' }, snippet: { title: '#shorts channel' } },
+    short('watched', 'a'), short('a1', 'a'), short('a2', 'a'), short('a3', 'a'), short('b1', 'b')];
+  expect(rankCandidates(items, { format: 'shorts', watchedIds: new Set(['watched']), random: () => 0 })
+    .map(item => item.id.videoId)).toEqual(['a1', 'a2', 'b1']);
+});
+
+test('Shorts search targets every OR topic and refreshes from its own cached pool', async () => {
+  const short = video('short', { isShort: true });
+  const fetcher = jest.fn().mockResolvedValue({ items: [short, video('normal')] });
+  const discovery = createDiscovery(fetcher);
+  expect((await discovery.discover('AI | Physics', { format: 'shorts', includeChannels: true })).items).toEqual([short]);
+  expect((await discovery.discover('ai | physics', { format: 'shorts' })).items).toEqual([short]);
+  expect(fetcher).toHaveBeenCalledTimes(1);
+  const params = new URLSearchParams(fetcher.mock.calls[0][0].split('?')[1]);
+  expect(params.get('q')).toBe('ai #shorts | physics #shorts');
+  expect(params.get('type')).toBe('video');
+  expect(params.get('maxResults')).toBe('50');
+  expect((await discovery.discover('AI | Physics')).items.map(item => item.id.videoId)).toEqual(['normal']);
+});
+
+test('appending Shorts retains played entries so a swipe never replaces the current feed', async () => {
+  const shorts = ['s1', 's2', 's3'].map(id => video(id, { isShort: true }));
+  const discovery = createDiscovery(async () => ({ items: shorts }));
+  const first = await discovery.discover('swipe', { format: 'shorts', limit: 2, random: () => 0 });
+  const next = await discovery.discover('swipe', { format: 'shorts', limit: 2, loadMore: true,
+    previous: first.items, watchedIds: new Set(['s1']), random: () => 0 });
+  expect(next.items.map(item => item.id.videoId)).toEqual(['s1', 's2', 's3']);
+});

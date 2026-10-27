@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Icon } from "./ui";
 import { useAccount } from "../context/account-context";
 export default function Header() {
@@ -10,6 +10,7 @@ export default function Header() {
   const [open, setOpen] = useState(false);
   const input = useRef();
   const navigate = useNavigate();
+  const location = useLocation();
   useEffect(() => {
     const handler = (e) => {
       if ((e.metaKey || e.ctrlKey) && e.key === "k") {
@@ -24,7 +25,8 @@ export default function Header() {
   function search(e) {
     e.preventDefault();
     if (query.trim()) {
-      navigate(`/search/${encodeURIComponent(query.trim())}`);
+      const shorts = location.pathname === "/shorts" || new URLSearchParams(location.search).get("format") === "shorts";
+      navigate(`/search/${encodeURIComponent(query.trim())}${shorts ? "?format=shorts" : ""}`);
       setOpen(false);
       input.current?.blur();
     }

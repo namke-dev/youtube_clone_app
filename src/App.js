@@ -33,6 +33,7 @@ export default function App() {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/explore" element={<HomePage />} />
+        <Route path="/shorts" element={<HomePage />} />
         <Route path="/topic/:topic" element={<HomePage />} />
         <Route path="/search/:searchTerm" element={<HomePage />} />
         <Route path="/video/:id" element={<VideoDetail />} />

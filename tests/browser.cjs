@@ -45,6 +45,14 @@ const assert = require("node:assert/strict");
     );
     requests.push(endpoint);
     const path = endpoint.split("?")[0];
+    if (new URLSearchParams(endpoint.split('?')[1]).get('q')?.includes('#shorts')) {
+      const start = endpoint.includes('pageToken') ? 106 : 100;
+      return route.fulfill({json: {
+        items: Array.from({length: 6}, (_, i) => ({...item(start + i), isShort: true,
+          snippet: {...item(start + i).snippet, title: `An idea in a minute #shorts ${start + i}`}})),
+        ...(!endpoint.includes('pageToken') ? {nextPageToken: 'shorts-next'} : {})
+      }});
+    }
     if (endpoint.includes("q=quota"))
       return route.fulfill({ status: 429, json: { error: "limit" } });
     if (endpoint.includes("q=creators"))
@@ -303,18 +311,56 @@ const assert = require("node:assert/strict");
     const dock = page.getByRole('navigation', {name:'Mobile navigation'});
     await dock.waitFor();
     assert.equal(await page.locator('.bottom-nav').count(),1);
-    assert.equal(await dock.getByRole('link').count(),4);
+    assert.equal(await dock.getByRole('link').count(),5);
     assert.ok(await page.locator('#main').evaluate(el=>parseFloat(getComputedStyle(el).paddingBottom)) >= 112);
     const dockBox=await dock.boundingBox();
     assert.ok(dockBox.x > 0 && dockBox.x+dockBox.width < 390 && dockBox.y+dockBox.height < 844);
     assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth > innerWidth),false);
     if(path==='/video/test0') await page.screenshot({path:'/tmp/devtubes-watch-navigation-phone.png',fullPage:true});
   }
+  // Shorts has its own phone navigation destination and snap-scrolling feed.
+  await page.getByRole('navigation', {name:'Mobile navigation'}).getByRole('link', {name:'Shorts',exact:true}).click();
+  await page.locator('.short-card[data-active="true"]').waitFor();
+  const shortsCalls = requests.length;
+  const firstShort = await page.locator('.short-card[data-active="true"]').getAttribute('data-video-id');
+  await page.locator('.short-card[data-active="true"] .short-scroll-rail').hover();
+  await page.mouse.wheel(0, await page.locator('.shorts-feed').evaluate(el => el.clientHeight));
+  await page.waitForFunction(id => document.querySelector('.short-card[data-active="true"]')?.dataset.videoId !== id, firstShort);
+  assert.equal(requests.length,shortsCalls);
+  await page.getByRole('button',{name:'Refresh Shorts',exact:true}).click();
+  await page.locator('.short-card[data-active="true"]').waitFor();
+  assert.equal(requests.length,shortsCalls);
+  for (const width of [320,390,430]) {
+    await page.setViewportSize({width,height:844});
+    assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
+    const dock=page.getByRole('navigation',{name:'Mobile navigation'});
+    for(const link of await dock.getByRole('link').all()) assert.ok((await link.boundingBox()).width>=44);
+    const feedBox=await page.locator('.shorts-feed').boundingBox();
+    const dockBox=await dock.boundingBox();
+    assert.ok(feedBox.y+feedBox.height<dockBox.y);
+  }
+  await page.setViewportSize({width:320,height:568});
+  const smallFeedBox=await page.locator('.shorts-feed').boundingBox();
+  const smallDockBox=await page.locator('.bottom-nav').boundingBox();
+  assert.ok(smallFeedBox.y+smallFeedBox.height<smallDockBox.y,'Shorts stays above the dock on a small phone');
+  assert.ok((await page.locator('.short-card[data-active="true"] .short-player').boundingBox()).height>=200,'The embedded player has enough height on a small phone');
+  await page.setViewportSize({width:390,height:844});
+  await page.screenshot({path:'/tmp/devtubes-shorts-phone.png',fullPage:true});
+  await page.locator('.shorts-feed').evaluate(el => el.scrollTo({top:el.clientHeight*4,behavior:'instant'}));
+  await page.waitForFunction(()=>document.querySelectorAll('.short-card').length===12);
+  assert.equal(requests.length,shortsCalls+1);
+  await page.waitForTimeout(100);
+  assert.equal(requests.length,shortsCalls+1);
+  await page.locator('.shorts-feed').evaluate(el => el.scrollTo({top:el.scrollHeight,behavior:'instant'}));
+  await page.waitForFunction(()=>document.querySelectorAll('.short-card[data-active="true"]').length===0);
+  await page.locator('nav[aria-label="Content type"]').getByRole('link',{name:'Videos',exact:true}).click();
+  await page.locator('.video-card').first().waitFor();
+  assert.equal(await page.locator('.shorts-feed').count(),0);
   await page.setViewportSize({width:1440,height:1100});
   assert.equal(await page.locator('.bottom-nav').isVisible(),false);
   assert.deepEqual(errors, []);
   console.log(
-    "PASS guest topic selection/persistence/personalized refresh without extra requests, desktop/mobile layout, Shorts filtering, unsupported fullscreen viewport fallback, manual/automatic fullscreen including related-video navigation, search, pagination deduplication, video actions, comments on demand, related videos, saved persistence/removal, quota/empty states, channel routing; no uncaught browser errors.",
+    "PASS Shorts navigation, snap scrolling, cached refresh and bounded pagination; guest topic selection/persistence/personalized refresh without extra requests, desktop/mobile layout, Shorts filtering, unsupported fullscreen viewport fallback, manual/automatic fullscreen including related-video navigation, search, pagination deduplication, video actions, comments on demand, related videos, saved persistence/removal, quota/empty states, channel routing; no uncaught browser errors.",
   );
   await browser.close();
   await new Promise((resolve) => server.close(resolve));
