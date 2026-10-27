@@ -48,7 +48,7 @@ const assert = require("node:assert/strict");
     if (new URLSearchParams(endpoint.split('?')[1]).get('q')?.includes('#shorts')) {
       const start = endpoint.includes('pageToken') ? 106 : 100;
       return route.fulfill({json: {
-        items: Array.from({length: 6}, (_, i) => ({...item(start + i), isShort: true,
+        items: Array.from({length: 6}, (_, i) => ({...item(start + i), id: {videoId: `short${String(start + i).padStart(6,'0')}`}, isShort: true,
           snippet: {...item(start + i).snippet, title: `An idea in a minute #shorts ${start + i}`}})),
         ...(!endpoint.includes('pageToken') ? {nextPageToken: 'shorts-next'} : {})
       }});
@@ -318,10 +318,17 @@ const assert = require("node:assert/strict");
     assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth > innerWidth),false);
     if(path==='/video/test0') await page.screenshot({path:'/tmp/devtubes-watch-navigation-phone.png',fullPage:true});
   }
+  // Keep ReactPlayer real, replacing only the remote YouTube SDK boundary.
+  await page.evaluate(require('./youtube-sdk.cjs'));
   // Shorts has its own phone navigation destination and snap-scrolling feed.
   await page.getByRole('navigation', {name:'Mobile navigation'}).getByRole('link', {name:'Shorts',exact:true}).click();
   await page.locator('.short-card[data-active="true"]').waitFor();
   const assertPortraitFrames = async () => {
+    await page.waitForFunction(() => {
+      const live = document.querySelector('.short-live-slot .short-player')?.getBoundingClientRect();
+      const slot = document.querySelector('.short-card[data-active="true"] .short-poster')?.getBoundingClientRect();
+      return live && slot && ['x','y','width','height'].every(key=>Math.abs(live[key]-slot[key])<1);
+    });
     const frames = await page.locator('.short-player, .short-poster').evaluateAll(elements => elements.map(el => {
       const {width,height} = el.getBoundingClientRect();
       const media = el.closest('.short-media').getBoundingClientRect();
@@ -333,11 +340,26 @@ const assert = require("node:assert/strict");
     }
   };
   const shortsCalls = requests.length;
+  await page.getByRole('button',{name:'Play Short',exact:true}).waitFor();
+  assert.equal(await page.getByRole('button',{name:'Play Short',exact:true}).textContent(),'Play with sound');
+  await page.getByRole('button',{name:'Play Short',exact:true}).click();
+  await page.getByRole('button',{name:'Pause Short',exact:true}).waitFor();
+  const persistentIframe=await page.locator('.short-live-slot iframe').elementHandle();
+  assert.equal(await page.evaluate(()=>window.__shortsPlayerInstances.at(-1).isMuted()),false);
+  // Sound enabled with YouTube's own control must update our setting as well.
+  await page.getByRole('button',{name:'Mute Short',exact:true}).click();
+  await page.getByRole('button',{name:'Turn sound on',exact:true}).waitFor();
+  await page.evaluate(()=>window.__shortsPlayerInstances.at(-1).unMute());
+  await page.getByRole('button',{name:'Mute Short',exact:true}).waitFor();
   const firstShort = await page.locator('.short-card[data-active="true"]').getAttribute('data-video-id');
   await page.locator('.short-card[data-active="true"] .short-scroll-rail').hover();
   await page.mouse.wheel(0, await page.locator('.shorts-feed').evaluate(el => el.clientHeight));
   await page.waitForFunction(id => document.querySelector('.short-card[data-active="true"]')?.dataset.videoId !== id, firstShort);
   assert.equal(requests.length,shortsCalls);
+  assert.equal(await persistentIframe.evaluate(el=>el===document.querySelector('.short-live-slot iframe')),true,'Swiping reuses the unlocked iframe');
+  await page.waitForFunction(()=>window.__shortsPlayerInstances.at(-1).state===1);
+  assert.equal(await page.evaluate(()=>window.__shortsPlayerInstances.at(-1).isMuted()),false);
+  assert.equal(await page.evaluate(()=>window.__shortsPlayerInstances.length),1);
   await page.getByRole('button',{name:'Refresh Shorts',exact:true}).click();
   await page.locator('.short-card[data-active="true"]').waitFor();
   assert.equal(requests.length,shortsCalls);
@@ -358,16 +380,18 @@ const assert = require("node:assert/strict");
   const smallFeedBox=await page.locator('.shorts-feed').boundingBox();
   const smallDockBox=await page.locator('.bottom-nav').boundingBox();
   assert.ok(smallFeedBox.y+smallFeedBox.height<smallDockBox.y,'Shorts stays above the dock on a small phone');
-  assert.ok((await page.locator('.short-card[data-active="true"] .short-player').boundingBox()).height>=200,'The embedded player has enough height on a small phone');
+  assert.ok((await page.locator('.short-live-slot .short-player').boundingBox()).height>=200,'The embedded player has enough height on a small phone');
   await page.setViewportSize({width:390,height:844});
   await page.screenshot({path:'/tmp/devtubes-shorts-phone.png',fullPage:true});
+  const loadedShorts=await page.locator('.short-card').count();
   await page.locator('.shorts-feed').evaluate(el => el.scrollTo({top:el.clientHeight*4,behavior:'instant'}));
-  await page.waitForFunction(()=>document.querySelectorAll('.short-card').length===12);
+  await page.waitForFunction(count=>document.querySelectorAll('.short-card').length===count+6,loadedShorts);
   assert.equal(requests.length,shortsCalls+1);
   await page.waitForTimeout(100);
   assert.equal(requests.length,shortsCalls+1);
   await page.locator('.shorts-feed').evaluate(el => el.scrollTo({top:el.scrollHeight,behavior:'instant'}));
   await page.waitForFunction(()=>document.querySelectorAll('.short-card[data-active="true"]').length===0);
+  await page.waitForFunction(()=>window.__shortsPlayerInstances.at(-1).state!==1);
   await page.locator('nav[aria-label="Content type"]').getByRole('link',{name:'Videos',exact:true}).click();
   await page.locator('.video-card').first().waitFor();
   assert.equal(await page.locator('.shorts-feed').count(),0);
@@ -375,7 +399,7 @@ const assert = require("node:assert/strict");
   assert.equal(await page.locator('.bottom-nav').isVisible(),false);
   assert.deepEqual(errors, []);
   console.log(
-    "PASS 9:16 Shorts player/poster sizing on desktop and phones; Shorts navigation, snap scrolling, cached refresh and bounded pagination; guest topic selection/persistence/personalized refresh without extra requests, desktop/mobile layout, Shorts filtering, unsupported fullscreen viewport fallback, manual/automatic fullscreen including related-video navigation, search, pagination deduplication, video actions, comments on demand, related videos, saved persistence/removal, quota/empty states, channel routing; no uncaught browser errors.",
+    "PASS persistent Shorts iframe/sound choice and blocked-autoplay recovery; 9:16 Shorts player/poster sizing on desktop and phones; Shorts navigation, snap scrolling, cached refresh and bounded pagination; guest topic selection/persistence/personalized refresh without extra requests, desktop/mobile layout, Shorts filtering, unsupported fullscreen viewport fallback, manual/automatic fullscreen including related-video navigation, search, pagination deduplication, video actions, comments on demand, related videos, saved persistence/removal, quota/empty states, channel routing; no uncaught browser errors.",
   );
   await browser.close();
   await new Promise((resolve) => server.close(resolve));
