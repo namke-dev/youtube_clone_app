@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useRef } from "react";
+import React, { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import ReactPlayer from "react-player/youtube";
 import { Link, useParams } from "react-router-dom";
 import { useResource, Status, formatCount } from "./ui";
@@ -10,7 +10,7 @@ import {
 } from "../utils/library";
 import Videos from "./videos";
 import { useAccount } from "../context/account-context";
-import { readAutoFullscreen, saveAutoFullscreen, requestVideoFullscreen, isVideoFullscreen, exitVideoFullscreen, isMobilePlayback, isLandscapeVideo, setVideoLandscape } from "../utils/playback";
+import { readAutoFullscreen, saveAutoFullscreen, requestVideoFullscreen, isVideoFullscreen, exitVideoFullscreen, isMobilePlayback, isLandscapeVideo, setVideoLandscape, setVideoFullscreenAppearance } from "../utils/playback";
 import { rankCandidates } from "../utils/discovery";
 let autoplayListenerId = 0;
 
@@ -41,8 +41,8 @@ export default function VideoDetail() {
   // This wrapper survives watch-to-watch navigation. Cleanup belongs here,
   // rather than in the keyed content that is replaced for each video.
   useEffect(() => () => {
-    if (document.documentElement.classList.contains("video-fullscreen") ||
-        document.documentElement.classList.contains("video-expanded")) {
+    if (isVideoFullscreen() || document.documentElement.classList.contains("video-fullscreen") ||
+        document.documentElement.classList.contains("video-playback-dark")) {
       void exitVideoFullscreen();
     }
   }, []);
@@ -86,6 +86,47 @@ function VideoContent({ id }) {
   const [autoFullscreen, setAutoFullscreen] = useState(readAutoFullscreen);
   const [fullscreen, setFullscreen] = useState(false);
   const playerElement = useRef(null);
+  const [controlsVisible, setControlsVisible] = useState(true);
+  const controlsTimer = useRef(null);
+  const keyboardControls = useRef(false);
+  const wakeOnlyClick = useRef(false);
+  const revealControls = useCallback(() => {
+    clearTimeout(controlsTimer.current);
+    setControlsVisible(true);
+    if (fullscreen) {
+      controlsTimer.current = setTimeout(() => {
+        if (!keyboardControls.current || !playerElement.current?.contains(document.activeElement)) setControlsVisible(false);
+      }, 3000);
+    }
+  }, [fullscreen]);
+  useEffect(() => {
+    revealControls();
+    if (!fullscreen) return () => clearTimeout(controlsTimer.current);
+    const key = () => { keyboardControls.current = true; wakeOnlyClick.current = false; revealControls(); };
+    // YouTube's cross-origin iframe cannot bubble pointer events to this page.
+    // Its focus and playback callbacks also wake the surrounding controls.
+    const frameFocus = () => { if (playerElement.current?.contains(document.activeElement)) revealControls(); };
+    window.addEventListener("keydown", key);
+    window.addEventListener("blur", frameFocus);
+    return () => {
+      clearTimeout(controlsTimer.current);
+      window.removeEventListener("keydown", key);
+      window.removeEventListener("blur", frameFocus);
+    };
+  }, [fullscreen, revealControls]);
+  function pointerActivity(event) {
+    keyboardControls.current = false;
+    wakeOnlyClick.current = !controlsVisible && Boolean(event.target.closest(".fullscreen-exit, .landscape-toggle"));
+    revealControls();
+  }
+  function activateControl(action) {
+    if (!controlsVisible || wakeOnlyClick.current) {
+      wakeOnlyClick.current = false;
+      revealControls();
+      return;
+    }
+    action();
+  }
   const [mobile] = useState(isMobilePlayback);
   const [muted, setMuted] = useState(isMobilePlayback);
   const [playerReady, setPlayerReady] = useState(false);
@@ -127,7 +168,9 @@ function VideoContent({ id }) {
   }
   useEffect(() => {
     const changed = () => {
-      setFullscreen(isVideoFullscreen());
+      const active = isVideoFullscreen();
+      setFullscreen(active);
+      setVideoFullscreenAppearance(active);
       if (!document.fullscreenElement) document.documentElement.classList.remove("video-fullscreen");
     };
     setFullscreen(isVideoFullscreen());
@@ -219,7 +262,9 @@ function VideoContent({ id }) {
     <main id="main" className="watch-shell">
       <div className="watch-layout">
         <div className="watch-main">
-          <div className="player" ref={playerElement}>
+          <div className={`player ${fullscreen && !controlsVisible ? "fullscreen-controls-hidden" : ""}`} ref={playerElement}
+            onPointerMove={event => { if (event.pointerType !== "touch") revealControls(); }}
+            onPointerDownCapture={pointerActivity} onFocusCapture={revealControls} onBlurCapture={revealControls}>
             <div className="player-stage">
             <ReactPlayer
               key={id}
@@ -231,7 +276,8 @@ function VideoContent({ id }) {
               playsinline={true}
               width="100%"
               height="100%"
-              onPlay={() => { setPlaybackBlocked(false); if (!accountLoading) recordHistory(video); }}
+              onPlay={() => { revealControls(); setPlaybackBlocked(false); if (!accountLoading) recordHistory(video); }}
+              onPause={revealControls}
               onError={() => setPlayerError(true)}
             />
             {playerReady && (playbackBlocked || muted) && (
@@ -240,14 +286,14 @@ function VideoContent({ id }) {
               </button>
             )}
             {fullscreen && mobile && (
-              <button className="button landscape-toggle" onClick={() => setLandscape(value => !value)} aria-pressed={landscape}>
+              <button className="button landscape-toggle" onClick={() => activateControl(() => setLandscape(value => !value))} aria-pressed={landscape}>
                 Rotate view
               </button>
             )}
             {fullscreen && (
-              <button className="button fullscreen-exit" onClick={() => {
+              <button className="button fullscreen-exit" onClick={() => activateControl(() => {
                 void exitVideoFullscreen();
-              }}>Exit fullscreen</button>
+              })}>Exit fullscreen</button>
             )}
             </div>
           </div>

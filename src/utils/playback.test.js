@@ -1,6 +1,6 @@
 import { readAutoFullscreen, saveAutoFullscreen, requestVideoFullscreen, exitVideoFullscreen, isVideoFullscreen } from './playback';
 beforeEach(() => { localStorage.clear(); document.documentElement.classList.remove('video-fullscreen'); });
-afterEach(() => jest.restoreAllMocks());
+afterEach(async () => { await exitVideoFullscreen(); jest.restoreAllMocks(); });
 test('automatic fullscreen is opt-in and survives a reload', () => {
   expect(readAutoFullscreen()).toBe(false);
   expect(saveAutoFullscreen(true)).toBe(true);
@@ -97,4 +97,29 @@ test('denied orientation lock still keeps landscape viewing available', async ()
     if (original) Object.defineProperty(window.screen, 'orientation', original);
     else delete window.screen.orientation;
   }
+});
+
+test('fullscreen requests a black browser theme and restores it on exit', async () => {
+  const meta=document.createElement('meta');meta.name='theme-color';meta.content='#fbfbfd';document.head.appendChild(meta);
+  const element=document.createElement('div');document.body.appendChild(element);
+  try {
+    await requestVideoFullscreen(element);
+    expect(meta.content).toBe('#000000');
+    expect(document.documentElement.classList.contains('video-playback-dark')).toBe(true);
+    await exitVideoFullscreen();
+    expect(meta.content).toBe('#fbfbfd');
+    expect(document.documentElement.classList.contains('video-playback-dark')).toBe(false);
+  } finally {await exitVideoFullscreen();element.remove();meta.remove();}
+});
+
+test('a native fullscreen request finishing after cancellation cannot restore the black theme', async () => {
+  let finish;
+  document.documentElement.requestFullscreen=jest.fn(()=>new Promise(resolve=>{finish=resolve;}));
+  try {
+    const request=requestVideoFullscreen();
+    await exitVideoFullscreen();
+    finish();
+    expect(await request).toBe(false);
+    expect(document.documentElement.classList.contains('video-playback-dark')).toBe(false);
+  } finally {delete document.documentElement.requestFullscreen;}
 });

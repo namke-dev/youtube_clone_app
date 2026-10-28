@@ -1124,6 +1124,11 @@ svg.MuiSvgIcon-root {
 }
 .playback-options label { display: flex; align-items: center; gap: 8px; cursor: pointer; }
 .playback-options input { accent-color: #242424; }
+/* Safari paints the safe-area surround from the root/body background. */
+html.video-playback-dark, html.video-playback-dark body { background: #000; }
+.player .fullscreen-exit, .player .landscape-toggle { transition: opacity 180ms ease; }
+.player.fullscreen-controls-hidden .fullscreen-exit,
+.player.fullscreen-controls-hidden .landscape-toggle { opacity: 0; }
 .video-fullscreen:fullscreen { background: #000; }
 .video-expanded .watch-shell .player,
 .video-fullscreen:fullscreen .watch-shell .player {

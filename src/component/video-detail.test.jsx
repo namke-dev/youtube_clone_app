@@ -217,3 +217,40 @@ test('autoplay and saving wait for account restoration without writing guest his
     expect(localStorage.getItem('devtubes:history')).toBeNull();
   } finally {act(()=>root.unmount());container.remove();}
 });
+
+test('fullscreen buttons hide after three seconds and wake on pointer activity or native playback interaction', async () => {
+  jest.useFakeTimers();
+  const agent = jest.spyOn(window.navigator, 'userAgent', 'get').mockReturnValue('Mozilla iPhone');
+  localStorage.clear();
+  axios.get.mockResolvedValue({data:{items:[{id:'hide-controls',snippet:{title:'Fullscreen controls',channelId:'a',thumbnails:{}}}]}});
+  const container=document.createElement('div'); document.body.appendChild(container); const root=createRoot(container);
+  try {
+    await act(async()=>root.render(<MemoryRouter><VideoDetail/></MemoryRouter>));
+    await act(async()=>[...container.querySelectorAll('button')].find(b=>b.textContent==='Fullscreen').click());
+    const player=container.querySelector('.player');
+    expect(player.classList.contains('fullscreen-controls-hidden')).toBe(false);
+    act(()=>jest.advanceTimersByTime(2999));
+    expect(player.classList.contains('fullscreen-controls-hidden')).toBe(false);
+    act(()=>jest.advanceTimersByTime(1));
+    expect(player.classList.contains('fullscreen-controls-hidden')).toBe(true);
+    act(()=>Simulate.pointerMove(player,{pointerType:'mouse'}));
+    expect(player.classList.contains('fullscreen-controls-hidden')).toBe(false);
+    act(()=>jest.advanceTimersByTime(3000));
+    act(()=>ReactPlayer.mock.calls.at(-1)[0].onPause());
+    expect(player.classList.contains('fullscreen-controls-hidden')).toBe(false);
+    act(()=>jest.advanceTimersByTime(3000));
+    const exit=container.querySelector('.fullscreen-exit');
+    act(()=>{document.dispatchEvent(new KeyboardEvent('keydown',{key:'Tab',bubbles:true}));exit.focus();});
+    act(()=>jest.advanceTimersByTime(5000));
+    expect(player.classList.contains('fullscreen-controls-hidden')).toBe(false);
+    const outside=document.createElement('button');container.appendChild(outside);
+    act(()=>outside.focus());
+    act(()=>jest.advanceTimersByTime(3000));
+    expect(player.classList.contains('fullscreen-controls-hidden')).toBe(true);
+    await act(async()=>{Simulate.pointerDown(exit,{pointerType:'touch'});exit.click();});
+    expect(document.documentElement.classList.contains('video-expanded')).toBe(true);
+    expect(player.classList.contains('fullscreen-controls-hidden')).toBe(false);
+    await act(async()=>{Simulate.pointerDown(exit,{pointerType:'touch'});exit.click();});
+    expect(document.documentElement.classList.contains('video-expanded')).toBe(false);
+  } finally {act(()=>root.unmount());container.remove();agent.mockRestore();jest.useRealTimers();}
+});
