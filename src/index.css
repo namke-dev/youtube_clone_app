@@ -1248,6 +1248,7 @@ html.video-expanded, html.video-expanded body { overflow: hidden; }
 .content-types a { padding: 7px 18px; border-radius: 20px; color: var(--muted); font-weight: 600; }
 .content-types a[aria-current="page"] { background: var(--ink); color: white; }
 .shorts-page {
+  --short-actions-reserve: 52px;
   height: calc(100dvh - var(--header));
   min-height: 580px;
   display: flex;
@@ -1281,8 +1282,8 @@ html.video-expanded, html.video-expanded body { overflow: hidden; }
 .short-stage { flex: 1; min-height: 0; display: flex; gap: 8px; }
 .short-media { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 8px; container-type: size; }
 .short-player, .short-poster {
-  /* Leave 44px for playback actions and an 8px gap beneath the portrait frame. */
-  width: min(100%, calc((100cqh - 52px) * 9 / 16));
+  /* Desktop reserves a row for actions; phone controls use the side rail. */
+  width: min(100%, calc((100cqh - var(--short-actions-reserve)) * 9 / 16));
   aspect-ratio: 9 / 16;
   flex: none;
   align-self: center;
@@ -1294,6 +1295,7 @@ html.video-expanded, html.video-expanded body { overflow: hidden; }
 .short-poster .thumbnail-fallback { height: 100%; }
 .short-live-slot { position: absolute; z-index: 1; }
 .short-card[data-active="true"] .short-poster { visibility: hidden; }
+.short-actions .short-action-icon, .section-heading .short-refresh-icon { display: none; }
 .short-actions { display: flex; justify-content: center; gap: 6px; }
 .short-actions .button { min-height: 44px; padding: 8px 12px; font-size: 12px; }
 .short-scroll-rail { width: 44px; flex-shrink: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; touch-action: pan-y; }
@@ -1307,20 +1309,46 @@ html.video-expanded, html.video-expanded body { overflow: hidden; }
 @media (max-width: 640px) {
   .content-types { margin-bottom: 6px; background: transparent; }
   .content-types a { padding: 6px 16px; font-size: 12px; }
-  .shorts-page { padding: 10px 14px calc(112px + env(safe-area-inset-bottom, 0px)); }
-  .shorts-page .intro h1 { font-size: 20px; }
-  .shorts-page .chips { margin-inline: -14px; }
-  .shorts-page .section-heading { margin: 4px 0 8px; }
-  .shorts-page .section-heading h2 { font-size: 13px; }
-  .shorts-page .section-heading .button { min-height: 32px; padding: 6px 12px; font-size: 12px; }
-}
-@media (max-width: 640px) and (max-height: 700px) {
-  /* Keep the portrait player usable above the dock on compact phones. */
-  .shorts-page { position: relative; min-height: 530px; }
-  .shorts-page .intro { display: none; }
-  .shorts-page .section-heading { position: absolute; top: 10px; right: 14px; margin: 0; }
-  .shorts-page .section-heading h2 { display: none; }
-  .shorts-page .content-types { margin-bottom: 0; }
-  .shorts-page .short-content { padding-bottom: 8px; }
-  .shorts-page .short-caption { min-height: 48px; }
+  #main.shorts-page {
+    --short-actions-reserve: 0px;
+    position: relative;
+    min-height: 0;
+    padding: 8px 8px calc(92px + env(safe-area-inset-bottom, 0px));
+  }
+  /* Keep the page heading available to assistive technology without a title row. */
+  .shorts-page .intro, .shorts-page .section-heading h2 {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  .shorts-page .content-types { margin: 0 40px 0 0; padding: 2px; }
+  .shorts-page .content-types a { min-height: 28px; padding: 4px 14px; }
+  .shorts-page .chips { margin: 0 -8px 6px; padding: 4px 8px; }
+  .shorts-page .chips .chip { min-height: 28px; padding: 4px 10px; font-size: 11px; }
+  .shorts-page .section-heading { position: absolute; top: 8px; right: 8px; margin: 0; }
+  .shorts-page .section-heading .button { width: 32px; height: 32px; min-height: 32px; padding: 0; }
+  .shorts-page .section-heading .button span { display: none; }
+  .shorts-page .short-refresh-icon { display: block; }
+  .shorts-page .short-content { gap: 4px; padding-bottom: 4px; }
+  .shorts-page .short-stage { gap: 4px; }
+  .shorts-page .short-caption { min-height: 36px; }
+  .shorts-page .short-caption h2 { font-size: 12px; -webkit-line-clamp: 1; }
+  .shorts-page .short-caption a, .shorts-page .short-caption p { font-size: 11px; }
+  .shorts-page .short-actions {
+    position: absolute;
+    top: 8px;
+    left: calc(100% + 4px);
+    width: 44px;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .shorts-page .short-actions .button { width: 44px; height: 44px; padding: 0; }
+  .shorts-page .short-actions .button span { display: none; }
+  .shorts-page .short-action-icon { display: block; }
+  .shorts-page .short-scroll-rail { justify-content: flex-end; gap: 8px; padding-bottom: 4px; }
+  .shorts-page .short-scroll-rail span { display: none; }
 }

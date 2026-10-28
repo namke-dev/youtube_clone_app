@@ -93,11 +93,15 @@ function ShortPlayer({ video, enabled, muted, onSoundChange }) {
         }} onPause={() => { if (enabled && !document.hidden && matchesVideo()) setPaused(true); }} onError={() => { if (matchesVideo()) setFailed(true); }} />
     </div>
     <div className="short-actions">
-      <button className="button" onClick={() => paused || blocked ? play() : setPaused(true)} aria-label={paused || blocked ? "Play Short" : "Pause Short"}>{blocked && !muted ? "Play with sound" : paused ? "Play" : "Pause"}</button>
-      <button className="button" onClick={toggleSound} aria-label={muted ? "Turn sound on" : "Mute Short"}>{muted ? "Sound on" : "Mute"}</button>
+      <button className="button" onClick={() => paused || blocked ? play() : setPaused(true)} aria-label={paused || blocked ? "Play Short" : "Pause Short"} title={blocked && !muted ? "Play with sound" : paused ? "Play" : "Pause"}>
+        <Icon className="short-action-icon" name={paused || blocked ? "play" : "pause"} /><span>{blocked && !muted ? "Play with sound" : paused ? "Play" : "Pause"}</span>
+      </button>
+      <button className="button" onClick={toggleSound} aria-label={muted ? "Turn sound on" : "Mute Short"} title={muted ? "Turn sound on" : "Mute"}>
+        <Icon className="short-action-icon" name={muted ? "muted" : "sound"} /><span>{muted ? "Sound on" : "Mute"}</span>
+      </button>
       <button className="button" disabled={loading} aria-label={saved ? "Unsave Short" : "Save Short"} aria-pressed={saved}
         onClick={() => saved ? removeVideo("saved", videoId(video)) : saveVideo(video)}>
-        <Icon name="saved" />{saved ? "Saved" : "Save"}
+        <Icon name="saved" /><span>{saved ? "Saved" : "Save"}</span>
       </button>
     </div>
     {failed && <p role="alert">This Short cannot play here. <a href={`https://www.youtube.com/shorts/${videoId(video)}`} target="_blank" rel="noreferrer">Watch on YouTube</a></p>}

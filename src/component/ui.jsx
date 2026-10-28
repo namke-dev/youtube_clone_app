@@ -1,4 +1,8 @@
 import React, { useEffect, useState } from "react";
+import PauseRounded from "@mui/icons-material/PauseRounded";
+import VolumeUpRounded from "@mui/icons-material/VolumeUpRounded";
+import VolumeOffRounded from "@mui/icons-material/VolumeOffRounded";
+import RefreshRounded from "@mui/icons-material/RefreshRounded";
 import SlowMotionVideoOutlined from "@mui/icons-material/SlowMotionVideoOutlined";
 import HomeOutlined from "@mui/icons-material/HomeOutlined";
 import GridViewOutlined from "@mui/icons-material/GridViewOutlined";
@@ -11,6 +15,10 @@ import ArrowForwardRounded from "@mui/icons-material/ArrowForwardRounded";
 import { fetchFromApi } from "../utils/fetchFromApi";
 export const icons = {
   home: HomeOutlined,
+  pause: PauseRounded,
+  sound: VolumeUpRounded,
+  muted: VolumeOffRounded,
+  refresh: RefreshRounded,
   shorts: SlowMotionVideoOutlined,
   explore: GridViewOutlined,
   history: HistoryOutlined,

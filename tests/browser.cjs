@@ -332,11 +332,11 @@ const assert = require("node:assert/strict");
     const frames = await page.locator('.short-player, .short-poster').evaluateAll(elements => elements.map(el => {
       const {width,height} = el.getBoundingClientRect();
       const media = el.closest('.short-media').getBoundingClientRect();
-      return {width,height,availableWidth:media.width,availableHeight:media.height};
+      return {width,height,availableWidth:media.width,availableHeight:media.height,controlsBelow:innerWidth<=640 ? 0 : 52};
     }));
     for (const frame of frames) {
       assert.ok(Math.abs(frame.width / frame.height - 9 / 16) < 0.005,'Shorts players and posters keep a 9:16 ratio');
-      assert.ok(frame.width <= frame.availableWidth && frame.height + 52 <= frame.availableHeight + 1,'Portrait video and controls fit in the available space');
+      assert.ok(frame.width <= frame.availableWidth && frame.height + frame.controlsBelow <= frame.availableHeight + 1,'Portrait video and controls fit in the available space');
     }
   };
   const shortsCalls = requests.length;
@@ -371,16 +371,30 @@ const assert = require("node:assert/strict");
     const feedBox=await page.locator('.shorts-feed').boundingBox();
     const dockBox=await dock.boundingBox();
     assert.ok(feedBox.y+feedBox.height<dockBox.y);
+    const playerBox=await page.locator('.short-live-slot .short-player').boundingBox();
+    assert.ok(playerBox.height >= (width===320 ? 440 : 540),'Phone Shorts gives the portrait video most of the available screen');
+    assert.ok(playerBox.y <= 125,'Compact phone controls leave space above the video');
+    const actions=await page.locator('.short-actions').boundingBox();
+    assert.ok(actions.x >= playerBox.x+playerBox.width,'Phone playback controls sit beside the video');
+    assert.ok(actions.y+actions.height < feedBox.y+feedBox.height,'Playback controls stay in the visible feed');
     await assertPortraitFrames();
   }
   await page.setViewportSize({width:1440,height:1100});
   await assertPortraitFrames();
+  const desktopPlayer=await page.locator('.short-player').boundingBox();
+  const desktopActions=await page.locator('.short-actions').boundingBox();
+  assert.ok(desktopActions.y >= desktopPlayer.y+desktopPlayer.height,'Desktop playback controls remain below the video');
   await page.setViewportSize({width:320,height:568});
   await assertPortraitFrames();
   const smallFeedBox=await page.locator('.shorts-feed').boundingBox();
   const smallDockBox=await page.locator('.bottom-nav').boundingBox();
   assert.ok(smallFeedBox.y+smallFeedBox.height<smallDockBox.y,'Shorts stays above the dock on a small phone');
   assert.ok((await page.locator('.short-live-slot .short-player').boundingBox()).height>=200,'The embedded player has enough height on a small phone');
+  await page.setViewportSize({width:390,height:667});
+  await assertPortraitFrames();
+  const compactActions=await page.locator('.short-actions').boundingBox();
+  const nextArrow=await page.locator('.short-card[data-active="true"] button[aria-label="Previous Short"]').boundingBox();
+  assert.ok(compactActions.y+compactActions.height <= nextArrow.y,'Compact phone actions and navigation do not overlap');
   await page.setViewportSize({width:390,height:844});
   await page.screenshot({path:'/tmp/devtubes-shorts-phone.png',fullPage:true});
   const loadedShorts=await page.locator('.short-card').count();
@@ -399,7 +413,7 @@ const assert = require("node:assert/strict");
   assert.equal(await page.locator('.bottom-nav').isVisible(),false);
   assert.deepEqual(errors, []);
   console.log(
-    "PASS persistent Shorts iframe/sound choice and blocked-autoplay recovery; 9:16 Shorts player/poster sizing on desktop and phones; Shorts navigation, snap scrolling, cached refresh and bounded pagination; guest topic selection/persistence/personalized refresh without extra requests, desktop/mobile layout, Shorts filtering, unsupported fullscreen viewport fallback, manual/automatic fullscreen including related-video navigation, search, pagination deduplication, video actions, comments on demand, related videos, saved persistence/removal, quota/empty states, channel routing; no uncaught browser errors.",
+    "PASS maximized mobile Shorts area and side controls; persistent Shorts iframe/sound choice and blocked-autoplay recovery; 9:16 Shorts player/poster sizing on desktop and phones; Shorts navigation, snap scrolling, cached refresh and bounded pagination; guest topic selection/persistence/personalized refresh without extra requests, desktop/mobile layout, Shorts filtering, unsupported fullscreen viewport fallback, manual/automatic fullscreen including related-video navigation, search, pagination deduplication, video actions, comments on demand, related videos, saved persistence/removal, quota/empty states, channel routing; no uncaught browser errors.",
   );
   await browser.close();
   await new Promise((resolve) => server.close(resolve));

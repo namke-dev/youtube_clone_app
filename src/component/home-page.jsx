@@ -192,8 +192,8 @@ export default function HomePage() {
                   ? "Explore videos"
                   : `${selected.name}, in focus`}
           </h2>
-          <button className="button" onClick={refresh} disabled={loading || more}>
-            {shorts ? "Refresh Shorts" : "Refresh videos"}
+          <button className="button" onClick={refresh} disabled={loading || more} aria-label={shorts ? "Refresh Shorts" : undefined} title={shorts ? "Refresh Shorts" : undefined}>
+            {shorts && <Icon className="short-refresh-icon" name="refresh" />}<span>{shorts ? "Refresh Shorts" : "Refresh videos"}</span>
           </button>
         </div>
         <Status
