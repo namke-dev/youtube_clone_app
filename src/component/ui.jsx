@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import FullscreenExitRounded from "@mui/icons-material/FullscreenExitRounded";
 import PauseRounded from "@mui/icons-material/PauseRounded";
 import VolumeUpRounded from "@mui/icons-material/VolumeUpRounded";
 import VolumeOffRounded from "@mui/icons-material/VolumeOffRounded";
@@ -16,6 +17,7 @@ import { fetchFromApi } from "../utils/fetchFromApi";
 export const icons = {
   home: HomeOutlined,
   pause: PauseRounded,
+  fullscreenExit: FullscreenExitRounded,
   sound: VolumeUpRounded,
   muted: VolumeOffRounded,
   refresh: RefreshRounded,

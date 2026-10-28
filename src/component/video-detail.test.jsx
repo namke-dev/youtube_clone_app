@@ -218,7 +218,7 @@ test('autoplay and saving wait for account restoration without writing guest his
   } finally {act(()=>root.unmount());container.remove();}
 });
 
-test('fullscreen buttons hide after three seconds and wake on pointer activity or native playback interaction', async () => {
+test('fullscreen controls compact after three seconds and the exit remains a one-tap action', async () => {
   jest.useFakeTimers();
   const agent = jest.spyOn(window.navigator, 'userAgent', 'get').mockReturnValue('Mozilla iPhone');
   localStorage.clear();
@@ -247,9 +247,6 @@ test('fullscreen buttons hide after three seconds and wake on pointer activity o
     act(()=>outside.focus());
     act(()=>jest.advanceTimersByTime(3000));
     expect(player.classList.contains('fullscreen-controls-hidden')).toBe(true);
-    await act(async()=>{Simulate.pointerDown(exit,{pointerType:'touch'});exit.click();});
-    expect(document.documentElement.classList.contains('video-expanded')).toBe(true);
-    expect(player.classList.contains('fullscreen-controls-hidden')).toBe(false);
     await act(async()=>{Simulate.pointerDown(exit,{pointerType:'touch'});exit.click();});
     expect(document.documentElement.classList.contains('video-expanded')).toBe(false);
   } finally {act(()=>root.unmount());container.remove();agent.mockRestore();jest.useRealTimers();}

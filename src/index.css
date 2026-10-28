@@ -15,6 +15,7 @@
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-left: env(safe-area-inset-left, 0px);
   --safe-right: env(safe-area-inset-right, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
   --status-background: var(--bg);
 }
 * {
@@ -1147,8 +1148,20 @@ svg.MuiSvgIcon-root {
 html.video-playback-dark { --status-background: #000; }
 html.video-playback-dark, html.video-playback-dark body, html.video-playback-dark #root { background: #000; }
 .player .fullscreen-exit, .player .landscape-toggle { transition: opacity 180ms ease; }
-.player.fullscreen-controls-hidden .fullscreen-exit,
-.player.fullscreen-controls-hidden .landscape-toggle { opacity: 0; }
+.player.fullscreen-controls-hidden .landscape-toggle { opacity: 0; pointer-events: none; }
+.player .fullscreen-exit .fullscreen-exit-icon { display: none; }
+/* Retain a discoverable one-tap escape even while the larger controls fade. */
+.player.fullscreen-controls-hidden .fullscreen-exit {
+  width: 44px;
+  height: 44px;
+  min-height: 44px;
+  padding: 0;
+  border-radius: 50%;
+  opacity: 0.85;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.25);
+}
+.player.fullscreen-controls-hidden .fullscreen-exit span { display: none; }
+.player.fullscreen-controls-hidden .fullscreen-exit .fullscreen-exit-icon { display: block; }
 .video-fullscreen:fullscreen { background: #000; }
 .video-expanded .watch-shell .player,
 .video-fullscreen:fullscreen .watch-shell .player {
@@ -1156,45 +1169,42 @@ html.video-playback-dark, html.video-playback-dark body, html.video-playback-dar
   inset: 0;
   z-index: 1000;
   width: 100vw;
-  height: 100vh;
+  height: 100dvh;
   border-radius: 0;
   background: #000;
 }
-.player:fullscreen { width: 100vw; height: 100vh; border-radius: 0; background: #000; }
-.player .fullscreen-exit { position: absolute; top: 12px; right: 12px; z-index: 2; }
-
+.player:fullscreen { width: 100vw; height: 100dvh; border-radius: 0; background: #000; }
 html.video-expanded, html.video-expanded body { overflow: hidden; }
-.video-expanded .watch-shell .player { top: var(--safe-top); height: calc(100dvh - var(--safe-top)); }
-.player .fullscreen-exit {
-  top: max(12px, env(safe-area-inset-top));
-  right: max(12px, env(safe-area-inset-right));
-}
-
 .player { position: relative; }
+.player-viewport, .player-controls { position: absolute; inset: 0; }
+.player-viewport { container-type: size; }
+/* Balance opposite gutters so a notch cannot shift the video off-center. */
+.video-expanded .player-viewport, .video-fullscreen:fullscreen .player-viewport,
+.player:fullscreen .player-viewport {
+  inset: max(var(--safe-top), var(--safe-bottom)) max(var(--safe-left), var(--safe-right));
+}
+.video-expanded .player-controls, .video-fullscreen:fullscreen .player-controls,
+.player:fullscreen .player-controls {
+  inset: var(--safe-top) var(--safe-right) var(--safe-bottom) var(--safe-left);
+}
 .player-stage { position: relative; width: 100%; height: 100%; }
-.player .playback-start {
-  position: absolute;
-  top: max(12px, env(safe-area-inset-top));
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 2;
-}
-.player .landscape-toggle {
-  position: absolute;
-  top: max(12px, env(safe-area-inset-top));
-  left: max(12px, env(safe-area-inset-left));
-  z-index: 2;
-}
-/* iPhone cannot always lock device orientation. Rotate the inner stage instead
-   of the fullscreen element, whose transform the browser may override. */
+/* App controls stay upright and independent of YouTube's rotating iframe. */
+.player-controls { z-index: 2; pointer-events: none; }
+.player-controls > .button { pointer-events: auto; }
+.player .fullscreen-exit { position: absolute; top: 12px; right: 12px; min-height: 44px; }
+.player .playback-start { position: absolute; top: 12px; left: 50%; transform: translateX(-50%); }
+.player .landscape-toggle { position: absolute; top: 12px; left: 12px; }
+:is(.video-expanded, .video-fullscreen) .player .playback-start,
+.player:fullscreen .playback-start { top: 64px; }
 @media (orientation: portrait) {
   .video-landscape .player-stage {
     position: absolute;
     left: 50%;
     top: 50%;
     width: 100vh;
-    width: calc(100dvh - var(--safe-top));
     height: 100vw;
+    width: 100cqh;
+    height: 100cqw;
     transform: translate(-50%, -50%) rotate(90deg);
   }
 }

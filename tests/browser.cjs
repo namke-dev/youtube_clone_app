@@ -258,11 +258,9 @@ const assert = require("node:assert/strict");
   assert.equal(await page.locator('meta[name="theme-color"]').getAttribute('content'),'#000000');
   assert.equal(await page.locator('meta[name="apple-mobile-web-app-status-bar-style"]').getAttribute('content'),'black-translucent');
   assert.equal(await page.evaluate(()=>getComputedStyle(document.body).backgroundColor),'rgb(0, 0, 0)');
-  await page.waitForFunction(()=>getComputedStyle(document.querySelector('.fullscreen-exit')).opacity==='0');
-  // Invisible corner buttons first wake the controls; a second tap activates them.
-  await page.getByRole("button", { name: "Exit fullscreen", exact: true }).click();
-  assert.equal(await page.evaluate(()=>document.documentElement.classList.contains('video-expanded')),true);
-  await page.waitForFunction(()=>getComputedStyle(document.querySelector('.fullscreen-exit')).opacity==='1');
+  await page.waitForFunction(()=>document.querySelector('.player').classList.contains('fullscreen-controls-hidden'));
+  assert.ok(await page.locator('.fullscreen-exit').evaluate(element=>Number(getComputedStyle(element).opacity))>0);
+  assert.equal(await page.locator('.fullscreen-exit').evaluate(element=>element.getBoundingClientRect().width),44);
   await page.getByRole("button", { name: "Exit fullscreen", exact: true }).click();
   await page.waitForFunction(() => !document.documentElement.classList.contains("video-expanded"));
   assert.equal(await page.locator('meta[name="theme-color"]').getAttribute('content'),'#fbfbfd');
@@ -425,7 +423,7 @@ const assert = require("node:assert/strict");
   await require('./standalone.cjs')(page);
   assert.deepEqual(errors, []);
   console.log(
-    "PASS simulated Home Screen status-area layout; fullscreen button auto-hide/wake and black theme restoration; maximized mobile Shorts area and side controls; persistent Shorts iframe/sound choice and blocked-autoplay recovery; 9:16 Shorts player/poster sizing on desktop and phones; Shorts navigation, snap scrolling, cached refresh and bounded pagination; guest topic selection/persistence/personalized refresh without extra requests, desktop/mobile layout, Shorts filtering, unsupported fullscreen viewport fallback, manual/automatic fullscreen including related-video navigation, search, pagination deduplication, video actions, comments on demand, related videos, saved persistence/removal, quota/empty states, channel routing; no uncaught browser errors.",
+    "PASS centered fullscreen with a persistent one-tap exit; simulated Home Screen status-area layout; fullscreen button auto-hide/wake and black theme restoration; maximized mobile Shorts area and side controls; persistent Shorts iframe/sound choice and blocked-autoplay recovery; 9:16 Shorts player/poster sizing on desktop and phones; Shorts navigation, snap scrolling, cached refresh and bounded pagination; guest topic selection/persistence/personalized refresh without extra requests, desktop/mobile layout, Shorts filtering, unsupported fullscreen viewport fallback, manual/automatic fullscreen including related-video navigation, search, pagination deduplication, video actions, comments on demand, related videos, saved persistence/removal, quota/empty states, channel routing; no uncaught browser errors.",
   );
   await browser.close();
   await new Promise((resolve) => server.close(resolve));

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import ReactPlayer from "react-player/youtube";
 import { Link, useParams } from "react-router-dom";
-import { useResource, Status, formatCount } from "./ui";
+import { useResource, Status, formatCount, Icon } from "./ui";
 import {
   readLibrary,
   saveVideo,
@@ -89,7 +89,6 @@ function VideoContent({ id }) {
   const [controlsVisible, setControlsVisible] = useState(true);
   const controlsTimer = useRef(null);
   const keyboardControls = useRef(false);
-  const wakeOnlyClick = useRef(false);
   const revealControls = useCallback(() => {
     clearTimeout(controlsTimer.current);
     setControlsVisible(true);
@@ -102,7 +101,7 @@ function VideoContent({ id }) {
   useEffect(() => {
     revealControls();
     if (!fullscreen) return () => clearTimeout(controlsTimer.current);
-    const key = () => { keyboardControls.current = true; wakeOnlyClick.current = false; revealControls(); };
+    const key = () => { keyboardControls.current = true; revealControls(); };
     // YouTube's cross-origin iframe cannot bubble pointer events to this page.
     // Its focus and playback callbacks also wake the surrounding controls.
     const frameFocus = () => { if (playerElement.current?.contains(document.activeElement)) revealControls(); };
@@ -114,18 +113,9 @@ function VideoContent({ id }) {
       window.removeEventListener("blur", frameFocus);
     };
   }, [fullscreen, revealControls]);
-  function pointerActivity(event) {
+  function pointerActivity() {
     keyboardControls.current = false;
-    wakeOnlyClick.current = !controlsVisible && Boolean(event.target.closest(".fullscreen-exit, .landscape-toggle"));
     revealControls();
-  }
-  function activateControl(action) {
-    if (!controlsVisible || wakeOnlyClick.current) {
-      wakeOnlyClick.current = false;
-      revealControls();
-      return;
-    }
-    action();
   }
   const [mobile] = useState(isMobilePlayback);
   const [muted, setMuted] = useState(isMobilePlayback);
@@ -265,7 +255,7 @@ function VideoContent({ id }) {
           <div className={`player ${fullscreen && !controlsVisible ? "fullscreen-controls-hidden" : ""}`} ref={playerElement}
             onPointerMove={event => { if (event.pointerType !== "touch") revealControls(); }}
             onPointerDownCapture={pointerActivity} onFocusCapture={revealControls} onBlurCapture={revealControls}>
-            <div className="player-stage">
+            <div className="player-viewport"><div className="player-stage">
             <ReactPlayer
               key={id}
               url={`https://www.youtube.com/watch?v=${encodeURIComponent(id)}`}
@@ -280,20 +270,22 @@ function VideoContent({ id }) {
               onPause={revealControls}
               onError={() => setPlayerError(true)}
             />
+            </div></div>
+            <div className="player-controls">
             {playerReady && (playbackBlocked || muted) && (
               <button className="button playback-start" onClick={playWithSound}>
                 {playbackBlocked ? "Tap to play" : "Tap for sound"}
               </button>
             )}
             {fullscreen && mobile && (
-              <button className="button landscape-toggle" onClick={() => activateControl(() => setLandscape(value => !value))} aria-pressed={landscape}>
+              <button className="button landscape-toggle" onClick={() => setLandscape(value => !value)} aria-pressed={landscape}>
                 Rotate view
               </button>
             )}
             {fullscreen && (
-              <button className="button fullscreen-exit" onClick={() => activateControl(() => {
+              <button className="button fullscreen-exit" aria-label="Exit fullscreen" title="Exit fullscreen" onClick={() => {
                 void exitVideoFullscreen();
-              })}>Exit fullscreen</button>
+              }}><Icon className="fullscreen-exit-icon" name="fullscreenExit" /><span>Exit fullscreen</span></button>
             )}
             </div>
           </div>
