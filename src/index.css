@@ -12,12 +12,17 @@
   --radius: 16px;
   --header: 80px;
   --side: 216px;
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+  --status-background: var(--bg);
 }
 * {
   box-sizing: border-box;
 }
 body {
   margin: 0;
+  padding: var(--safe-top) var(--safe-right) 0 var(--safe-left);
   background: var(--bg);
   color: var(--ink);
   font-family:
@@ -28,6 +33,20 @@ body {
     sans-serif;
   font-size: 14px;
   -webkit-font-smoothing: antialiased;
+}
+/* Translucent Home Screen status bars show page content behind the clock.
+   Paint that area black and keep the light app below its safe-area inset. */
+html.standalone { --status-background: #000; }
+html.standalone, html.standalone body { background: #000; }
+#root { min-height: calc(100dvh - var(--safe-top)); background: var(--bg); }
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0 0 auto;
+  height: var(--safe-top);
+  background: var(--status-background);
+  z-index: 1100;
+  pointer-events: none;
 }
 a {
   color: inherit;
@@ -85,7 +104,7 @@ svg.MuiSvgIcon-root {
 }
 .header {
   position: sticky;
-  top: 0;
+  top: var(--safe-top);
   z-index: 20;
   height: var(--header);
   padding: 0 24px;
@@ -176,8 +195,8 @@ svg.MuiSvgIcon-root {
   background: var(--surface);
   padding: 24px;
   position: sticky;
-  top: var(--header);
-  height: calc(100dvh - var(--header));
+  top: calc(var(--safe-top) + var(--header));
+  height: calc(100dvh - var(--header) - var(--safe-top));
   min-height: 650px;
   display: flex;
   flex-direction: column;
@@ -857,7 +876,7 @@ svg.MuiSvgIcon-root {
   }
   .chips {
     position: sticky;
-    top: var(--header);
+    top: calc(var(--safe-top) + var(--header));
     z-index: 15;
     gap: 7px;
     margin: 0 -20px 16px;
@@ -1125,7 +1144,8 @@ svg.MuiSvgIcon-root {
 .playback-options label { display: flex; align-items: center; gap: 8px; cursor: pointer; }
 .playback-options input { accent-color: #242424; }
 /* Safari paints the safe-area surround from the root/body background. */
-html.video-playback-dark, html.video-playback-dark body { background: #000; }
+html.video-playback-dark { --status-background: #000; }
+html.video-playback-dark, html.video-playback-dark body, html.video-playback-dark #root { background: #000; }
 .player .fullscreen-exit, .player .landscape-toggle { transition: opacity 180ms ease; }
 .player.fullscreen-controls-hidden .fullscreen-exit,
 .player.fullscreen-controls-hidden .landscape-toggle { opacity: 0; }
@@ -1144,7 +1164,7 @@ html.video-playback-dark, html.video-playback-dark body { background: #000; }
 .player .fullscreen-exit { position: absolute; top: 12px; right: 12px; z-index: 2; }
 
 html.video-expanded, html.video-expanded body { overflow: hidden; }
-.video-expanded .watch-shell .player { height: 100dvh; }
+.video-expanded .watch-shell .player { top: var(--safe-top); height: calc(100dvh - var(--safe-top)); }
 .player .fullscreen-exit {
   top: max(12px, env(safe-area-inset-top));
   right: max(12px, env(safe-area-inset-right));
@@ -1173,7 +1193,7 @@ html.video-expanded, html.video-expanded body { overflow: hidden; }
     left: 50%;
     top: 50%;
     width: 100vh;
-    width: 100dvh;
+    width: calc(100dvh - var(--safe-top));
     height: 100vw;
     transform: translate(-50%, -50%) rotate(90deg);
   }
@@ -1254,7 +1274,7 @@ html.video-expanded, html.video-expanded body { overflow: hidden; }
 .content-types a[aria-current="page"] { background: var(--ink); color: white; }
 .shorts-page {
   --short-actions-reserve: 52px;
-  height: calc(100dvh - var(--header));
+  height: calc(100dvh - var(--header) - var(--safe-top));
   min-height: 580px;
   display: flex;
   flex-direction: column;
