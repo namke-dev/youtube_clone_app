@@ -2,7 +2,7 @@ import React from "react";
 import { NavLink, Link } from "react-router-dom";
 import { Icon, topics } from "./ui";
 const links = [
-  ["/", "Discover", "home"],
+  ["/", "Today", "home"],
   ["/explore", "Explore", "explore"],
   ["/shorts", "Shorts", "shorts"],
   ["/history", "History", "history"],
@@ -19,13 +19,14 @@ export default function SideBar() {
             </NavLink>
           ))}
         </nav>
-        <p className="eyebrow topic-label">Explore topics</p>
+        <p className="topic-label">Widen your world</p>
         <div className="topic-links">
-          {topics.slice(1).map((t) => (
-            <Link key={t.name} to={`/topic/${t.name.toLowerCase()}`}>
+          {['AI', 'Landscapes', 'Culture & Food', 'World & Science', 'History', 'Critical Thinking'].map(name => topics.find(t => t.name === name)).filter(Boolean).map((t) => (
+            <Link key={t.name} to={`/topic/${encodeURIComponent(t.name.toLowerCase())}`}>
               {t.name}
             </Link>
           ))}
+          <Link className="all-topics" to="/explore">All topics <Icon name="arrow" /></Link>
         </div>
         <div className="sidebar-note">
           A little less noise.

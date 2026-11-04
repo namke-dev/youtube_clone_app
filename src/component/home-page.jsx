@@ -2,11 +2,10 @@ import React, { useEffect, useRef, useState } from "react";
 import { Link, useParams, useLocation } from "react-router-dom";
 import { discovery } from "../utils/discovery";
 import { readLibrary, videoId } from "../utils/library";
-import { topics, Icon, Status, Thumbnail } from "./ui";
+import { topics, Icon, Status } from "./ui";
 import SideBar from "./side-bar";
 import Videos from "./videos";
 import ShortsFeed from "./shorts-feed";
-import VideoLink from "./video-link";
 import { useAccount } from "../context/account-context";
 import { favoriteTopicBar, forYouQuery, interestScore, topicFromName } from "../utils/personalization";
 export default function HomePage() {
@@ -109,39 +108,37 @@ export default function HomePage() {
       }
     }
   }
-  const home = !shorts && !searchTerm && !topic && location.pathname === "/";
-  const videoPath = location.pathname === "/shorts" ? "/" : location.pathname;
+  const explore = !shorts && !searchTerm && !topic;
+  const videoPath = location.pathname === "/shorts" ? "/explore" : location.pathname;
   const shortsPath = ["/", "/explore", "/shorts"].includes(location.pathname) ? "/shorts" : `${location.pathname}?format=shorts`;
-  const featured = videos.find(videoId);
   return (
     <div className="app-layout">
       <SideBar />
       <main id="main" className={`feed ${shorts ? "shorts-page" : ""}`}>
         <div className="intro">
           <div>
-            <h1 className={home ? "desktop-title" : ""}>
+            <h1>
               {searchTerm
                 ? `Results for “${searchTerm}”`
                 : topic
                   ? selected.name
                   : shorts
                     ? "Shorts"
-                    : home
-                    ? "Find your next rabbit hole."
-                    : "Made for curious minds."}
+                    : "Explore"}
             </h1>
-            {home && (
-              <h1 className="mobile-title">
-                A little less noise.
-                <br />A lot more wonder.
-              </h1>
-            )}
-            <p>Extraordinary stories. Room to explore.</p>
+            <p>{searchTerm ? 'Videos and creators matching your search.' : shorts ? 'A quick change of perspective.' : topic ? 'Ideas, stories and perspectives to go deeper.' : 'Follow an interest. Or find a new one.'}</p>
           </div>
-          <span className="eyebrow">
-            {searchTerm ? "SEARCH" : "DISCOVER SOMETHING NEW"}
-          </span>
         </div>
+        {explore && <nav className="topic-shelf" aria-label="Explore a wider world">
+          {[
+            ['AI', 'AI & technology', 'Developments, ideas and useful explanations.'],
+            ['Landscapes', 'Places & landscapes', 'Geography, nature and the shape of the world.'],
+            ['Culture & Food', 'Culture & food', 'How people live, cook and see things differently.'],
+            ['World & Science', 'World & science', 'Discoveries and the forces changing our planet.'],
+          ].map(([name, title, description]) => <Link key={name} to={`/topic/${encodeURIComponent(name.toLowerCase())}`}>
+            <h2>{title}</h2><p>{description}</p><Icon name="arrow" />
+          </Link>)}
+        </nav>}
         <nav className="content-types" aria-label="Content type">
           <Link to={videoPath} aria-current={!shorts ? "page" : undefined}>Videos</Link>
           <Link to={shortsPath} aria-current={shorts ? "page" : undefined}>Shorts</Link>
@@ -157,39 +154,12 @@ export default function HomePage() {
             </Link>
           ))}
         </nav>
-        {home && featured && (
-          <section className="hero">
-            <div className="hero-copy">
-              <span className="eyebrow">THE DISCOVERY EDIT</span>
-              <h2>
-                Go somewhere
-                <br />
-                you’ve never been.
-              </h2>
-              <p>A slower perspective on a world in motion.</p>
-              <VideoLink className="button light" to={`/video/${videoId(featured)}`}>
-                <Icon name="play" />
-                Watch video
-              </VideoLink>
-            </div>
-            <VideoLink
-              className="hero-art"
-              to={`/video/${videoId(featured)}`}
-              aria-label={`Watch ${featured.snippet?.title}`}
-            >
-              <Thumbnail item={featured} />
-              <span className="hero-caption">{featured.snippet?.title}</span>
-            </VideoLink>
-          </section>
-        )}
         <div className="section-heading">
           <h2>
             {shorts ? "Scroll to discover." : searchTerm
               ? "Search results"
-              : home
-                ? "Worth your time"
-                : selected.name === "For you"
-                  ? "Explore videos"
+              : selected.name === "For you"
+                  ? "From your interests"
                   : `${selected.name}, in focus`}
           </h2>
           <button className="button" onClick={refresh} disabled={loading || more} aria-label={shorts ? "Refresh Shorts" : undefined} title={shorts ? "Refresh Shorts" : undefined}>
@@ -215,14 +185,6 @@ export default function HomePage() {
             <button className="button" onClick={loadMore} disabled={more}>
               {more ? "Loading…" : shorts ? "Find more Shorts" : "Explore more videos"}
             </button>
-          </div>
-        )}
-        {home && (
-          <div className="section-heading ending">
-            <h2>Made for curious minds</h2>
-            <Link to="/explore">
-              Explore all topics <Icon name="arrow" />
-            </Link>
           </div>
         )}
       </main>

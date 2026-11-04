@@ -2,6 +2,8 @@
 
 Prepared November 4, 2026. This is a reviewable concept; the production application has not been changed.
 
+November 5 follow-up: the [working UI implementation](superpowers/plans/2026-11-05-personal-home-ui.md) brings the editorial layout into the application with live video discovery. The isolated preview below remains a fixed concept, including its sample journeys and notes; those features are not part of this UI release.
+
 ## Try it
 
 The [Today preview](http://127.0.0.1:4188/docs/previews/personal-edition/) offers three fixed English-language editions. It adapts to a phone, tablet, or desktop. The source files are in [the preview folder](/Users/namnguyenke/Desktop/dotnet/youtube_clone_app/docs/previews/personal-edition/index.html).

@@ -7,6 +7,16 @@ jest.mock('axios');
 global.IS_REACT_ACT_ENVIRONMENT=true;
 window.scrollTo=jest.fn();
 
+test('existing root links with the Shorts format still open the Shorts feed', async () => {
+ window.history.replaceState({},'', '/?format=shorts');
+ axios.get.mockResolvedValue({data:{items:[]}});
+ const container=document.createElement('div');document.body.appendChild(container);const root=createRoot(container);
+ try {
+  await act(async()=>root.render(<App/>));
+  expect(container.querySelector('main.shorts-page h1')?.textContent).toBe('Shorts');
+ } finally {act(()=>root.unmount());container.remove();}
+});
+
 test.each(['/', '/explore', '/shorts', '/topic/ai', '/search/design', '/video/nav-example', '/channel/nav-example', '/saved', '/history', '/account', '/missing-page'])('one shared mobile navigation is available on %s',async path=>{
  localStorage.clear();window.history.replaceState({},'',path);
  axios.get.mockResolvedValue({data:{items:[]}});

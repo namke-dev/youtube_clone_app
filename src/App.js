@@ -9,6 +9,7 @@ import {
 import Header from "./component/header";
 import { MobileNavigation } from "./component/side-bar";
 import HomePage from "./component/home-page";
+import TodayPage from "./component/today-page";
 import VideoDetail from "./component/video-detail";
 import ChannelDetail from "./component/channel-detail";
 import LibraryPage from "./component/library-page";
@@ -22,6 +23,10 @@ function ScrollReset() {
   }, [pathname]);
   return null;
 }
+function HomeRoute() {
+  const { search } = useLocation();
+  return new URLSearchParams(search).get('format') === 'shorts' ? <HomePage /> : <TodayPage />;
+}
 export default function App() {
   return (
     <AccountProvider><BrowserRouter>
@@ -31,7 +36,7 @@ export default function App() {
       <ScrollReset />
       <Header />
       <Routes>
-        <Route path="/" element={<HomePage />} />
+        <Route path="/" element={<HomeRoute />} />
         <Route path="/explore" element={<HomePage />} />
         <Route path="/shorts" element={<HomePage />} />
         <Route path="/topic/:topic" element={<HomePage />} />

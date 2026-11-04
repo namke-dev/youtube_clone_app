@@ -5,7 +5,7 @@
   --bg: #fbfbfd;
   --surface: #f5f5f7;
   --ink: #1d1d1f;
-  --muted: #717179;
+  --muted: #62676b;
   --blue: #0071e3;
   --line: #e5e5ea;
   --pill: #efeff2;
@@ -114,7 +114,6 @@ svg.MuiSvgIcon-root {
   align-items: center;
   gap: 24px;
   border-bottom: 1px solid #f3f3f5;
-  backdrop-filter: blur(16px);
 }
 .brand {
   display: flex;
@@ -224,10 +223,10 @@ svg.MuiSvgIcon-root {
   background: var(--line);
 }
 .eyebrow {
-  font-size: 10px;
-  letter-spacing: 1.2px;
+  font-size: 12px;
+  letter-spacing: 0;
   font-weight: 600;
-  text-transform: uppercase;
+  text-transform: none;
   color: var(--muted);
 }
 .topic-label {
@@ -783,7 +782,7 @@ svg.MuiSvgIcon-root {
   .header {
     padding: 0 14px;
     gap: 7px;
-    background: transparent;
+    background: var(--bg);
     border: 0;
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
@@ -899,9 +898,8 @@ svg.MuiSvgIcon-root {
     letter-spacing: -0.1px;
   }
   .chips .chip.selected {
-    color: #0055ad;
-    background: linear-gradient(145deg, rgba(225, 237, 255, 0.96), rgba(221, 234, 254, 0.62));
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.95), 0 2px 6px rgba(64, 109, 174, 0.12);
+    color: #1c625c;
+    background: #e4eeea;
   }
   .chips .chip.selected::before {
     content: "";
@@ -974,7 +972,7 @@ svg.MuiSvgIcon-root {
   .thumbnail {
     border-radius: 16px;
   }
-  /* Floating glass dock, confined to the existing phone breakpoint. */
+  /* Solid navigation keeps labels readable over every kind of thumbnail. */
   .bottom-nav {
     display: grid;
     grid-template-columns: repeat(5, minmax(0, 1fr));
@@ -990,35 +988,15 @@ svg.MuiSvgIcon-root {
     padding: 6px;
     border-radius: 36px;
   }
-  /* One glass material for the header bubbles, topic pills and navigation dock. */
+  /* A quiet, opaque surface shared by the phone controls. */
   .header .brand,
   .header .mobile-search,
   .header .library-mark,
   .header.search-open .search,
   .chips .chip,
   .bottom-nav {
-    border: 1px solid rgba(255, 255, 255, 0.94);
-    background: rgba(244, 247, 252, 0.97);
-    box-shadow:
-      inset 0 1px 1px rgba(255, 255, 255, 1),
-      inset 1px 0 0 rgba(255, 255, 255, 0.7),
-      inset 0 -1px 1px rgba(69, 91, 130, 0.2),
-      0 0 0 0.5px rgba(74, 94, 126, 0.14),
-      0 5px 16px -5px rgba(24, 42, 73, 0.3);
-  }
-  @supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-    .header .brand,
-    .header .mobile-search,
-    .header .library-mark,
-    .header.search-open .search,
-    .chips .chip,
-    .bottom-nav {
-      background:
-        linear-gradient(135deg, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.12) 32%, rgba(255, 255, 255, 0.08) 68%, rgba(255, 255, 255, 0.56)),
-        rgba(238, 245, 255, 0.58);
-      -webkit-backdrop-filter: blur(14px) saturate(210%) contrast(1.04);
-      backdrop-filter: blur(14px) saturate(210%) contrast(1.04);
-    }
+    border: 0;
+    background: #eef1f0;
   }
   .header .brand:active,
   .header .mobile-search:active,
@@ -1036,7 +1014,7 @@ svg.MuiSvgIcon-root {
     padding: 7px 4px;
     border-radius: 28px;
     color: #1d2430;
-    font-size: 10px;
+    font-size: 11px;
     font-weight: 600;
     line-height: 1.2;
     letter-spacing: -0.1px;
@@ -1046,9 +1024,8 @@ svg.MuiSvgIcon-root {
     font-size: 23px;
   }
   .bottom-nav a.active {
-    color: #0055ad;
-    background: linear-gradient(145deg, rgba(225, 237, 255, 0.96), rgba(221, 234, 254, 0.62));
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9), 0 1px 3px rgba(64, 109, 174, 0.06);
+    color: #1c625c;
+    background: #dfeae5;
   }
   .bottom-nav a:active {
     transform: scale(0.96);

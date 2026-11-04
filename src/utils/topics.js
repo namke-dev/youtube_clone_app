@@ -2,8 +2,11 @@ export const topics = [
   {
     name: "For you",
     query:
-      "AI | product building | communication | philosophy",
+      "AI | landscapes geography | food culture | world science",
   },
+  { name: "Landscapes", query: "landscapes geography nature documentary" },
+  { name: "Culture & Food", query: "food culture traditions documentary" },
+  { name: "World & Science", query: "world science environment discoveries explained" },
 
   // Kinh doanh và xây sản phẩm
   {

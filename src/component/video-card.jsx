@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { Thumbnail, formatCount } from "./ui";
 import VideoLink from "./video-link";
 import { videoId } from "../utils/library";
+import VideoFacts from "./video-facts";
 export default function VideoCard({ video }) {
   const id = videoId(video);
   if (!id) return null;
@@ -33,6 +34,7 @@ export default function VideoCard({ video }) {
           <span> · {formatCount(video.statistics.viewCount)} views</span>
         )}
       </div>
+      <VideoFacts video={video} />
     </article>
   );
 }
