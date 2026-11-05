@@ -15,6 +15,7 @@ import ChannelDetail from "./component/channel-detail";
 import LibraryPage from "./component/library-page";
 import AccountPage from "./component/account-page";
 import { AccountProvider } from "./context/account-context";
+import PullToRefresh from "./component/pull-to-refresh";
 function ScrollReset() {
   const { pathname } = useLocation();
   useEffect(() => {
@@ -35,6 +36,7 @@ export default function App() {
       </a>
       <ScrollReset />
       <Header />
+      <PullToRefresh />
       <Routes>
         <Route path="/" element={<HomeRoute />} />
         <Route path="/explore" element={<HomePage />} />

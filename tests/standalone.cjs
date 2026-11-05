@@ -22,12 +22,17 @@ module.exports = async function checkStandalone(page) {
   }), { background: 'rgb(251, 251, 253)', height: '59px', page: 'rgb(251, 251, 253)' });
   await page.evaluate(() => document.documentElement.style.setProperty('--safe-bottom', '34px'));
   const bottomBar=await page.locator('.bottom-nav').boundingBox();
-  assert.equal(bottomBar.y+bottomBar.height,844,'Tab bar reaches the physical viewport bottom');
-  assert.equal(bottomBar.x,0);
-  assert.equal(bottomBar.width,390);
+  assert.equal(bottomBar.y+bottomBar.height,822,'Floating navigation sits 22px from the bottom with a 34px safe inset');
+  assert.equal(bottomBar.x,16);
+  assert.equal(bottomBar.width,358);
+  assert.equal(await page.locator('.bottom-nav').evaluate(el=>getComputedStyle(el).borderRadius),'36px');
   const tab=await page.locator('.bottom-nav a').first().boundingBox();
-  assert.ok(tab.y+tab.height<=810,'Tabs stay above the 34px Home indicator inset');
+  assert.ok(tab.y+tab.height<=816,'Tabs remain clear of the Home indicator');
   assert.equal(await page.locator('.header').evaluate(el=>getComputedStyle(el).height),'48px');
+  assert.deepEqual(await page.locator('.header').evaluate(el=>{
+    const style=getComputedStyle(el);
+    return {background:style.backgroundColor,filter:style.filter,blur:style.backdropFilter,opacity:style.opacity};
+  }),{background:'rgb(251, 251, 253)',filter:'none',blur:'none',opacity:'1'},'The header is solid and unblurred');
   assert.equal(await page.locator('h1').evaluate(el=>getComputedStyle(el).userSelect),'none');
   assert.equal(await page.locator('input[aria-label="Search videos"]').evaluate(el=>getComputedStyle(el).userSelect),'text');
   assert.deepEqual(await page.evaluate(() => [1,2].map(count => {

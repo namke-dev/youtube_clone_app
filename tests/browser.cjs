@@ -336,7 +336,7 @@ const assert = require("node:assert/strict");
     assert.equal(await dock.getByRole('link').count(),5);
     assert.ok(await page.locator('#main').evaluate(el=>parseFloat(getComputedStyle(el).paddingBottom)) >= 80);
     const dockBox=await dock.boundingBox();
-    assert.equal(dockBox.x,0);assert.equal(dockBox.width,390);assert.equal(dockBox.y+dockBox.height,844);
+    assert.equal(dockBox.x,16);assert.equal(dockBox.width,358);assert.equal(dockBox.y+dockBox.height,838);
     assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth > innerWidth),false);
     if(path==='/video/test0') await page.screenshot({path:'/tmp/devtubes-watch-navigation-phone.png',fullPage:true});
   }
@@ -434,6 +434,7 @@ const assert = require("node:assert/strict");
   await page.setViewportSize({width:1440,height:1100});
   assert.equal(await page.locator('.bottom-nav').isVisible(),false);
   await require('./standalone.cjs')(page);
+  await require('./pull-to-refresh.cjs')(page);
   assert.deepEqual(errors, []);
   console.log(
     "PASS centered fullscreen with a persistent one-tap exit; simulated Home Screen status-area layout; fullscreen button auto-hide/wake and black theme restoration; maximized mobile Shorts area and side controls; persistent Shorts iframe/sound choice and blocked-autoplay recovery; 9:16 Shorts player/poster sizing on desktop and phones; Shorts navigation, snap scrolling, cached refresh and bounded pagination; guest topic selection/persistence/personalized refresh without extra requests, desktop/mobile layout, Shorts filtering, unsupported fullscreen viewport fallback, manual/automatic fullscreen including related-video navigation, search, pagination deduplication, video actions, comments on demand, related videos, saved persistence/removal, quota/empty states, channel routing; no uncaught browser errors.",

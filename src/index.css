@@ -11,7 +11,7 @@
   --pill: #efeff2;
   --radius: 16px;
   --header: 80px;
-  --mobile-nav: 56px;
+  --mobile-nav: 68px;
   --side: 216px;
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-left: env(safe-area-inset-left, 0px);
@@ -117,7 +117,9 @@ svg.MuiSvgIcon-root {
   z-index: 20;
   height: var(--header);
   padding: 0 24px;
-  background: rgba(255, 255, 255, 0.96);
+  background: var(--bg);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
   display: flex;
   align-items: center;
   gap: 24px;
@@ -980,22 +982,24 @@ svg.MuiSvgIcon-root {
   .thumbnail {
     border-radius: 16px;
   }
-  /* Solid navigation keeps labels readable over every kind of thumbnail. */
+  /* Retain the separate rounded dock, lowered without covering the Home indicator. */
   .bottom-nav {
     display: grid;
     grid-template-columns: repeat(5, minmax(0, 1fr));
-    gap: 0;
+    gap: 4px;
     position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    min-height: calc(var(--mobile-nav) + var(--safe-bottom));
+    bottom: max(6px, calc(var(--safe-bottom) - 12px));
+    left: calc(16px + var(--safe-left));
+    right: calc(16px + var(--safe-right));
+    max-width: 440px;
+    min-height: var(--mobile-nav);
+    margin-inline: auto;
     z-index: 30;
     isolation: isolate;
-    padding: 0 var(--safe-right) var(--safe-bottom) var(--safe-left);
-    border-radius: 0;
-    background: var(--bg);
-    border-top: 1px solid var(--line);
+    padding: 6px;
+    border-radius: 36px;
+    background: #eef1f0;
+    border: 0;
   }
   /* Search fields and topic controls keep a quiet surface; header actions are bare. */
   .header.search-open .search,
@@ -1015,10 +1019,10 @@ svg.MuiSvgIcon-root {
     justify-content: center;
     gap: 4px;
     min-width: 0;
-    height: var(--mobile-nav);
-    min-height: var(--mobile-nav);
-    padding: 5px 4px;
-    border-radius: 0;
+    height: 56px;
+    min-height: 56px;
+    padding: 7px 4px;
+    border-radius: 28px;
     color: #1d2430;
     font-size: 11px;
     font-weight: 600;
@@ -1115,6 +1119,30 @@ svg.MuiSvgIcon-root {
   }
 }
 
+@media (max-width: 850px), (pointer: coarse) {
+  html { overscroll-behavior-y: contain; }
+}
+.pull-refresh {
+  position: fixed;
+  top: calc(var(--safe-top) + var(--header) + 8px);
+  left: 50%;
+  transform: translate(-50%, var(--pull-travel));
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  border-radius: 24px;
+  background: #eef1f0;
+  color: #344055;
+  font-size: 13px;
+  white-space: nowrap;
+  pointer-events: none;
+}
+.pull-refresh.ready { color: #1c625c; }
+.pull-refresh.loading svg { animation: refresh-spin 800ms linear infinite; }
+@keyframes refresh-spin { to { transform: rotate(360deg); } }
+
 /* Fullscreen is requested during the original video-link click, before routing. */
 .playback-options {
   display: flex;
@@ -1131,6 +1159,7 @@ svg.MuiSvgIcon-root {
 html.video-playback-dark { --status-background: #000; color-scheme: dark; }
 html.video-playback-dark, html.video-playback-dark body, html.video-playback-dark #root { background: #000; }
 .video-playback-dark .header, .video-playback-dark .bottom-nav { visibility: hidden; pointer-events: none; }
+.video-playback-dark .pull-refresh { display: none; }
 .player .fullscreen-exit, .player .landscape-toggle { transition: opacity 180ms ease; }
 .player.fullscreen-controls-hidden .landscape-toggle { opacity: 0; pointer-events: none; }
 .player .fullscreen-exit .fullscreen-exit-icon { display: none; }
