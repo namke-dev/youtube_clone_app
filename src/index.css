@@ -11,6 +11,7 @@
   --pill: #efeff2;
   --radius: 16px;
   --header: 80px;
+  --mobile-nav: 56px;
   --side: 216px;
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-left: env(safe-area-inset-left, 0px);
@@ -21,6 +22,7 @@
 * {
   box-sizing: border-box;
 }
+html { background: var(--bg); color-scheme: light; touch-action: pan-x pan-y; }
 body {
   margin: 0;
   padding: var(--safe-top) var(--safe-right) 0 var(--safe-left);
@@ -34,11 +36,17 @@ body {
     sans-serif;
   font-size: 14px;
   -webkit-font-smoothing: antialiased;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
 }
-/* Translucent Home Screen status bars show page content behind the clock.
-   Paint that area black and keep the light app below its safe-area inset. */
-html.standalone { --status-background: #000; }
-html.standalone, html.standalone body { background: #000; }
+input, textarea, [contenteditable=""], [contenteditable="true"], [contenteditable="plaintext-only"] {
+  -webkit-user-select: text;
+  user-select: text;
+  -webkit-touch-callout: default;
+}
+/* Keep the status/safe-area surround continuous with the page during browsing.
+   Fullscreen overrides this same surface to black below. */
 #root { min-height: calc(100dvh - var(--safe-top)); background: var(--bg); }
 body::before {
   content: "";
@@ -774,10 +782,10 @@ svg.MuiSvgIcon-root {
 }
 @media (max-width: 640px) {
   :root {
-    --header: 32px;
+    --header: 48px;
   }
   body:has(.header.search-open) {
-    --header: 86px;
+    --header: 102px;
   }
   .header {
     padding: 0 14px;
@@ -788,24 +796,24 @@ svg.MuiSvgIcon-root {
     backdrop-filter: none;
   }
   .brand {
-    height: 28px;
-    min-height: 28px;
-    gap: 5px;
-    padding: 3px 8px 3px 4px;
-    border-radius: 18px;
+    height: 44px;
+    min-height: 44px;
+    gap: 8px;
+    padding: 0;
+    border-radius: 0;
     color: #263448;
-    font-size: 12px;
+    font-size: 16px;
     font-weight: 650;
     letter-spacing: -0.3px;
   }
   .brand-mark {
-    width: 18px;
-    height: 18px;
+    width: 24px;
+    height: 24px;
     border-radius: 7px;
     background: #435268;
   }
   .brand-mark svg.MuiSvgIcon-root {
-    font-size: 12px;
+    font-size: 16px;
   }
   .header .search {
     display: none;
@@ -816,18 +824,18 @@ svg.MuiSvgIcon-root {
     margin-left: auto;
     background: none;
     color: #344055;
-    height: 28px;
-    width: 28px;
+    height: 44px;
+    width: 44px;
     padding: 0;
     border-radius: 50%;
   }
   .mobile-search svg.MuiSvgIcon-root,
   .library-mark svg.MuiSvgIcon-root {
-    font-size: 15px;
+    font-size: 20px;
   }
   .library-mark {
-    height: 28px;
-    width: 28px;
+    height: 44px;
+    width: 44px;
     background: none;
     color: #344055;
   }
@@ -855,7 +863,7 @@ svg.MuiSvgIcon-root {
     display: none;
   }
   .feed {
-    padding: 28px 20px calc(112px + env(safe-area-inset-bottom, 0px));
+    padding: 28px 20px calc(var(--mobile-nav) + var(--safe-bottom) + 24px);
   }
   .intro {
     margin-bottom: 22px;
@@ -976,25 +984,22 @@ svg.MuiSvgIcon-root {
   .bottom-nav {
     display: grid;
     grid-template-columns: repeat(5, minmax(0, 1fr));
-    gap: 4px;
+    gap: 0;
     position: fixed;
-    bottom: calc(12px + env(safe-area-inset-bottom, 0px));
-    left: 16px;
-    right: 16px;
-    max-width: 440px;
-    margin-inline: auto;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    min-height: calc(var(--mobile-nav) + var(--safe-bottom));
     z-index: 30;
     isolation: isolate;
-    padding: 6px;
-    border-radius: 36px;
+    padding: 0 var(--safe-right) var(--safe-bottom) var(--safe-left);
+    border-radius: 0;
+    background: var(--bg);
+    border-top: 1px solid var(--line);
   }
-  /* A quiet, opaque surface shared by the phone controls. */
-  .header .brand,
-  .header .mobile-search,
-  .header .library-mark,
+  /* Search fields and topic controls keep a quiet surface; header actions are bare. */
   .header.search-open .search,
-  .chips .chip,
-  .bottom-nav {
+  .chips .chip {
     border: 0;
     background: #eef1f0;
   }
@@ -1010,9 +1015,10 @@ svg.MuiSvgIcon-root {
     justify-content: center;
     gap: 4px;
     min-width: 0;
-    min-height: 56px;
-    padding: 7px 4px;
-    border-radius: 28px;
+    height: var(--mobile-nav);
+    min-height: var(--mobile-nav);
+    padding: 5px 4px;
+    border-radius: 0;
     color: #1d2430;
     font-size: 11px;
     font-weight: 600;
@@ -1037,7 +1043,7 @@ svg.MuiSvgIcon-root {
     padding: 20px;
   }
   #main {
-    padding-bottom: calc(112px + env(safe-area-inset-bottom, 0px));
+    padding-bottom: calc(var(--mobile-nav) + var(--safe-bottom) + 24px);
   }
   .player {
     border-radius: 14px;
@@ -1122,8 +1128,9 @@ svg.MuiSvgIcon-root {
 .playback-options label { display: flex; align-items: center; gap: 8px; cursor: pointer; }
 .playback-options input { accent-color: #242424; }
 /* Safari paints the safe-area surround from the root/body background. */
-html.video-playback-dark { --status-background: #000; }
+html.video-playback-dark { --status-background: #000; color-scheme: dark; }
 html.video-playback-dark, html.video-playback-dark body, html.video-playback-dark #root { background: #000; }
+.video-playback-dark .header, .video-playback-dark .bottom-nav { visibility: hidden; pointer-events: none; }
 .player .fullscreen-exit, .player .landscape-toggle { transition: opacity 180ms ease; }
 .player.fullscreen-controls-hidden .landscape-toggle { opacity: 0; pointer-events: none; }
 .player .fullscreen-exit .fullscreen-exit-icon { display: none; }
@@ -1325,7 +1332,7 @@ html.video-expanded, html.video-expanded body { overflow: hidden; }
     --short-actions-reserve: 0px;
     position: relative;
     min-height: 0;
-    padding: 8px 8px calc(92px + env(safe-area-inset-bottom, 0px));
+    padding: 8px 8px calc(var(--mobile-nav) + var(--safe-bottom) + 12px);
   }
   /* Keep the page heading available to assistive technology without a title row. */
   .shorts-page .intro, .shorts-page .section-heading h2 {

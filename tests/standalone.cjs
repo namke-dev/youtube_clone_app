@@ -12,13 +12,30 @@ module.exports = async function checkStandalone(page) {
   await page.goto('http://127.0.0.1:4173/saved');
   await page.locator('.header').waitFor();
   assert.equal(await page.evaluate(() => document.documentElement.classList.contains('standalone')), true, 'Home Screen launch uses the standalone appearance');
-  assert.equal(await page.locator('meta[name="theme-color"]').getAttribute('content'), '#000000');
+  assert.equal(await page.locator('meta[name="theme-color"]').getAttribute('content'), '#fbfbfd');
+  assert.equal(await page.locator('meta[name="apple-mobile-web-app-status-bar-style"]').count(), 0, 'Normal browsing leaves status-bar appearance to iOS');
   await page.evaluate(() => document.documentElement.style.setProperty('--safe-top', '59px'));
   await page.waitForFunction(() => document.querySelector('.header').getBoundingClientRect().y === 59);
   assert.deepEqual(await page.evaluate(() => {
     const bar = getComputedStyle(document.body, '::before');
     return { background: bar.backgroundColor, height: bar.height, page: getComputedStyle(document.getElementById('root')).backgroundColor };
-  }), { background: 'rgb(0, 0, 0)', height: '59px', page: 'rgb(251, 251, 253)' });
+  }), { background: 'rgb(251, 251, 253)', height: '59px', page: 'rgb(251, 251, 253)' });
+  await page.evaluate(() => document.documentElement.style.setProperty('--safe-bottom', '34px'));
+  const bottomBar=await page.locator('.bottom-nav').boundingBox();
+  assert.equal(bottomBar.y+bottomBar.height,844,'Tab bar reaches the physical viewport bottom');
+  assert.equal(bottomBar.x,0);
+  assert.equal(bottomBar.width,390);
+  const tab=await page.locator('.bottom-nav a').first().boundingBox();
+  assert.ok(tab.y+tab.height<=810,'Tabs stay above the 34px Home indicator inset');
+  assert.equal(await page.locator('.header').evaluate(el=>getComputedStyle(el).height),'48px');
+  assert.equal(await page.locator('h1').evaluate(el=>getComputedStyle(el).userSelect),'none');
+  assert.equal(await page.locator('input[aria-label="Search videos"]').evaluate(el=>getComputedStyle(el).userSelect),'text');
+  assert.deepEqual(await page.evaluate(() => [1,2].map(count => {
+    const event=new Event('touchstart',{bubbles:true,cancelable:true});
+    Object.defineProperty(event,'touches',{value:Array.from({length:count},()=>({}))});
+    document.body.dispatchEvent(event);
+    return event.defaultPrevented;
+  })),[false,true],'The installed app blocks a pinch but leaves single-finger input alone');
   await page.screenshot({ path: '/tmp/devtubes-standalone-status.png', fullPage: true });
 
   await page.setViewportSize({ width: 844, height: 390 });
@@ -58,6 +75,10 @@ module.exports = async function checkStandalone(page) {
   await page.evaluate(() => document.documentElement.style.setProperty('--safe-top', '59px'));
   await page.getByRole('button', { name: 'Fullscreen', exact: true }).click();
   await page.waitForFunction(() => document.documentElement.classList.contains('video-expanded'));
+  assert.equal(await page.locator('.header').isVisible(),false,'The app header is hidden during fullscreen');
+  assert.equal(await page.locator('.bottom-nav').isVisible(),false,'Tabs are hidden during fullscreen');
+  assert.equal(await page.locator('meta[name="apple-mobile-web-app-status-bar-style"]').getAttribute('content'),'black');
+  assert.equal(await page.evaluate(()=>getComputedStyle(document.body,'::before').backgroundColor),'rgb(0, 0, 0)');
   const player = await page.locator('.player').boundingBox();
   assert.equal(player.y, 0);
   assert.equal(player.height, 844);
@@ -100,5 +121,8 @@ module.exports = async function checkStandalone(page) {
   await touch.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
   await touch.detach();
   await page.waitForFunction(() => !document.documentElement.classList.contains('video-expanded'));
-  assert.equal(await page.locator('meta[name="theme-color"]').getAttribute('content'), '#000000', 'Standalone theme stays black after leaving fullscreen');
+  assert.equal(await page.locator('meta[name="theme-color"]').getAttribute('content'), '#fbfbfd', 'Standalone returns to its light theme after fullscreen');
+  assert.equal(await page.locator('meta[name="apple-mobile-web-app-status-bar-style"]').count(),0);
+  assert.equal(await page.locator('.header').isVisible(),true);
+  assert.equal(await page.locator('.bottom-nav').isVisible(),true);
 };

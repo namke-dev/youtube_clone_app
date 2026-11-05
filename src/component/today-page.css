@@ -81,7 +81,7 @@
   .edition-heading h1 { font-size: 28px; }
 }
 @media (max-width: 640px) {
-  .today-page { padding: 24px 20px calc(112px + env(safe-area-inset-bottom, 0px)); }
+  .today-page { padding: 24px 20px calc(var(--mobile-nav) + var(--safe-bottom) + 24px); }
   .edition-heading { align-items: flex-start; gap: 16px; }
   .edition-heading h1 { font-size: 25px; letter-spacing: -.8px; }
   .edition-heading p { font-size: 13px; max-width: 27ch; }

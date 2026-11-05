@@ -112,6 +112,20 @@ test('fullscreen requests a black browser theme and restores it on exit', async 
   } finally {await exitVideoFullscreen();element.remove();meta.remove();}
 });
 
+test.each([null, 'default'])('fullscreen requests a black iPhone status bar and restores its previous %s setting', async previous => {
+  const status=document.createElement('meta');status.name='apple-mobile-web-app-status-bar-style';
+  if (previous !== null) {status.content=previous;document.head.appendChild(status);}
+  const element=document.createElement('div');document.body.appendChild(element);
+  try {
+    await requestVideoFullscreen(element);
+    expect(document.querySelector('meta[name="apple-mobile-web-app-status-bar-style"]').content).toBe('black');
+    await exitVideoFullscreen();
+    const restored=document.querySelector('meta[name="apple-mobile-web-app-status-bar-style"]');
+    expect(restored?.getAttribute('content') || null).toBe(previous);
+    if (previous === null) expect(restored).toBeNull();
+  } finally {await exitVideoFullscreen();element.remove();status.remove();}
+});
+
 test('a native fullscreen request finishing after cancellation cannot restore the black theme', async () => {
   let finish;
   document.documentElement.requestFullscreen=jest.fn(()=>new Promise(resolve=>{finish=resolve;}));

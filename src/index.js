@@ -9,6 +9,9 @@ import ReactDOM from "react-dom/client";
 import App from "./App";
 import "./index.css";
 import "./component/today-page.css";
+import { installAppInteractions } from "./utils/app-interactions";
+
+installAppInteractions();
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 

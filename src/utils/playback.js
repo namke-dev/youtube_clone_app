@@ -65,17 +65,26 @@ let fullscreenTheme = null;
 export function setVideoFullscreenAppearance(enabled) {
   document.documentElement.classList.toggle("video-playback-dark", enabled);
   if (enabled && !fullscreenTheme) {
-    const existing = document.querySelector('meta[name="theme-color"]');
-    const meta = existing || document.createElement("meta");
-    fullscreenTheme = { meta, existing: Boolean(existing), content: meta.getAttribute("content") };
-    meta.name = "theme-color";
-    meta.content = "#000000";
-    if (!existing) document.head.appendChild(meta);
+    fullscreenTheme = [
+      ['theme-color', '#000000'],
+      // Older iOS may honor this hint; newer versions also sample the black
+      // page/safe-area surfaces painted by .video-playback-dark.
+      ['apple-mobile-web-app-status-bar-style', 'black'],
+    ].map(([name, value]) => {
+      const existing = document.querySelector(`meta[name="${name}"]`);
+      const meta = existing || document.createElement('meta');
+      const snapshot = {meta, existing:Boolean(existing), content:meta.getAttribute('content')};
+      meta.name = name;
+      meta.content = value;
+      if (!existing) document.head.appendChild(meta);
+      return snapshot;
+    });
   } else if (!enabled && fullscreenTheme) {
-    const { meta, existing, content } = fullscreenTheme;
-    if (!existing) meta.remove();
-    else if (content === null) meta.removeAttribute("content");
-    else meta.setAttribute("content", content);
+    fullscreenTheme.forEach(({meta, existing, content}) => {
+      if (!existing) meta.remove();
+      else if (content === null) meta.removeAttribute('content');
+      else meta.setAttribute('content', content);
+    });
     fullscreenTheme = null;
   }
 }
